@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SportPark - Khám phá thể thao công viên</title>
+    <!-- Leaflet JS & CSS cho Bản đồ -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- CSS -->
+     <link rel="stylesheet" href="main.css">
+</head>
+<body>
+
+    <!-- Header & Menu -->
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <div class="logo-box" onclick="resetFilters()">
+                    <div class="logo-icon">
+                        <i class="fa-solid fa-leaf"></i>
+                    </div>
+                    <div class="logo-text">
+                        <span>Sport<em>Park</em></span>
+                        <div class="logo-sub">Khám phá thể thao công viên</div>
+                    </div>
+                </div>
+
+                <div class="search-box">
+                    <input type="text" id="searchInput" onkeyup="handleSearch()" placeholder="Tìm môn thể thao, công viên, địa chỉ...">
+                    <button><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+
+                <div class="user-profile">
+                    <button style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size: 18px; position:relative;">
+                        <i class="fa-regular fa-bell"></i>
+                        <span style="position:absolute; top:0; right:0; width:8px; height:8px; background:var(--accent-orange); border-radius:50%;"></span>
+                    </button>
+                    <div style="display:flex; align-items:center; gap:8px; border-left:1px solid var(--border-color); padding-left:12px;">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120" alt="Avatar" class="avatar">
+                        <span style="font-size:14px; font-weight:500;" class="hidden-mobile">Hào Chu Văn</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sub-nav-bar">
+            <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <nav class="nav-links">
+                    <a href="#"><i class="fa-solid fa-house"></i> Trang Chủ</a>
+                    <a href="#" class="active"><i class="fa-solid fa-map-location-dot"></i> Bản Đồ</a>
+                    <a href="#"><i class="fa-solid fa-tree"></i> Công Viên</a>
+                    <a href="#"><i class="fa-solid fa-person-running"></i> Hoạt Động</a>
+                    <a href="#"><i class="fa-solid fa-user"></i> Tài Khoản</a>
+                </nav>
+                <button onclick="openRegisterModal()" class="btn-primary">
+                    <i class="fa-solid fa-plus"></i> Đăng Ký Hoạt Động
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        
+        <!-- Top: Bản đồ + Bộ lọc -->
+        <div class="grid-2cols" style="margin-bottom: 24px;">
+            <div class="col-8 map-card">
+                <div class="map-badge">
+                    <span class="dot-pulse"></span>
+                    <span id="mapCounter">Hiển thị 6 địa điểm thể thao</span>
+                </div>
+                <div id="map"></div>
+            </div>
+
+            <div class="col-4 filter-panel">
+                <div class="filter-header">
+                    <h2><i class="fa-solid fa-sliders" style="color:var(--accent-teal);"></i> Bộ lọc thông minh</h2>
+                    <button onclick="resetFilters()">Đặt lại</button>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:14px; overflow-y:auto; max-height:420px; padding-right:4px;">
+                    <!-- Môn thể thao -->
+                    <div class="filter-group">
+                        <label>Môn Thể Thao</label>
+                        <div class="filter-buttons" id="sportFilters">
+                            <button class="filter-btn active" data-category="sport" data-value="all">all</button>
+                            <button class="filter-btn" data-category="sport" data-value="cầu lông">cầu lông</button>
+                            <button class="filter-btn" data-category="sport" data-value="chạy bộ">chạy bộ</button>
+                            <button class="filter-btn" data-category="sport" data-value="bóng rổ">bóng rổ</button>
+                            <button class="filter-btn" data-category="sport" data-value="gym">gym</button>
+                        </div>
+                    </div>
+
+                    <!-- Công viên -->
+                    <div class="filter-group">
+                        <label>Công Viên</label>
+                        <div class="filter-buttons" id="parkFilters">
+                            <button class="filter-btn active" data-category="park" data-value="all">All</button>
+                            <button class="filter-btn" data-category="park" data-value="Thống Nhất">Thống Nhất</button>
+                            <button class="filter-btn" data-category="park" data-value="Cầu Giấy">Cầu Giấy</button>
+                            <button class="filter-btn" data-category="park" data-value="Nghĩa Đô">Nghĩa Đô</button>
+                        </div>
+                    </div>
+
+                    <!-- Thời gian -->
+                    <div class="filter-group">
+                        <label>Thời Gian</label>
+                        <div class="filter-buttons" id="timeFilters">
+                            <button class="filter-btn active" data-category="time" data-value="all">tất cả</button>
+                            <button class="filter-btn" data-category="time" data-value="sáng">sáng</button>
+                            <button class="filter-btn" data-category="time" data-value="chiều">chiều</button>
+                            <button class="filter-btn" data-category="time" data-value="tối">tối</button>
+                        </div>
+                    </div>
+
+                    <!-- Chi phí -->
+                    <div class="filter-group">
+                        <label>Chi Phí</label>
+                        <div class="filter-buttons" id="costFilters">
+                            <button class="filter-btn active" data-category="cost" data-value="all">miễn phí & có phí</button>
+                            <button class="filter-btn" data-category="cost" data-value="miễn phí">miễn phí</button>
+                            <button class="filter-btn" data-category="cost" data-value="có phí">có phí</button>
+                            <button class="filter-btn" data-category="cost" data-value="<100k">&lt;100k</button>
+                        </div>
+                    </div>
+
+                    <!-- Trình độ -->
+                    <div class="filter-group">
+                        <label>Trình Độ</label>
+                        <div class="filter-buttons" id="levelFilters">
+                            <button class="filter-btn active" data-category="level" data-value="all">mọi trình độ</button>
+                            <button class="filter-btn" data-category="level" data-value="mới bắt đầu">mới bắt đầu</button>
+                            <button class="filter-btn" data-category="level" data-value="trung bình">trung bình</button>
+                            <button class="filter-btn" data-category="level" data-value="nâng cao">nâng cao</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="applyFilters()" class="btn-apply-filter">Áp Dụng Bộ Lọc</button>
+            </div>
+        </div>
+
+        <!-- Bottom: Slider các địa điểm nổi bật + Hoạt động -->
+        <div class="grid-2cols">
+            <div class="col-8">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <h2 class="section-title"><i class="fa-solid fa-fire" style="color:var(--accent-orange);"></i> Địa điểm & Công Viên Nổi Bật</h2>
+                    <div style="display:flex; gap:8px;">
+                        <button onclick="scrollCarousel(-1)" style="width:32px; height:32px; border-radius:50%; background:var(--bg-card); border:1px solid var(--border-color); color:white; cursor:pointer;"><i class="fa-solid fa-chevron-left"></i></button>
+                        <button onclick="scrollCarousel(1)" style="width:32px; height:32px; border-radius:50%; background:var(--bg-card); border:1px solid var(--border-color); color:white; cursor:pointer;"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                </div>
+
+                <div class="carousel-container" id="carouselContainer">
+                    <div class="carousel-card" onclick="focusPark('Thống Nhất', 'cầu lông')">
+                        <div class="carousel-img-box">
+                            <img src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&q=80&w=400">
+                            <span class="carousel-badge"><i class="fa-solid fa-table-tennis-paddle-ball"></i></span>
+                        </div>
+                        <div class="carousel-content">
+                            <h3>Công viên Thống Nhất</h3>
+                            <p>Sân Cầu Lông ngoài trời</p>
+                        </div>
+                    </div>
+
+                    <div class="carousel-card" onclick="focusPark('Thống Nhất', 'chạy bộ')">
+                        <div class="carousel-img-box">
+                            <img src="https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&q=80&w=400">
+                            <span class="carousel-badge" style="background:#2563eb;"><i class="fa-solid fa-person-running"></i></span>
+                        </div>
+                        <div class="carousel-content">
+                            <h3>Công viên Thống Nhất</h3>
+                            <p>Đường Chạy hồ Bảy Mẫu</p>
+                        </div>
+                    </div>
+
+                    <div class="carousel-card" onclick="focusPark('Cầu Giấy', 'chạy bộ')">
+                        <div class="carousel-img-box">
+                            <img src="https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&q=80&w=400">
+                            <span class="carousel-badge" style="background:#2563eb;"><i class="fa-solid fa-person-running"></i></span>
+                        </div>
+                        <div class="carousel-content">
+                            <h3>Công viên Cầu Giấy</h3>
+                            <p>Khu tập thể thao đa năng</p>
+                        </div>
+                    </div>
+
+                    <div class="carousel-card" onclick="focusPark('Cầu Giấy', 'bóng rổ')">
+                        <div class="carousel-img-box">
+                            <img src="https://images.unsplash.com/photo-1519861531473-9200262188bf?auto=format&fit=crop&q=80&w=400">
+                            <span class="carousel-badge" style="background:#d97706;"><i class="fa-solid fa-basketball"></i></span>
+                        </div>
+                        <div class="carousel-content">
+                            <h3>Sân Bóng Rổ Cầu Giấy</h3>
+                            <p>Sân bóng rổ tự do</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-4">
+                <h2 class="section-title"><i class="fa-solid fa-calendar-days" style="color:var(--accent-teal);"></i> Hoạt Động Sắp Tới</h2>
+                <div class="activity-list">
+                    <div class="activity-card">
+                        <img src="https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&q=80&w=200" class="activity-img">
+                        <div style="display:flex; flex-direction:column; justify-content:space-between; flex:1;">
+                            <div>
+                                <h4>Cầu lông & Cộng Đồng</h4>
+                                <p><i class="fa-solid fa-location-dot" style="color:var(--accent-orange);"></i> Công viên Thống Nhất</p>
+                                <div class="activity-meta"><i class="fa-regular fa-clock"></i> Thứ 3 & 5, 18:00 - 20:00</div>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+                                <span class="badge-free">Miễn phí</span>
+                                <span style="font-size:10px; color:var(--text-muted);">| Người mới</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="activity-card">
+                        <img src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&q=80&w=200" class="activity-img">
+                        <div style="display:flex; flex-direction:column; justify-content:space-between; flex:1;">
+                            <div>
+                                <h4>CLB Chạy Bộ Hoàng Thành</h4>
+                                <p><i class="fa-solid fa-location-dot" style="color:var(--accent-orange);"></i> Công viên Nghĩa Đô</p>
+                                <div class="activity-meta"><i class="fa-regular fa-clock"></i> Thứ 7 & CN, 06:00 - 08:00</div>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+                                <span class="badge-free" style="background:rgba(59,130,246,0.2); color:#60a5fa; border-color:rgba(59,130,246,0.3);">Miễn phí</span>
+                                <span style="font-size:10px; color:var(--text-muted);">| Mọi trình độ</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-flex">
+            <div class="footer-links">
+                <a href="#">Về chúng tôi</a>
+                <a href="#">Liên hệ</a>
+                <a href="#">Điều khoản sử dụng</a>
+            </div>
+            <div style="display:flex; gap:16px; font-size: 16px;">
+                <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                <a href="#"><i class="fa-brands fa-youtube"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal Đăng Ký Hoạt Động -->
+    <div id="registerModal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-pen-to-square" style="color:var(--accent-orange);"></i> Đăng Ký Hoạt Động Mới</h3>
+                <button onclick="closeRegisterModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="form-group">
+                <label>Tên hoạt động / Tên nhóm</label>
+                <input type="text" placeholder="Ví dụ: Giao lưu cầu lông chiều T3" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label>Công viên chọn</label>
+                <select class="form-control">
+                    <option>Công viên Thống Nhất</option>
+                    <option>Công viên Cầu Giấy</option>
+                    <option>Công viên Nghĩa Đô</option>
+                    <option>Công viên Bách Thảo</option>
+                </select>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                <div class="form-group">
+                    <label>Môn thể thao</label>
+                    <select class="form-control">
+                        <option>Cầu Lông</option>
+                        <option>Chạy Bộ</option>
+                        <option>Bóng Rổ</option>
+                        <option>Gym / Calisthenics</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Chi phí</label>
+                    <input type="text" placeholder="Miễn phí hoặc số tiền" class="form-control">
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
+                <button onclick="closeRegisterModal()" style="background:#334155; color:white; border:none; padding:8px 16px; border-radius:8px; cursor:pointer; font-size:12px; font-weight:600;">Hủy</button>
+                <button onclick="submitRegister()" style="background:var(--accent-orange); color:white; border:none; padding:8px 16px; border-radius:8px; cursor:pointer; font-size:12px; font-weight:600;">Đăng Ký</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast thông báo -->
+    <div id="toast">
+        <i class="fa-solid fa-circle-check" style="font-size: 16px;"></i>
+        <span id="toastMsg">Thao tác thành công!</span>
+    </div>
+</body>
+</html>
