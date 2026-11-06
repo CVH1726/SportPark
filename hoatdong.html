@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SportPark - Danh Sách Hoạt Động Thể Thao</title>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- CSS dùng chung -->
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+
+    <!-- Header & Menu -->
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <div class="logo-box" onclick="window.location.href='index.html'">
+                    <div class="logo-icon">
+                        <i class="fa-solid fa-leaf"></i>
+                    </div>
+                    <div class="logo-text">
+                        <span>Sport<em>Park</em></span>
+                        <div class="logo-sub">Khám phá thể thao công viên</div>
+                    </div>
+                </div>
+
+                <div class="search-box">
+                    <input type="text" placeholder="Tìm hoạt động, môn thể thao, công viên...">
+                    <button><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+
+                <div class="user-profile" onclick="window.location.href='account.html'" style="cursor: pointer;">
+                    <button style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size: 18px; position:relative;">
+                        <i class="fa-regular fa-bell"></i>
+                        <span style="position:absolute; top:0; right:0; width:8px; height:8px; background:var(--accent-orange); border-radius:50%;"></span>
+                    </button>
+                    <a href="account.html" style="display:flex; align-items:center; gap:8px; border-left:1px solid var(--border-color); padding-left:12px; text-decoration:none; color:inherit;">
+                        <img src="https://marketplace.canva.com/tXH-Q/MAG7IGtXH-Q/1/tl/canva-MAG7IGtXH-Q.jpg" alt="Avatar" class="avatar">
+                        <span style="font-size:14px; font-weight:500;" class="hidden-mobile">Hào Chu Văn</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="sub-nav-bar">
+            <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <nav class="nav-links">
+                    <a href="index.html"><i class="fa-solid fa-house"></i> Trang Chủ</a>
+                    <a href="map.html"><i class="fa-solid fa-map-location-dot"></i> Bản Đồ</a>
+                    <a href="park.html"><i class="fa-solid fa-tree"></i> Công Viên</a>
+                    <a href="hoatdong.html" class="active"><i class="fa-solid fa-person-running"></i> Hoạt Động</a>
+                    <a href="account.html"><i class="fa-solid fa-user"></i> Tài Khoản</a>
+                </nav>
+                <button onclick="alert('Mở modal đăng ký hoạt động')" class="btn-primary">
+                    <i class="fa-solid fa-plus"></i> Đăng Ký Hoạt Động
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content: Danh Sách Hoạt Động -->
+    <main class="container" style="margin-top: 24px; margin-bottom: 32px;">
+        
+        <!-- Tiêu đề trang & Thanh lọc nhanh -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+            <div>
+                <h1 style="font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-person-running" style="color: var(--accent-orange);"></i> Hoạt Động Thể Thao Cộng Đồng
+                </h1>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Tham gia các buổi giao lưu, tập luyện cùng cộng đồng tại các công viên Hà Nội</p>
+            </div>
+
+            <!-- Bộ lọc nhanh danh mục -->
+            <div style="display: flex; gap: 8px;">
+                <button class="filter-btn active" style="padding: 6px 14px; font-size: 13px;">Tất cả</button>
+                <button class="filter-btn" style="padding: 6px 14px; font-size: 13px;">Cầu lông</button>
+                <button class="filter-btn" style="padding: 6px 14px; font-size: 13px;">Chạy bộ</button>
+                <button class="filter-btn" style="padding: 6px 14px; font-size: 13px;">Bóng rổ</button>
+            </div>
+        </div>
+
+        <!-- Lưới danh sách hoạt động -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;">
+            
+            <!-- Card Hoạt Động 1 -->
+            <div class="carousel-card" style="flex: unset; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div class="carousel-img-box" style="height: 150px;">
+                        <img src="https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&q=80&w=400" alt="Cầu lông">
+                        <span class="carousel-badge"><i class="fa-solid fa-table-tennis-paddle-ball"></i></span>
+                    </div>
+                    <div style="padding: 14px;">
+                        <span class="badge-free" style="margin-bottom: 6px; display: inline-block;">Miễn phí</span>
+                        <h3 style="font-size: 15px; font-weight: 700; margin-top: 4px; color: white;">Cầu lông & Cộng Đồng</h3>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;"><i class="fa-solid fa-location-dot" style="color: var(--accent-orange);"></i> Công viên Thống Nhất</p>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px; display: flex; align-items: center; gap: 6px;">
+                            <i class="fa-regular fa-clock"></i> Thứ 3 & 5, 18:00 - 20:00
+                        </div>
+                    </div>
+                </div>
+                <div style="padding: 0 14px 14px 14px;">
+                    <button style="width: 100%; background: var(--bg-panel); color: white; border: 1px solid var(--border-color); padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='var(--accent-orange)'; this.style.borderColor='var(--accent-orange)'" onmouseout="this.style.background='var(--bg-panel)'; this.style.borderColor='var(--border-color)'">Tham Gia Ngay</button>
+                </div>
+            </div>
+
+            <!-- Card Hoạt Động 2 -->
+            <div class="carousel-card" style="flex: unset; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div class="carousel-img-box" style="height: 150px;">
+                        <img src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&q=80&w=400" alt="Chạy bộ">
+                        <span class="carousel-badge" style="background:#2563eb;"><i class="fa-solid fa-person-running"></i></span>
+                    </div>
+                    <div style="padding: 14px;">
+                        <span class="badge-free" style="background:rgba(59,130,246,0.2); color:#60a5fa; border-color:rgba(59,130,246,0.3); margin-bottom: 6px; display: inline-block;">Miễn phí</span>
+                        <h3 style="font-size: 15px; font-weight: 700; margin-top: 4px; color: white;">CLB Chạy Bộ Hoàng Thành</h3>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;"><i class="fa-solid fa-location-dot" style="color: var(--accent-orange);"></i> Công viên Nghĩa Đô</p>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px; display: flex; align-items: center; gap: 6px;">
+                            <i class="fa-regular fa-clock"></i> Thứ 7 & CN, 06:00 - 08:00
+                        </div>
+                    </div>
+                </div>
+                <div style="padding: 0 14px 14px 14px;">
+                    <button style="width: 100%; background: var(--bg-panel); color: white; border: 1px solid var(--border-color); padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='var(--accent-orange)'; this.style.borderColor='var(--accent-orange)'" onmouseout="this.style.background='var(--bg-panel)'; this.style.borderColor='var(--border-color)'">Tham Gia Ngay</button>
+                </div>
+            </div>
+
+            <!-- Card Hoạt Động 3 -->
+            <div class="carousel-card" style="flex: unset; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div class="carousel-img-box" style="height: 150px;">
+                        <img src="https://images.unsplash.com/photo-1519861531473-9200262188bf?auto=format&fit=crop&q=80&w=400" alt="Bóng rổ">
+                        <span class="carousel-badge" style="background:#d97706;"><i class="fa-solid fa-basketball"></i></span>
+                    </div>
+                    <div style="padding: 14px;">
+                        <span class="badge-free" style="background:rgba(217,119,6,0.2); color:#fbbf24; border-color:rgba(217,119,6,0.3); margin-bottom: 6px; display: inline-block;">Có phí (50k)</span>
+                        <h3 style="font-size: 15px; font-weight: 700; margin-top: 4px; color: white;">Giao Lưu Bóng Rổ Cuối Tuần</h3>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;"><i class="fa-solid fa-location-dot" style="color: var(--accent-orange);"></i> Sân Bóng Rổ Cầu Giấy</p>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px; display: flex; align-items: center; gap: 6px;">
+                            <i class="fa-regular fa-clock"></i> Chủ Nhật, 16:00 - 18:00
+                        </div>
+                    </div>
+                </div>
+                <div style="padding: 0 14px 14px 14px;">
+                    <button style="width: 100%; background: var(--bg-panel); color: white; border: 1px solid var(--border-color); padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='var(--accent-orange)'; this.style.borderColor='var(--accent-orange)'" onmouseout="this.style.background='var(--bg-panel)'; this.style.borderColor='var(--border-color)'">Tham Gia Ngay</button>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-flex">
+            <div class="footer-links">
+                <a href="#">Về chúng tôi</a>
+                <a href="#">Liên hệ</a>
+                <a href="#">Điều khoản sử dụng</a>
+            </div>
+            <div style="display:flex; gap:16px; font-size: 16px;">
+                <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                <a href="#"><i class="fa-brands fa-youtube"></i></a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
