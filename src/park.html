@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SportPark - Danh Sách Công Viên Thể Thao</title>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- CSS dùng chung -->
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+
+    <!-- Header & Menu -->
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <div class="logo-box" onclick="window.location.href='index.html'">
+                    <div class="logo-icon">
+                        <i class="fa-solid fa-leaf"></i>
+                    </div>
+                    <div class="logo-text">
+                        <span>Sport<em>Park</em></span>
+                        <div class="logo-sub">Khám phá thể thao công viên</div>
+                    </div>
+                </div>
+
+                <div class="search-box">
+                    <input type="text" placeholder="Tìm tên công viên, địa điểm...">
+                    <button><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+
+                <!-- Bấm vào Avatar/Tên để chuyển về trang tài khoản -->
+                <div class="user-profile">
+                    <button style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size: 18px; position:relative;">
+                        <i class="fa-regular fa-bell"></i>
+                        <span style="position:absolute; top:0; right:0; width:8px; height:8px; background:var(--accent-orange); border-radius:50%;"></span>
+                    </button>
+                    <a href="account.html" style="display:flex; align-items:center; gap:8px; border-left:1px solid var(--border-color); padding-left:12px; text-decoration:none; color:inherit;">
+                        <img src="https://marketplace.canva.com/tXH-Q/MAG7IGtXH-Q/1/tl/canva-MAG7IGtXH-Q.jpg" alt="Avatar" class="avatar">
+                        <span style="font-size:14px; font-weight:500;" class="hidden-mobile">Hào Chu Văn</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="sub-nav-bar">
+            <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <nav class="nav-links">
+                    <a href="index.html"><i class="fa-solid fa-house"></i> Trang Chủ</a>
+                    <a href="map.html"><i class="fa-solid fa-map-location-dot"></i> Bản Đồ</a>
+                    <a href="park.html" class="active"><i class="fa-solid fa-tree"></i> Công Viên</a>
+                    <a href="activity.html"><i class="fa-solid fa-person-running"></i> Hoạt Động</a>
+                    <a href="group.html"><i class="fa-solid fa-users"></i> Nhóm</a>
+                    <a href="account.html"><i class="fa-solid fa-user"></i> Tài Khoản</a>
+                </nav>
+                <button onclick="openRegisterModal()" class="btn-primary">
+                    <i class="fa-solid fa-plus"></i> Đăng Ký Hoạt Động
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content: Danh Sách Công Viên -->
+    <main class="container" style="margin-top: 24px; margin-bottom: 32px;">
+        
+        <!-- Tiêu đề trang -->
+        <div style="margin-bottom: 24px;">
+            <h1 style="font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-tree" style="color: var(--accent-teal);"></i> Hệ Thống Công Viên Thể Thao Tại Hà Nội
+            </h1>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Khám phá không gian xanh, đường chạy và các khu vực tập luyện ngoài trời</p>
+        </div>
+
+        <!-- Lưới danh sách các công viên -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
+            
+            <!-- Công viên 1: Thống Nhất -->
+            <div class="carousel-card" style="flex: unset; display: flex; flex-direction: column; justify-content: space-between;" onclick="window.location.href='park-detail.html?name=thong-nhat'">
+                <div>
+                    <div class="carousel-img-box" style="height: 180px;">
+                        <img src="https://baomoi-photo-fbcrawler.bmcdn.me/w1200_r3x2/2025_04_18_294_52008334/3cca165f4c11a54ffc00.jpg" alt="Công viên Thống Nhất">
+                        <span class="carousel-badge"><i class="fa-solid fa-location-dot"></i></span>
+                    </div>
+                    <div style="padding: 16px;">
+                        <span style="font-size: 11px; color: var(--accent-teal); font-weight: 600; text-transform: uppercase;">Quận Hai Bà Trưng</span>
+                        <h3 style="font-size: 16px; font-weight: 700; margin-top: 4px; color: white;">Công viên Thống Nhất</h3>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px; line-height: 1.4;">Khuôn viên rộng lớn với hồ Bảy Mẫu, sở hữu sân cầu lông ngoài trời, đường chạy bộ và khu tập thể thao.</p>
+                        
+                        <div style="display: flex; gap: 12px; margin-top: 12px; font-size: 11px; color: var(--text-muted);">
+                            <span><i class="fa-solid fa-table-tennis-paddle-ball" style="color: var(--accent-orange);"></i> Cầu lông</span>
+                            <span><i class="fa-solid fa-person-running" style="color: #2563eb;"></i> Chạy bộ</span>
+                            <span><i class="fa-solid fa-dumbbell" style="color: #8b5cf6;"></i> Gym</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="padding: 0 16px 16px 16px;">
+                    <button style="width: 100%; background: var(--bg-panel); color: white; border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='var(--accent-orange)'; this.style.borderColor='var(--accent-orange)'" onmouseout="this.style.background='var(--bg-panel)'; this.style.borderColor='var(--border-color)'">
+                        <i class="fa-solid fa-map-location-dot"></i> Xem Bản Đồ Chi Tiết Công Viên
+                    </button>
+                </div>
+            </div>
+
+            <!-- Công viên 2: Cầu Giấy -->
+            <div class="carousel-card" style="flex: unset; display: flex; flex-direction: column; justify-content: space-between;" onclick="window.location.href='park-detail.html?name=cau-giay'">
+                <div>
+                    <div class="carousel-img-box" style="height: 180px;">
+                        <img src="https://cdn-images.vtv.vn/thumb_w/730/66349b6076cb4dee98746cf1/2025/11/02/z7143901566081-45254a2e5361b66613c51d0c05c82022-46954429118544025859239-16207647683828488864725.jpg" alt="Công viên Cầu Giấy">
+                        <span class="carousel-badge"><i class="fa-solid fa-location-dot"></i></span>
+                    </div>
+                    <div style="padding: 16px;">
+                        <span style="font-size: 11px; color: var(--accent-teal); font-weight: 600; text-transform: uppercase;">Quận Cầu Giấy</span>
+                        <h3 style="font-size: 16px; font-weight: 700; margin-top: 4px; color: white;">Công viên Cầu Giấy</h3>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px; line-height: 1.4;">Công viên hiện đại, không gian xanh thoáng mát, nổi tiếng với các sân bóng rổ tiêu chuẩn và khu vận động ngoài trời.</p>
+                        
+                        <div style="display: flex; gap: 12px; margin-top: 12px; font-size: 11px; color: var(--text-muted);">
+                            <span><i class="fa-solid fa-basketball" style="color: #d97706;"></i> Bóng rổ</span>
+                            <span><i class="fa-solid fa-person-running" style="color: #2563eb;"></i> Chạy bộ</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="padding: 0 16px 16px 16px;">
+                    <button style="width: 100%; background: var(--bg-panel); color: white; border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='var(--accent-orange)'; this.style.borderColor='var(--accent-orange)'" onmouseout="this.style.background='var(--bg-panel)'; this.style.borderColor='var(--border-color)'">
+                        <i class="fa-solid fa-map-location-dot"></i> Xem Bản Đồ Chi Tiết Công Viên
+                    </button>
+                </div>
+            </div>
+
+            <!-- Công viên 3: Nghĩa Đô -->
+            <div class="carousel-card" style="flex: unset; display: flex; flex-direction: column; justify-content: space-between;" onclick="window.location.href='park-detail.html?name=nghia-do'">
+                <div>
+                    <div class="carousel-img-box" style="height: 180px;">
+                        <img src="https://images.unsplash.com/photo-1519861531473-9200262188bf?auto=format&fit=crop&q=80&w=400" alt="Công viên Nghĩa Đô">
+                        <span class="carousel-badge"><i class="fa-solid fa-location-dot"></i></span>
+                    </div>
+                    <div style="padding: 16px;">
+                        <span style="font-size: 11px; color: var(--accent-teal); font-weight: 600; text-transform: uppercase;">Quận Cầu Giấy</span>
+                        <h3 style="font-size: 16px; font-weight: 700; margin-top: 4px; color: white;">Công viên Nghĩa Đô</h3>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px; line-height: 1.4;">Nơi lý tưởng để tập luyện Calisthenics, đi dạo và tham gia các CLB chạy bộ cộng đồng vào mỗi buổi sáng.</p>
+                        
+                        <div style="display: flex; gap: 12px; margin-top: 12px; font-size: 11px; color: var(--text-muted);">
+                            <span><i class="fa-solid fa-dumbbell" style="color: #8b5cf6;"></i> Gym / Calisthenics</span>
+                            <span><i class="fa-solid fa-person-running" style="color: #2563eb;"></i> Chạy bộ</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="padding: 0 16px 16px 16px;">
+                    <button style="width: 100%; background: var(--bg-panel); color: white; border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='var(--accent-orange)'; this.style.borderColor='var(--accent-orange)'" onmouseout="this.style.background='var(--bg-panel)'; this.style.borderColor='var(--border-color)'">
+                        <i class="fa-solid fa-map-location-dot"></i> Xem Bản Đồ Chi Tiết Công Viên
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-flex">
+            <div class="footer-links">
+                <a href="#">Về chúng tôi</a>
+                <a href="#">Liên hệ</a>
+                <a href="#">Điều khoản sử dụng</a>
+            </div>
+            <div style="display:flex; gap:16px; font-size: 16px;">
+                <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                <a href="#"><i class="fa-brands fa-youtube"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal Đăng Ký Hoạt Động -->
+    <div id="registerModal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-pen-to-square" style="color:var(--accent-orange);"></i> Đăng Ký Hoạt Động Mới</h3>
+                <button onclick="closeRegisterModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="form-group">
+                <label>Tên hoạt động / Tên nhóm</label>
+                <input type="text" placeholder="Ví dụ: Giao lưu cầu lông chiều T3" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Công viên chọn</label>
+                <select class="form-control">
+                    <option>Công viên Thống Nhất</option>
+                    <option>Công viên Cầu Giấy</option>
+                    <option>Công viên Nghĩa Đô</option>
+                </select>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
+                <button onclick="closeRegisterModal()" style="background:#334155; color:white; border:none; padding:8px 16px; border-radius:8px; cursor:pointer; font-size:12px;">Hủy</button>
+                <button onclick="submitRegister()" style="background:var(--accent-orange); color:white; border:none; padding:8px 16px; border-radius:8px; cursor:pointer; font-size:12px;">Đăng Ký</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast thông báo -->
+    <div id="toast">
+        <i class="fa-solid fa-circle-check" style="font-size: 16px;"></i>
+        <span id="toastMsg">Thao tác thành công!</span>
+    </div>
+
+    <script>
+        function openRegisterModal() { document.getElementById('registerModal').classList.remove('hidden'); }
+        function closeRegisterModal() { document.getElementById('registerModal').classList.add('hidden'); }
+        function submitRegister() { closeRegisterModal(); showToast("Đăng ký hoạt động thành công!"); }
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+    </script>
+</body>
+</html>
