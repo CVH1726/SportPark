@@ -10,91 +10,143 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/main.css">
 </head>
-<body>
+<body class="map-page">
 
+    <!-- Header giữ nguyên như các trang khác -->
     <div id="shared-header"></div>
 
-    <main class="container">
-        <div class="grid-2cols">
-            <div class="col-8 map-card map-page-box">
-                <div class="map-badge">
-                    <span class="dot-pulse"></span>
-                    <span id="mapCounter">Đang tải bản đồ...</span>
-                </div>
-                <div id="map"></div>
-            </div>
+    <!-- Bản đồ phủ toàn bộ phần còn lại của màn hình, bộ lọc nằm trên thanh bên trái có thể đóng / mở -->
+    <main class="map-fullscreen">
+        <div id="map"></div>
 
-            <div class="col-4 filter-panel">
-                <div class="filter-header">
-                    <h2><i class="fa-solid fa-sliders" style="color:var(--accent-teal);"></i> Bộ Lọc Danh Sách</h2>
-                    <button type="button" onclick="resetMapFilters()">Đặt lại</button>
-                </div>
-
-                <div class="filter-scroll-area">
-                    <div class="filter-group">
-                        <label><i class="fa-solid fa-dumbbell"></i> Môn Thể Thao</label>
-                        <select id="filterSport" class="filter-select">
-                            <option value="all">-- Tất cả môn thể thao --</option>
-                            <option value="cầu lông">Cầu lông</option>
-                            <option value="chạy bộ">Chạy bộ</option>
-                            <option value="bóng rổ">Bóng rổ</option>
-                            <option value="gym">Gym / Calisthenics</option>
-                            <option value="bóng đá">Bóng đá</option>
-                            <option value="đạp xe">Đạp xe</option>
-                            <option value="yoga">Yoga ngoài trời</option>
-                        </select>
-                    </div>
-
-                    <div class="filter-group">
-                        <label><i class="fa-solid fa-tree"></i> Công Viên / Khu Vực</label>
-                        <select id="filterPark" class="filter-select">
-                            <option value="all">-- Tất cả công viên tại Hà Nội --</option>
-                            <option value="Thống Nhất">Công viên Thống Nhất</option>
-                            <option value="Cầu Giấy">Công viên Cầu Giấy</option>
-                            <option value="Nghĩa Đô">Công viên Nghĩa Đô</option>
-                            <option value="Bách Thảo">Công viên Bách Thảo</option>
-                            <option value="Hòa Bình">Công viên Hòa Bình</option>
-                            <option value="Yên Sở">Công viên Yên Sở</option>
-                        </select>
-                    </div>
-
-                    <div class="filter-group">
-                        <label><i class="fa-regular fa-clock"></i> Khung Thời Gian</label>
-                        <select id="filterTime" class="filter-select">
-                            <option value="all">-- Tất cả thời gian --</option>
-                            <option value="sáng">Buổi sáng (05:00 - 10:00)</option>
-                            <option value="chiều">Buổi chiều (14:00 - 18:00)</option>
-                            <option value="tối">Buổi tối (18:00 - 22:00)</option>
-                        </select>
-                    </div>
-
-                    <div class="filter-group">
-                        <label><i class="fa-solid fa-tags"></i> Mức Chi Phí</label>
-                        <select id="filterCost" class="filter-select">
-                            <option value="all">-- Tất cả (Miễn phí &amp; Có phí) --</option>
-                            <option value="miễn phí">Miễn phí hoàn toàn</option>
-                            <option value="có phí">Có phí / Thuê sân</option>
-                            <option value="<100k">Dưới 100.000đ</option>
-                        </select>
-                    </div>
-
-                    <div class="filter-group">
-                        <label><i class="fa-solid fa-chart-line"></i> Trình Độ Yêu Cầu</label>
-                        <select id="filterLevel" class="filter-select">
-                            <option value="all">-- Mọi trình độ --</option>
-                            <option value="mới bắt đầu">Mới bắt đầu / Nhập môn</option>
-                            <option value="trung bình">Trung bình</option>
-                            <option value="nâng cao">Nâng cao / Chuyên nghiệp</option>
-                        </select>
-                    </div>
-                </div>
-
-                <button type="button" onclick="applyMapFilters()" class="btn-apply-filter">Áp Dụng Bộ Lọc</button>
-            </div>
+        <div class="map-badge map-badge-center">
+            <span class="dot-pulse"></span>
+            <span id="mapCounter">Đang tải bản đồ...</span>
         </div>
+
+        <!-- Nút đóng / mở thanh bên -->
+        <button type="button" class="map-sidebar-toggle" id="mapSidebarToggle" onclick="toggleMapSidebar()" title="Đóng / mở bộ lọc">
+            <i class="fa-solid fa-chevron-left" id="mapSidebarToggleIcon"></i>
+            <span class="map-sidebar-toggle-text">Bộ lọc</span>
+        </button>
+
+        <aside class="map-sidebar" id="mapSidebar">
+            <div class="filter-header">
+                <h2><i class="fa-solid fa-sliders" style="color:var(--accent-teal);"></i> Bộ lọc thông minh</h2>
+                <button type="button" onclick="resetMapFilters()">Đặt lại</button>
+            </div>
+
+            <div class="filter-scroll-area">
+                <!-- 1. Môn Thể Thao -->
+                <div class="filter-group">
+                    <label for="mapSportSelect"><i class="fa-solid fa-dumbbell"></i> Môn Thể Thao</label>
+                    <select id="mapSportSelect" class="filter-select">
+                        <option value="all">-- Tất cả môn thể thao --</option>
+                        <option value="cầu lông">Cầu lông</option>
+                        <option value="chạy bộ">Chạy bộ</option>
+                        <option value="bóng rổ">Bóng rổ</option>
+                        <option value="gym">Gym / Calisthenics</option>
+                        <option value="đạp xe">Đạp xe</option>
+                        <option value="yoga">Yoga ngoài trời</option>
+                        <option value="bóng đá">Bóng đá</option>
+                    </select>
+                </div>
+
+                <!-- 2. Địa Điểm -->
+                <div class="filter-group">
+                    <label for="mapLocationSelect"><i class="fa-solid fa-location-dot"></i> Địa Điểm</label>
+                    <select id="mapLocationSelect" class="filter-select">
+                        <option value="all">-- Tất cả địa điểm / công viên --</option>
+                        <option value="Thống Nhất">Công viên Thống Nhất (Hai Bà Trưng)</option>
+                        <option value="Cầu Giấy">Công viên Cầu Giấy (Cầu Giấy)</option>
+                        <option value="Nghĩa Đô">Công viên Nghĩa Đô (Cầu Giấy)</option>
+                        <option value="Hòa Bình">Công viên Hòa Bình (Bắc Từ Liêm)</option>
+                        <option value="Yên Sở">Công viên Yên Sở (Hoàng Mai)</option>
+                    </select>
+                </div>
+
+                <!-- 3. Chi Phí -->
+                <div class="filter-group">
+                    <label><i class="fa-solid fa-tags"></i> Chi Phí (VNĐ)</label>
+                    <div class="form-grid-compact">
+                        <input type="number" id="mapCostMin" class="form-control" min="0" step="5000" placeholder="Giá tối thiểu (VD: 0)">
+                        <input type="number" id="mapCostMax" class="form-control" min="0" step="5000" placeholder="Giá tối đa (VD: 100000)">
+                    </div>
+                </div>
+
+                <!-- 4. Thời Gian -->
+                <div class="filter-group">
+                    <label><i class="fa-regular fa-calendar-days"></i> Thời Gian (Ngày &amp; Khung giờ)</label>
+                    <div class="date-picker-row">
+                        <input type="text" id="mapDateInput" class="form-control" placeholder="Chọn ngày (dd/mm/yyyy)..." readonly onclick="toggleMapMiniCalendar()">
+                        <button type="button" class="btn-calendar-toggle" onclick="toggleMapMiniCalendar()">
+                            <i class="fa-regular fa-calendar"></i> Lịch
+                        </button>
+                    </div>
+
+                    <div class="mini-cal hidden" id="mapMiniCalendar">
+                        <div class="mini-cal-header">
+                            <button type="button" onclick="changeMapCalMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                            <span id="mapCalMonthLabel">Tháng 11 / 2026</span>
+                            <button type="button" onclick="changeMapCalMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                        <div class="mini-cal-weekdays">
+                            <span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span><span>CN</span>
+                        </div>
+                        <div class="mini-cal-days" id="mapCalDaysGrid"></div>
+                    </div>
+
+                    <div class="form-grid-compact" style="margin-top: 8px;">
+                        <select id="mapTimeMin" class="filter-select">
+                            <option value="">Giờ bắt đầu (Min)</option>
+                            <option value="05:00">05:00</option>
+                            <option value="06:00">06:00</option>
+                            <option value="07:00">07:00</option>
+                            <option value="08:00">08:00</option>
+                            <option value="14:00">14:00</option>
+                            <option value="16:00">16:00</option>
+                            <option value="17:00">17:00</option>
+                            <option value="18:00">18:00</option>
+                            <option value="19:00">19:00</option>
+                        </select>
+                        <select id="mapTimeMax" class="filter-select">
+                            <option value="">Giờ kết thúc (Max)</option>
+                            <option value="08:00">08:00</option>
+                            <option value="09:00">09:00</option>
+                            <option value="10:00">10:00</option>
+                            <option value="17:00">17:00</option>
+                            <option value="18:00">18:00</option>
+                            <option value="19:00">19:00</option>
+                            <option value="20:00">20:00</option>
+                            <option value="21:00">21:00</option>
+                            <option value="22:00">22:00</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 5. Trình Độ -->
+                <div class="filter-group">
+                    <label for="mapLevelSelect"><i class="fa-solid fa-chart-line"></i> Trình Độ</label>
+                    <select id="mapLevelSelect" class="filter-select">
+                        <option value="all">-- Mọi trình độ --</option>
+                        <option value="mới bắt đầu">Mới bắt đầu</option>
+                        <option value="trung bình">Trung bình</option>
+                        <option value="nâng cao">Nâng cao</option>
+                    </select>
+                </div>
+
+                <!-- 6. Số Lượng Người -->
+                <div class="filter-group">
+                    <label for="mapPeopleInput"><i class="fa-solid fa-user-group"></i> Số Lượng Người Tối Thiểu</label>
+                    <input type="number" id="mapPeopleInput" class="form-control" min="1" placeholder="Nhập số lượng người (VD: 10)">
+                </div>
+            </div>
+
+            <button type="button" onclick="applyMapFilters(true)" class="btn-apply-filter">Áp Dụng Bộ Lọc</button>
+        </aside>
     </main>
 
-    <div id="shared-footer"></div>
+    <!-- Trang bản đồ không dùng Footer để bản đồ phủ kín màn hình -->
     <div id="shared-modals"></div>
 
     <script src="js/data.js"></script>

@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SportPark - Khám phá thể thao công viên</title>
-    <!-- Thư viện bản đồ Leaflet -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <!-- Bộ icon FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Font chữ Inter -->
@@ -20,153 +17,194 @@
     <div id="shared-header"></div>
 
     <!-- Nội dung chính Trang chủ -->
-    <main class="container">
-        <!-- Khu vực trên: Bản đồ bên trái + Bộ lọc thông minh hoàn chỉnh bên phải -->
-        <div class="grid-2cols" style="margin-bottom: 24px;">
-            <div class="col-8 map-card">
-                <div class="map-badge">
-                    <span class="dot-pulse"></span>
-                    <span id="mapCounter">Đang tải bản đồ...</span>
+    <main class="container home-main">
+
+        <!-- ===== Banner chào mừng ===== -->
+        <section class="home-hero">
+            <div class="home-hero-text">
+                <span class="home-hero-tag"><i class="fa-solid fa-leaf"></i> Cộng đồng thể thao công viên Hà Nội</span>
+                <h1>Tìm nơi tập, tìm bạn tập — ngay tại công viên gần bạn</h1>
+                <p>Khám phá hoạt động thể thao phong trào, công viên phù hợp và các nhóm câu lạc bộ đang chào đón thành viên mới.</p>
+                <div class="home-hero-actions">
+                    <a href="map.html" class="btn-primary hero-btn"><i class="fa-solid fa-map-location-dot"></i> Xem bản đồ &amp; bộ lọc</a>
+                    <a href="activity.html" class="btn-hero-outline"><i class="fa-solid fa-person-running"></i> Khám phá hoạt động</a>
                 </div>
-                <div id="map"></div>
+            </div>
+            <div class="home-hero-stats" id="homeHeroStats"></div>
+        </section>
+
+        <!-- ===== 1. Các hoạt động nổi bật ===== -->
+        <section class="home-section" id="featured-activities">
+            <div class="section-header-row">
+                <h2 class="section-title"><i class="fa-solid fa-fire" style="color:var(--accent-orange);"></i> Các Hoạt Động Nổi Bật</h2>
+                <a href="activity.html" class="section-link">Xem tất cả <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+            <div class="cards-grid" id="featuredActivitiesGrid"></div>
+        </section>
+
+        <!-- ===== 2. Các công viên nổi bật ===== -->
+        <section class="home-section" id="featured-parks">
+            <div class="section-header-row">
+                <h2 class="section-title"><i class="fa-solid fa-tree" style="color:var(--accent-teal);"></i> Các Công Viên Nổi Bật</h2>
+                <a href="park.html" class="section-link">Xem tất cả <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+            <div class="cards-grid" id="featuredParksGrid"></div>
+        </section>
+
+        <!-- ===== 3. Tin tức ===== -->
+        <section class="home-section" id="news">
+            <div class="section-header-row">
+                <h2 class="section-title"><i class="fa-regular fa-newspaper" style="color:#60a5fa;"></i> Tin Tức</h2>
+            </div>
+            <div class="news-grid" id="newsGrid"></div>
+        </section>
+
+        <!-- ===== 4. Giới thiệu về trang web + Về chúng tôi ===== -->
+        <section class="home-section info-section" id="about">
+            <div class="section-header-row">
+                <h2 class="section-title"><i class="fa-solid fa-circle-info" style="color:var(--accent-teal);"></i> Giới Thiệu Về Trang Web</h2>
             </div>
 
-            <div class="col-4 filter-panel">
-                <div class="filter-header">
-                    <h2><i class="fa-solid fa-sliders" style="color:var(--accent-teal);"></i> Bộ lọc thông minh</h2>
-                    <button type="button" onclick="resetHomeFilters()">Đặt lại</button>
+            <div class="about-intro">
+                <p>
+                    <strong>SportPark</strong> là nền tảng kết nối cộng đồng yêu thể thao với hệ thống công viên tại Hà Nội.
+                    Thay vì phải hỏi từng nơi, bạn có thể xem sân bãi trên bản đồ, lọc theo môn thể thao – thời gian – chi phí – trình độ,
+                    rồi đăng ký tham gia hoạt động hoặc xin vào nhóm phù hợp chỉ trong vài thao tác.
+                </p>
+            </div>
+
+            <div class="about-features">
+                <div class="about-feature">
+                    <div class="about-feature-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+                    <h3>Bản đồ &amp; bộ lọc thông minh</h3>
+                    <p>Xem vị trí sân tập và lọc nhanh theo môn, địa điểm, chi phí, ngày giờ, trình độ và số người.</p>
+                </div>
+                <div class="about-feature">
+                    <div class="about-feature-icon"><i class="fa-solid fa-person-running"></i></div>
+                    <h3>Hoạt động cộng đồng</h3>
+                    <p>Đăng ký các buổi giao lưu, theo dõi số người đã tham gia và tự tạo hoạt động của riêng bạn.</p>
+                </div>
+                <div class="about-feature">
+                    <div class="about-feature-icon"><i class="fa-solid fa-users"></i></div>
+                    <h3>Nhóm &amp; câu lạc bộ</h3>
+                    <p>Tìm nhóm cùng sở thích, xem nội quy, lịch sinh hoạt và gửi yêu cầu tham gia dễ dàng.</p>
+                </div>
+                <div class="about-feature">
+                    <div class="about-feature-icon"><i class="fa-regular fa-bell"></i></div>
+                    <h3>Thông báo kịp thời</h3>
+                    <p>Nhận nhắc nhở lịch tập và cập nhật mới từ công viên, nhóm mà bạn quan tâm.</p>
+                </div>
+            </div>
+
+            <div class="about-us-box">
+                <h3><i class="fa-solid fa-heart" style="color:var(--accent-orange);"></i> Về chúng tôi</h3>
+                <p>
+                    Chúng tôi tin rằng thể thao nên gần gũi và dễ tiếp cận với mọi người.
+                    SportPark ra đời với mục tiêu giúp người dân thành phố tận dụng không gian xanh sẵn có,
+                    duy trì thói quen vận động và kết nối thêm nhiều người bạn mới thông qua các môn thể thao phong trào.
+                </p>
+                <ul class="about-us-list">
+                    <li><i class="fa-solid fa-check"></i> Sứ mệnh: đưa thể thao công viên đến gần hơn với mọi người.</li>
+                    <li><i class="fa-solid fa-check"></i> Giá trị: thân thiện, an toàn, minh bạch và tôn trọng cộng đồng.</li>
+                    <li><i class="fa-solid fa-check"></i> Tầm nhìn: trở thành cổng thông tin thể thao công viên được tin dùng tại Hà Nội.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ===== 5. Liên hệ ===== -->
+        <section class="home-section info-section" id="contact">
+            <div class="section-header-row">
+                <h2 class="section-title"><i class="fa-solid fa-envelope" style="color:var(--accent-orange);"></i> Liên Hệ</h2>
+            </div>
+            <p class="info-lead">Bạn có câu hỏi, góp ý hoặc muốn hợp tác tổ chức hoạt động? Hãy gửi tin nhắn cho chúng tôi.</p>
+
+            <div class="contact-grid">
+                <div class="contact-cards">
+                    <div class="contact-item">
+                        <span class="contact-icon"><i class="fa-solid fa-envelope"></i></span>
+                        <div><div class="contact-label">Email</div><div class="contact-value" id="contactEmail"></div></div>
+                    </div>
+                    <div class="contact-item">
+                        <span class="contact-icon"><i class="fa-solid fa-phone"></i></span>
+                        <div><div class="contact-label">Điện thoại</div><div class="contact-value" id="contactPhone"></div></div>
+                    </div>
+                    <div class="contact-item">
+                        <span class="contact-icon"><i class="fa-solid fa-location-dot"></i></span>
+                        <div><div class="contact-label">Địa chỉ</div><div class="contact-value" id="contactAddress"></div></div>
+                    </div>
+                    <div class="contact-item">
+                        <span class="contact-icon"><i class="fa-regular fa-clock"></i></span>
+                        <div><div class="contact-label">Giờ làm việc</div><div class="contact-value" id="contactHours"></div></div>
+                    </div>
                 </div>
 
-                <div class="filter-scroll-area">
-                    <!-- 1. Môn Thể Thao (thanh trượt xuống / dropdown) -->
-                    <div class="filter-group">
-                        <label for="homeSportSelect"><i class="fa-solid fa-dumbbell"></i> Môn Thể Thao</label>
-                        <select id="homeSportSelect" class="filter-select">
-                            <option value="all">-- Tất cả môn thể thao --</option>
-                            <option value="cầu lông">Cầu lông</option>
-                            <option value="chạy bộ">Chạy bộ</option>
-                            <option value="bóng rổ">Bóng rổ</option>
-                            <option value="gym">Gym / Calisthenics</option>
-                            <option value="đạp xe">Đạp xe</option>
-                            <option value="yoga">Yoga ngoài trời</option>
-                            <option value="bóng đá">Bóng đá</option>
+                <form class="contact-form" id="contactForm" onsubmit="handleContactSubmit(event)">
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label for="contactNameInput">Họ và tên *</label>
+                            <input type="text" id="contactNameInput" class="form-control" placeholder="Nguyễn Văn A" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactEmailInput">Email *</label>
+                            <input type="email" id="contactEmailInput" class="form-control" placeholder="ban@example.com" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactSubject">Chủ đề</label>
+                        <select id="contactSubject" class="form-control">
+                            <option>Góp ý về trang web</option>
+                            <option>Báo lỗi / sự cố</option>
+                            <option>Hợp tác tổ chức hoạt động</option>
+                            <option>Khác</option>
                         </select>
                     </div>
-
-                    <!-- 2. Địa Điểm (thanh trượt xuống / dropdown) -->
-                    <div class="filter-group">
-                        <label for="homeLocationSelect"><i class="fa-solid fa-location-dot"></i> Địa Điểm</label>
-                        <select id="homeLocationSelect" class="filter-select">
-                            <option value="all">-- Tất cả địa điểm / công viên --</option>
-                            <option value="Thống Nhất">Công viên Thống Nhất (Hai Bà Trưng)</option>
-                            <option value="Cầu Giấy">Công viên Cầu Giấy (Cầu Giấy)</option>
-                            <option value="Nghĩa Đô">Công viên Nghĩa Đô (Cầu Giấy)</option>
-                            <option value="Hòa Bình">Công viên Hòa Bình (Bắc Từ Liêm)</option>
-                            <option value="Yên Sở">Công viên Yên Sở (Hoàng Mai)</option>
-                        </select>
+                    <div class="form-group">
+                        <label for="contactMessage">Nội dung *</label>
+                        <textarea id="contactMessage" class="form-control" rows="4" style="resize: none;" placeholder="Nhập nội dung bạn muốn gửi..." required></textarea>
                     </div>
-
-                    <!-- 3. Chi Phí (nhập giá min và max) -->
-                    <div class="filter-group">
-                        <label><i class="fa-solid fa-tags"></i> Chi Phí (VNĐ)</label>
-                        <div class="form-grid-compact">
-                            <input type="number" id="homeCostMin" class="form-control" min="0" step="5000" placeholder="Giá tối thiểu (VD: 0)">
-                            <input type="number" id="homeCostMax" class="form-control" min="0" step="5000" placeholder="Giá tối đa (VD: 100000)">
-                        </div>
-                    </div>
-
-                    <!-- 4. Thời Gian (Ngày tháng năm bấm vào hiện lịch + Khung giờ min và max) -->
-                    <div class="filter-group">
-                        <label><i class="fa-regular fa-calendar-days"></i> Thời Gian (Ngày &amp; Khung giờ)</label>
-                        <div class="date-picker-row">
-                            <input type="text" id="homeDateInput" class="form-control" placeholder="Chọn ngày (dd/mm/yyyy)..." readonly onclick="toggleHomeMiniCalendar()">
-                            <button type="button" class="btn-calendar-toggle" onclick="toggleHomeMiniCalendar()">
-                                <i class="fa-regular fa-calendar"></i> Lịch
-                            </button>
-                        </div>
-
-                        <!-- Khung lịch mini bật ra khi bấm vào ô ngày -->
-                        <div class="mini-cal hidden" id="homeMiniCalendar">
-                            <div class="mini-cal-header">
-                                <button type="button" onclick="changeHomeCalMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
-                                <span id="homeCalMonthLabel">Tháng 11 / 2026</span>
-                                <button type="button" onclick="changeHomeCalMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
-                            </div>
-                            <div class="mini-cal-weekdays">
-                                <span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span><span>CN</span>
-                            </div>
-                            <div class="mini-cal-days" id="homeCalDaysGrid"></div>
-                        </div>
-
-                        <!-- Khung giờ min và max -->
-                        <div class="form-grid-compact" style="margin-top: 8px;">
-                            <select id="homeTimeMin" class="filter-select">
-                                <option value="">Giờ bắt đầu (Min)</option>
-                                <option value="05:00">05:00</option>
-                                <option value="06:00">06:00</option>
-                                <option value="07:00">07:00</option>
-                                <option value="08:00">08:00</option>
-                                <option value="14:00">14:00</option>
-                                <option value="16:00">16:00</option>
-                                <option value="17:00">17:00</option>
-                                <option value="18:00">18:00</option>
-                                <option value="19:00">19:00</option>
-                            </select>
-                            <select id="homeTimeMax" class="filter-select">
-                                <option value="">Giờ kết thúc (Max)</option>
-                                <option value="08:00">08:00</option>
-                                <option value="09:00">09:00</option>
-                                <option value="10:00">10:00</option>
-                                <option value="17:00">17:00</option>
-                                <option value="18:00">18:00</option>
-                                <option value="19:00">19:00</option>
-                                <option value="20:00">20:00</option>
-                                <option value="21:00">21:00</option>
-                                <option value="22:00">22:00</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- 5. Trình Độ -->
-                    <div class="filter-group">
-                        <label for="homeLevelSelect"><i class="fa-solid fa-chart-line"></i> Trình Độ</label>
-                        <select id="homeLevelSelect" class="filter-select">
-                            <option value="all">-- Mọi trình độ --</option>
-                            <option value="mới bắt đầu">Mới bắt đầu</option>
-                            <option value="trung bình">Trung bình</option>
-                            <option value="nâng cao">Nâng cao</option>
-                        </select>
-                    </div>
-
-                    <!-- 6. Số Lượng Người (điền số vào) -->
-                    <div class="filter-group">
-                        <label for="homePeopleInput"><i class="fa-solid fa-user-group"></i> Số Lượng Người Tối Thiểu</label>
-                        <input type="number" id="homePeopleInput" class="form-control" min="1" placeholder="Nhập số lượng người (VD: 10)">
-                    </div>
-                </div>
-
-                <button type="button" onclick="applyHomeFilters()" class="btn-apply-filter">Áp Dụng Bộ Lọc</button>
+                    <button type="submit" class="btn-primary"><i class="fa-solid fa-paper-plane"></i> Gửi liên hệ</button>
+                </form>
             </div>
-        </div>
+        </section>
 
-        <!-- Khu vực dưới: Hàng thẻ công viên nổi bật + Danh sách hoạt động sắp tới -->
-        <div class="grid-2cols">
-            <div class="col-8">
-                <div class="section-header-row">
-                    <h2 class="section-title"><i class="fa-solid fa-fire" style="color:var(--accent-orange);"></i> Địa điểm &amp; Công Viên Nổi Bật</h2>
-                    <div class="carousel-controls">
-                        <button type="button" onclick="scrollCarousel(-1)" class="carousel-arrow-btn"><i class="fa-solid fa-chevron-left"></i></button>
-                        <button type="button" onclick="scrollCarousel(1)" class="carousel-arrow-btn"><i class="fa-solid fa-chevron-right"></i></button>
-                    </div>
-                </div>
-                <div class="carousel-container" id="carouselContainer"></div>
+        <!-- ===== 6. Điều khoản sử dụng ===== -->
+        <section class="home-section info-section" id="terms">
+            <div class="section-header-row">
+                <h2 class="section-title"><i class="fa-solid fa-file-contract" style="color:#a78bfa;"></i> Điều Khoản Sử Dụng</h2>
             </div>
+            <p class="info-lead">Khi sử dụng SportPark, bạn đồng ý với các điều khoản dưới đây. Bấm vào từng mục để xem chi tiết.</p>
 
-            <div class="col-4">
-                <h2 class="section-title"><i class="fa-solid fa-calendar-days" style="color:var(--accent-teal);"></i> Hoạt Động Sắp Tới</h2>
-                <div class="activity-list" id="upcomingActivities"></div>
+            <div class="terms-list">
+                <details class="terms-item" open>
+                    <summary><span class="terms-num">1</span> Chấp nhận điều khoản</summary>
+                    <p>Việc truy cập và sử dụng website đồng nghĩa với việc bạn đã đọc, hiểu và đồng ý tuân thủ toàn bộ điều khoản này. Nếu không đồng ý, vui lòng ngừng sử dụng dịch vụ.</p>
+                </details>
+                <details class="terms-item">
+                    <summary><span class="terms-num">2</span> Tài khoản người dùng</summary>
+                    <p>Bạn chịu trách nhiệm về thông tin đăng ký và bảo mật tài khoản của mình. Vui lòng cung cấp thông tin chính xác và thông báo ngay cho chúng tôi nếu phát hiện tài khoản bị sử dụng trái phép.</p>
+                </details>
+                <details class="terms-item">
+                    <summary><span class="terms-num">3</span> Quy tắc khi tham gia hoạt động &amp; nhóm</summary>
+                    <p>Người dùng cần tôn trọng người tổ chức và các thành viên khác, tuân thủ nội quy của công viên cũng như của từng nhóm. Nghiêm cấm hành vi quấy rối, phân biệt đối xử hoặc gây mất trật tự.</p>
+                </details>
+                <details class="terms-item">
+                    <summary><span class="terms-num">4</span> Nội dung do người dùng đăng tải</summary>
+                    <p>Hoạt động, nhóm và thông tin do người dùng tạo phải trung thực, không vi phạm pháp luật và quyền của người khác. Chúng tôi có quyền gỡ nội dung vi phạm mà không cần báo trước.</p>
+                </details>
+                <details class="terms-item">
+                    <summary><span class="terms-num">5</span> An toàn &amp; sức khỏe</summary>
+                    <p>Thể thao có thể tiềm ẩn rủi ro chấn thương. Bạn tự đánh giá tình trạng sức khỏe và chịu trách nhiệm khi tham gia. SportPark chỉ là nền tảng kết nối, không trực tiếp tổ chức hay bảo hiểm cho các buổi tập.</p>
+                </details>
+                <details class="terms-item">
+                    <summary><span class="terms-num">6</span> Quyền riêng tư</summary>
+                    <p>Thông tin cá nhân chỉ được dùng để vận hành dịch vụ (đăng ký hoạt động, thông báo, liên hệ) và không được chia sẻ cho bên thứ ba khi chưa có sự đồng ý của bạn, trừ trường hợp pháp luật yêu cầu.</p>
+                </details>
+                <details class="terms-item">
+                    <summary><span class="terms-num">7</span> Thay đổi điều khoản</summary>
+                    <p>Chúng tôi có thể cập nhật điều khoản theo thời gian. Phiên bản mới có hiệu lực ngay khi được đăng trên website; việc tiếp tục sử dụng đồng nghĩa với việc bạn chấp nhận thay đổi đó.</p>
+                </details>
             </div>
-        </div>
+        </section>
     </main>
 
     <!-- Khung chứa Footer và Modal/Toast dùng chung -->

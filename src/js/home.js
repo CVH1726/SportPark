@@ -1,323 +1,219 @@
-let homeMap = null;
-let homeMarkersLayer = null;
-
-// Trạng thái lịch mini trên Trang chủ
-let homeCalYear = 2026;
-let homeCalMonth = 10; // Tháng 11 (0-indexed)
-let homeSelectedDateISO = "";
-
+// Trang chủ: Hoạt động nổi bật, Công viên nổi bật, Tin tức, Giới thiệu, Liên hệ, Điều khoản
 document.addEventListener("DOMContentLoaded", function () {
-    initHomeMap();
+    renderHeroStats();
+    renderFeaturedActivities();
+    renderFeaturedParks();
+    renderNews();
+    renderContactInfo();
     setupHomeSearch();
-    renderHomeMiniCalendar();
-    renderFeaturedCarousel();
-    renderUpcomingActivities();
-    applyHomeFilters();
 });
 
-// Khởi tạo bản đồ Leaflet trên Trang chủ
-function initHomeMap() {
-    homeMap = L.map("map").setView([21.0245, 105.8250], 13);
-
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        attribution: "&copy; OpenStreetMap"
-    }).addTo(homeMap);
-
-    homeMarkersLayer = L.layerGroup().addTo(homeMap);
-}
-
-// Vẽ các ghim địa điểm lên bản đồ Trang chủ theo danh sách đã lọc
-function drawHomeMarkers(locationItems) {
-    if (!homeMap || !homeMarkersLayer) {
-        return;
-    }
-
-    homeMarkersLayer.clearLayers();
-
-    locationItems.forEach(function (spot) {
-        const markerIcon = L.divIcon({
-            className: "custom-div-icon",
-            html: `<div class="marker-pin" style="background:${spot.color};"><i class="fa-solid ${spot.icon}"></i></div>`,
-            iconSize: [32, 42],
-            iconAnchor: [16, 42]
-        });
-
-        const costText = spot.costAmount === 0 ? "Miễn phí" : spot.costAmount.toLocaleString("vi-VN") + "đ";
-        const marker = L.marker([spot.lat, spot.lng], { icon: markerIcon });
-        marker.bindPopup(`
-            <div style="min-width:185px; line-height:1.5;">
-                <strong>${spot.name}</strong><br>
-                <span>${spot.address}</span><br>
-                <small>Môn: <b>${spot.sport}</b> • ${costText}</small><br>
-                <small>Giờ: ${spot.startHour} - ${spot.endHour} • Tối đa ${spot.maxPeople} người</small>
-            </div>
-        `);
-
-        homeMarkersLayer.addLayer(marker);
-    });
-
-    const counterElement = document.getElementById("mapCounter");
-    if (counterElement) {
-        counterElement.innerText = "Hiển thị " + locationItems.length + " địa điểm";
-    }
-}
-
-// Bật/tắt lịch mini khi bấm vào ô Ngày tháng năm
-function toggleHomeMiniCalendar() {
-    const calBox = document.getElementById("homeMiniCalendar");
-    if (calBox) {
-        calBox.classList.toggle("hidden");
-    }
-}
-
-// Chuyển tháng trên lịch mini
-function changeHomeCalMonth(offset) {
-    homeCalMonth += offset;
-    if (homeCalMonth < 0) {
-        homeCalMonth = 11;
-        homeCalYear -= 1;
-    } else if (homeCalMonth > 11) {
-        homeCalMonth = 0;
-        homeCalYear += 1;
-    }
-    renderHomeMiniCalendar();
-}
-
-// Vẽ lưới ngày trong tháng của lịch mini
-function renderHomeMiniCalendar() {
-    const label = document.getElementById("homeCalMonthLabel");
-    const grid = document.getElementById("homeCalDaysGrid");
-    if (!label || !grid) {
-        return;
-    }
-
-    label.innerText = "Tháng " + (homeCalMonth + 1) + " / " + homeCalYear;
-
-    const firstDay = new Date(homeCalYear, homeCalMonth, 1).getDay();
-    const startOffset = (firstDay === 0) ? 6 : (firstDay - 1); // Bắt đầu từ Thứ 2
-    const daysInMonth = new Date(homeCalYear, homeCalMonth + 1, 0).getDate();
-
-    let html = "";
-    for (let i = 0; i < startOffset; i++) {
-        html += `<span class="cal-day empty"></span>`;
-    }
-
-    for (let d = 1; d <= daysInMonth; d++) {
-        const mm = String(homeCalMonth + 1).padStart(2, "0");
-        const dd = String(d).padStart(2, "0");
-        const isoDate = `${homeCalYear}-${mm}-${dd}`;
-        const isSelected = (homeSelectedDateISO === isoDate);
-        const isToday = (homeCalYear === 2026 && homeCalMonth === 10 && d === 22);
-
-        html += `
-            <button type="button"
-                class="cal-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}"
-                onclick="selectHomeCalendarDate('${isoDate}', '${dd}/${mm}/${homeCalYear}')">
-                ${d}
-            </button>
-        `;
-    }
-
-    grid.innerHTML = html;
-}
-
-// Chọn ngày trên lịch mini và đóng khung lịch
-function selectHomeCalendarDate(isoDate, displayDate) {
-    homeSelectedDateISO = isoDate;
-    const dateInput = document.getElementById("homeDateInput");
-    if (dateInput) {
-        dateInput.value = displayDate;
-    }
-    renderHomeMiniCalendar();
-    const calBox = document.getElementById("homeMiniCalendar");
-    if (calBox) {
-        calBox.classList.add("hidden");
-    }
-}
-
-// Chuyển chuỗi giờ "HH:MM" thành số phút để so sánh min/max
-function timeToMinutes(timeStr) {
-    if (!timeStr || !timeStr.includes(":")) {
-        return null;
-    }
-    const parts = timeStr.split(":");
-    return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
-}
-
-// Lọc danh sách địa điểm theo đầy đủ tiêu chí mới trên Trang chủ
-function applyHomeFilters() {
-    const keywordInput = document.getElementById("globalSearchInput");
-    const keyword = keywordInput ? keywordInput.value.trim().toLowerCase() : "";
-
-    const selectedSport = document.getElementById("homeSportSelect").value;
-    const selectedLocation = document.getElementById("homeLocationSelect").value;
-    const minCostRaw = document.getElementById("homeCostMin").value.trim();
-    const maxCostRaw = document.getElementById("homeCostMax").value.trim();
-    const timeMinVal = document.getElementById("homeTimeMin").value;
-    const timeMaxVal = document.getElementById("homeTimeMax").value;
-    const selectedLevel = document.getElementById("homeLevelSelect").value;
-    const peopleRaw = document.getElementById("homePeopleInput").value.trim();
-
-    const minCost = minCostRaw !== "" ? parseFloat(minCostRaw) : null;
-    const maxCost = maxCostRaw !== "" ? parseFloat(maxCostRaw) : null;
-    const minMinutes = timeToMinutes(timeMinVal);
-    const maxMinutes = timeToMinutes(timeMaxVal);
-    const minPeople = peopleRaw !== "" ? parseInt(peopleRaw, 10) : null;
-
-    const matchedLocations = sportLocations.filter(function (spot) {
-        const matchSport = (selectedSport === "all") || (spot.sport === selectedSport);
-        const matchLocation = (selectedLocation === "all") || spot.park.toLowerCase().includes(selectedLocation.toLowerCase());
-
-        // Lọc theo chi phí min / max
-        const spotCost = typeof spot.costAmount === "number" ? spot.costAmount : 0;
-        const matchMinCost = (minCost === null || isNaN(minCost)) || (spotCost >= minCost);
-        const matchMaxCost = (maxCost === null || isNaN(maxCost)) || (spotCost <= maxCost);
-
-        // Lọc theo ngày đã chọn trên lịch (nếu có)
-        const matchDate = (homeSelectedDateISO === "") || (spot.date === homeSelectedDateISO);
-
-        // Lọc theo khung giờ min / max
-        const spotStartMin = timeToMinutes(spot.startHour);
-        const spotEndMin = timeToMinutes(spot.endHour);
-        const matchTimeMin = (minMinutes === null || spotStartMin === null) || (spotStartMin >= minMinutes);
-        const matchTimeMax = (maxMinutes === null || spotEndMin === null) || (spotEndMin <= maxMinutes);
-
-        // Lọc theo trình độ
-        const matchLevel =
-            (selectedLevel === "all") ||
-            (spot.level === selectedLevel) ||
-            (spot.level === "mọi trình độ");
-
-        // Lọc theo số lượng người
-        const spotPeople = spot.maxPeople || 10;
-        const matchPeople = (minPeople === null || isNaN(minPeople)) || (spotPeople >= minPeople);
-
-        // Lọc theo từ khóa tìm kiếm trên header
-        const matchKeyword =
-            (keyword === "") ||
-            spot.name.toLowerCase().includes(keyword) ||
-            spot.sport.toLowerCase().includes(keyword) ||
-            spot.address.toLowerCase().includes(keyword);
-
-        return (
-            matchSport &&
-            matchLocation &&
-            matchMinCost &&
-            matchMaxCost &&
-            matchDate &&
-            matchTimeMin &&
-            matchTimeMax &&
-            matchLevel &&
-            matchPeople &&
-            matchKeyword
-        );
-    });
-
-    drawHomeMarkers(matchedLocations);
-}
-
-// Đặt lại toàn bộ bộ lọc và ô tìm kiếm về trạng thái ban đầu
-function resetHomeFilters() {
-    document.getElementById("homeSportSelect").value = "all";
-    document.getElementById("homeLocationSelect").value = "all";
-    document.getElementById("homeCostMin").value = "";
-    document.getElementById("homeCostMax").value = "";
-    document.getElementById("homeDateInput").value = "";
-    document.getElementById("homeTimeMin").value = "";
-    document.getElementById("homeTimeMax").value = "";
-    document.getElementById("homeLevelSelect").value = "all";
-    document.getElementById("homePeopleInput").value = "";
-
-    homeSelectedDateISO = "";
-    renderHomeMiniCalendar();
-
-    const calBox = document.getElementById("homeMiniCalendar");
-    if (calBox) {
-        calBox.classList.add("hidden");
-    }
-
-    const searchInput = document.getElementById("globalSearchInput");
-    if (searchInput) {
-        searchInput.value = "";
-    }
-
-    applyHomeFilters();
-    showToast("Đã đặt lại bộ lọc!");
-}
-
-// Tìm kiếm trực tiếp khi người dùng gõ từ khóa vào ô tìm kiếm trên header
+// Ô tìm kiếm trên header: bấm Enter hoặc nút kính lúp sẽ chuyển sang trang Bản đồ kèm từ khóa
 function setupHomeSearch() {
     const searchInput = document.getElementById("globalSearchInput");
+    const searchBtn = document.getElementById("globalSearchBtn");
     if (!searchInput) {
         return;
     }
 
-    searchInput.addEventListener("keyup", function () {
-        applyHomeFilters();
+    function goSearch() {
+        const keyword = searchInput.value.trim();
+        window.location.href = keyword ? ("map.html?q=" + encodeURIComponent(keyword)) : "map.html";
+    }
+
+    searchInput.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            goSearch();
+        }
     });
+    if (searchBtn) {
+        searchBtn.addEventListener("click", goSearch);
+    }
 }
 
-// Vẽ danh sách thẻ Địa điểm & Công Viên Nổi Bật từ mảng featuredSpots (bấm vào mở chi tiết công viên)
-function renderFeaturedCarousel() {
-    const carouselContainer = document.getElementById("carouselContainer");
-    if (!carouselContainer) {
+// Các con số thống kê nhanh ở banner
+function renderHeroStats() {
+    const box = document.getElementById("homeHeroStats");
+    if (!box) {
+        return;
+    }
+    const stats = [
+        { icon: "fa-tree", value: parksList.length, label: "Công viên" },
+        { icon: "fa-person-running", value: activitiesList.length, label: "Hoạt động" },
+        { icon: "fa-users", value: groupsList.length, label: "Nhóm / CLB" },
+        { icon: "fa-location-dot", value: sportLocations.length, label: "Điểm tập trên bản đồ" }
+    ];
+    let html = "";
+    stats.forEach(function (st) {
+        html += `
+            <div class="hero-stat">
+                <i class="fa-solid ${st.icon}"></i>
+                <div class="hero-stat-value">${st.value}</div>
+                <div class="hero-stat-label">${st.label}</div>
+            </div>
+        `;
+    });
+    box.innerHTML = html;
+}
+
+// Hoạt động nổi bật: ưu tiên hoạt động có đông người tham gia nhất (bấm vào mở chi tiết)
+function renderFeaturedActivities() {
+    const grid = document.getElementById("featuredActivitiesGrid");
+    if (!grid) {
         return;
     }
 
-    let htmlContent = "";
-    featuredSpots.forEach(function (item) {
-        htmlContent += `
-            <div class="carousel-card" onclick="openParkDetailModal('${item.parkSlug}')">
-                <div class="carousel-img-box">
-                    <img src="${item.image}" alt="${item.title}">
-                    <span class="carousel-badge" style="background:${item.badgeColor};"><i class="fa-solid ${item.icon}"></i></span>
+    const sorted = activitiesList.slice().sort(function (a, b) {
+        return getActivityParticipantCount(b) - getActivityParticipantCount(a);
+    }).slice(0, 3);
+
+    let html = "";
+    sorted.forEach(function (act) {
+        html += `
+            <div class="grid-card" style="cursor:pointer;" onclick="openActivityDetailModal(${act.id})">
+                <div>
+                    <div class="carousel-img-box">
+                        <img src="${act.image}" alt="${act.title}">
+                        <span class="carousel-badge" style="background:${act.badgeColor};"><i class="fa-solid ${act.icon}"></i></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-top-meta">
+                            <span class="badge-free ${act.badgeStyle}">${act.costLabel}</span>
+                            <span class="member-count">${act.level}</span>
+                        </div>
+                        <h3 class="card-title-white">${act.title}</h3>
+                        <p class="card-location"><i class="fa-solid fa-location-dot"></i> ${act.park}</p>
+                        <div class="card-time"><i class="fa-regular fa-clock"></i> ${act.schedule}</div>
+                        ${buildParticipantsHtml(act)}
+                    </div>
                 </div>
-                <div class="carousel-content">
+                <div class="card-footer-action">
+                    <button type="button" class="btn-card-action" onclick="event.stopPropagation(); openActivityDetailModal(${act.id})">Xem chi tiết</button>
+                </div>
+            </div>
+        `;
+    });
+    grid.innerHTML = html;
+}
+
+// Công viên nổi bật: các công viên có điểm đánh giá cao nhất (bấm vào mở chi tiết)
+function renderFeaturedParks() {
+    const grid = document.getElementById("featuredParksGrid");
+    if (!grid) {
+        return;
+    }
+
+    const sorted = parksList.slice().sort(function (a, b) {
+        return b.rating - a.rating;
+    }).slice(0, 3);
+
+    let html = "";
+    sorted.forEach(function (park) {
+        let sportsHtml = "";
+        park.sports.forEach(function (sp) {
+            sportsHtml += `<span class="park-sport-chip"><i class="fa-solid ${sp.icon}" style="color:${sp.color};"></i> ${sp.name}</span>`;
+        });
+
+        html += `
+            <div class="grid-card" style="cursor:pointer;" onclick="openParkDetailModal('${park.slug}')">
+                <div>
+                    <div class="carousel-img-box">
+                        <img src="${park.image}" alt="${park.name}">
+                        <span class="carousel-badge" style="background:#f59e0b;"><i class="fa-solid fa-star"></i> ${park.rating}</span>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title-white">${park.name}</h3>
+                        <p class="card-location"><i class="fa-solid fa-location-dot"></i> ${park.district}</p>
+                        <p class="card-desc">${park.description}</p>
+                        <div class="park-sport-chips">${sportsHtml}</div>
+                    </div>
+                </div>
+                <div class="card-footer-action">
+                    <button type="button" class="btn-card-action" onclick="event.stopPropagation(); openParkDetailModal('${park.slug}')">Xem chi tiết</button>
+                </div>
+            </div>
+        `;
+    });
+    grid.innerHTML = html;
+}
+
+// Tin tức: bài đầu là bài nổi bật (to), các bài còn lại xếp bên cạnh
+function renderNews() {
+    const grid = document.getElementById("newsGrid");
+    if (!grid) {
+        return;
+    }
+
+    let html = "";
+    newsList.forEach(function (item, index) {
+        html += `
+            <article class="news-card ${index === 0 ? 'news-card-main' : ''}" onclick="openNewsDetailModal(${item.id})">
+                <div class="news-img-box"><img src="${item.image}" alt="${item.title}"></div>
+                <div class="news-body">
+                    <div class="news-meta">
+                        <span class="news-category">${item.category}</span>
+                        <span class="news-date"><i class="fa-regular fa-calendar"></i> ${item.date}</span>
+                    </div>
                     <h3>${item.title}</h3>
-                    <p>${item.subtitle}</p>
+                    <p>${item.summary}</p>
+                    <span class="news-readmore">Đọc tiếp <i class="fa-solid fa-arrow-right"></i></span>
                 </div>
-            </div>
+            </article>
         `;
     });
-
-    carouselContainer.innerHTML = htmlContent;
+    grid.innerHTML = html;
 }
 
-// Vẽ danh sách Hoạt Động Sắp Tới ở cột bên phải Trang chủ (bấm vào mở chi tiết hoạt động)
-function renderUpcomingActivities() {
-    const activityListBox = document.getElementById("upcomingActivities");
-    if (!activityListBox) {
+// Mở modal đọc chi tiết một tin tức
+function openNewsDetailModal(newsId) {
+    const item = newsList.find(function (n) { return n.id === newsId; });
+    const headerTitle = document.getElementById("detailModalHeaderTitle");
+    const modalBody = document.getElementById("detailModalBody");
+    const modal = document.getElementById("detailInfoModal");
+    if (!item || !headerTitle || !modalBody || !modal) {
         return;
     }
 
-    let htmlContent = "";
-    activitiesList.slice(0, 2).forEach(function (act) {
-        htmlContent += `
-            <div class="activity-card" onclick="openActivityDetailModal(${act.id})">
-                <img src="${act.image}" alt="${act.title}" class="activity-img">
-                <div class="activity-info">
-                    <div>
-                        <h4>${act.title}</h4>
-                        <p><i class="fa-solid fa-location-dot" style="color:var(--accent-orange);"></i> ${act.park}</p>
-                        <div class="activity-meta"><i class="fa-regular fa-clock"></i> ${act.schedule}</div>
-                    </div>
-                    <div class="activity-bottom">
-                        <span class="badge-free ${act.badgeStyle}">${act.costLabel}</span>
-                        <span class="activity-level">| ${act.level}</span>
-                    </div>
-                </div>
-            </div>
-        `;
+    headerTitle.innerHTML = `<i class="fa-regular fa-newspaper" style="color:#60a5fa;"></i> Tin Tức`;
+
+    let paragraphs = "";
+    item.content.forEach(function (text) {
+        paragraphs += `<p class="detail-desc">${text}</p>`;
     });
 
-    activityListBox.innerHTML = htmlContent;
+    modalBody.innerHTML = `
+        <div class="detail-hero-img">
+            <img src="${item.image}" alt="${item.title}">
+            <span class="detail-hero-badge">${item.category} • ${item.date}</span>
+        </div>
+        <h2 class="detail-title">${item.title}</h2>
+        ${paragraphs}
+        <div class="detail-modal-footer">
+            <button type="button" class="btn-cancel" onclick="closeDetailModal()">Đóng</button>
+        </div>
+    `;
+    modal.classList.remove("hidden");
 }
 
-// Cuộn ngang hàng thẻ địa điểm nổi bật sang trái (-1) hoặc phải (+1)
-function scrollCarousel(direction) {
-    const carouselContainer = document.getElementById("carouselContainer");
-    if (carouselContainer) {
-        carouselContainer.scrollBy({ left: direction * 240, behavior: "smooth" });
-    }
+// Hiển thị thông tin liên hệ từ siteInfo (data.js)
+function renderContactInfo() {
+    const map = {
+        contactEmail: siteInfo.email,
+        contactPhone: siteInfo.phone,
+        contactAddress: siteInfo.address,
+        contactHours: siteInfo.workingHours
+    };
+    Object.keys(map).forEach(function (id) {
+        const el = document.getElementById(id);
+        if (el) {
+            el.textContent = map[id];
+        }
+    });
+}
+
+// Gửi form liên hệ (hiện tại chỉ mô phỏng phía giao diện)
+function handleContactSubmit(event) {
+    event.preventDefault();
+    document.getElementById("contactForm").reset();
+    showToast("Cảm ơn bạn! Chúng tôi đã nhận được tin nhắn và sẽ phản hồi sớm.");
 }

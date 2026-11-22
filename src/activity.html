@@ -254,6 +254,9 @@
         // Danh sách ID hoạt động người dùng đã bấm "Tham Gia Ngay"
         let myJoinedActivityIds = [2];
 
+        // Danh sách đăng ký ban đầu (dùng để tính đúng số người tham gia khi bạn đăng ký / hủy thêm)
+        const initialJoinedActivityIds = [2];
+
         // Khởi tạo giao diện khi trang tải xong
         document.addEventListener("DOMContentLoaded", function () {
             setupActivityFilterEvents();
@@ -482,7 +485,8 @@
             let htmlContent = "";
             items.forEach(function (act) {
                 const alreadyJoined = myJoinedActivityIds.includes(act.id);
-                const buttonText = alreadyJoined ? "Đã Đăng Ký Tham Gia" : "Tham Gia Ngay";
+                const isFull = act.maxParticipants && getActivityParticipantCount(act) >= act.maxParticipants;
+                const buttonText = alreadyJoined ? "Đã Đăng Ký Tham Gia" : (isFull ? "Đã Đủ Người" : "Tham Gia Ngay");
 
                 htmlContent += `
                     <div class="grid-card" style="cursor: pointer;" onclick="viewActivityDetail(${act.id})">
@@ -499,6 +503,7 @@
                                 <h3 class="card-title-white">${act.title}</h3>
                                 <p class="card-location"><i class="fa-solid fa-location-dot"></i> ${act.park}</p>
                                 <div class="card-time"><i class="fa-regular fa-clock"></i> ${act.schedule}</div>
+                                ${buildParticipantsHtml(act)}
                             </div>
                         </div>
                         <div class="card-footer-action">
@@ -516,6 +521,11 @@
         // Đăng ký tham gia hoạt động và lưu vào danh sách quản lý của người dùng
         function joinActivityById(activityId, activityTitle) {
             if (!myJoinedActivityIds.includes(activityId)) {
+                const target = getCombinedActivities().find(function (item) { return item.id === activityId; });
+                if (target && target.maxParticipants && getActivityParticipantCount(target) >= target.maxParticipants) {
+                    showToast('Hoạt động "' + activityTitle + '" đã đủ người tham gia.');
+                    return;
+                }
                 myJoinedActivityIds.push(activityId);
                 renderManagedActivities();
                 filterAndRenderActivities();
@@ -568,6 +578,7 @@
                                     <span><i class="fa-solid fa-location-dot" style="color: var(--accent-orange);"></i> ${item.park}</span>
                                     <span><i class="fa-regular fa-clock"></i> ${item.schedule}</span>
                                     <span><i class="fa-solid fa-tags"></i> ${item.costLabel}</span>
+                                    <span><i class="fa-solid fa-user-group"></i> ${getActivityParticipantCount(item)}/${item.maxParticipants} người tham gia</span>
                                 </div>
                             </div>
                             <div class="managed-item-actions">
@@ -600,6 +611,7 @@
                                     <span><i class="fa-solid fa-location-dot" style="color: var(--accent-orange);"></i> ${act.park}</span>
                                     <span><i class="fa-regular fa-clock"></i> ${act.schedule}</span>
                                     <span><i class="fa-solid fa-tags"></i> ${act.costLabel}</span>
+                                    <span><i class="fa-solid fa-user-group"></i> ${getActivityParticipantCount(act)}/${act.maxParticipants} người tham gia</span>
                                 </div>
                             </div>
                             <div class="managed-item-actions">

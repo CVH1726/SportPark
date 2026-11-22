@@ -428,7 +428,7 @@
                     : `<i class="fa-solid fa-user-plus"></i> Xin Tham Gia Nhóm`;
 
                 htmlContent += `
-                    <div class="grid-card">
+                    <div class="grid-card" style="cursor: pointer;" onclick="viewGroupDetail(${grp.id})">
                         <div>
                             <div class="carousel-img-box">
                                 <img src="${grp.image}" alt="${grp.name}">
@@ -445,7 +445,7 @@
                             </div>
                         </div>
                         <div class="card-footer-action">
-                            <button type="button" class="btn-card-action" onclick="requestJoinGroupById(${grp.id}, '${grp.name.replace(/'/g, "\\'")}')">
+                            <button type="button" class="btn-card-action" onclick="event.stopPropagation(); requestJoinGroupById(${grp.id}, '${grp.name.replace(/'/g, "\\'")}')">
                                 ${buttonHtml}
                             </button>
                         </div>
@@ -454,6 +454,11 @@
             });
 
             gridBox.innerHTML = htmlContent;
+        }
+
+        // Mở chi tiết nhóm khi bấm vào thẻ nhóm (gồm cả nhóm hệ thống và nhóm do bạn tạo)
+        function viewGroupDetail(groupId) {
+            openGroupDetailModal(groupId, getCombinedGroups());
         }
 
         function requestJoinGroupById(groupId, groupName) {
@@ -501,7 +506,7 @@
                 myCreatedGroups.forEach(function (item) {
                     createdHtml += `
                         <div class="managed-item-row">
-                            <div class="managed-item-info">
+                            <div class="managed-item-info" style="cursor: pointer;" onclick="viewGroupDetail(${item.id})">
                                 <h4>${item.name}</h4>
                                 <div class="managed-item-meta">
                                     <span><i class="fa-solid fa-location-dot" style="color: var(--accent-orange);"></i> ${item.park}</span>
@@ -532,7 +537,7 @@
                 joinedItems.forEach(function (grp) {
                     joinedHtml += `
                         <div class="managed-item-row">
-                            <div class="managed-item-info">
+                            <div class="managed-item-info" style="cursor: pointer;" onclick="viewGroupDetail(${grp.id})">
                                 <h4>${grp.name}</h4>
                                 <div class="managed-item-meta">
                                     <span><i class="fa-solid fa-location-dot" style="color: var(--accent-orange);"></i> ${grp.park}</span>

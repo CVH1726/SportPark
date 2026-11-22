@@ -181,14 +181,14 @@ function renderSharedFooter() {
         <footer>
             <div class="container footer-flex">
                 <div class="footer-links">
-                    <a href="park.html">Về chúng tôi</a>
-                    <a href="account.html">Liên hệ</a>
-                    <a href="index.html">Điều khoản sử dụng</a>
+                    <a href="index.html#about">Về chúng tôi</a>
+                    <a href="index.html#contact">Liên hệ</a>
+                    <a href="index.html#terms">Điều khoản sử dụng</a>
                 </div>
                 <div class="footer-socials">
-                    <a href="#"><i class="fa-brands fa-facebook"></i></a>
-                    <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
-                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#" class="social-btn social-facebook" title="Facebook" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="#" class="social-btn social-x" title="X (Twitter)" aria-label="X"><i class="fa-brands fa-x-twitter"></i></a>
+                    <a href="#" class="social-btn social-youtube" title="YouTube" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
                 </div>
             </div>
         </footer>
@@ -312,6 +312,46 @@ function openParkDetailModal(parkSlug) {
     modal.classList.remove("hidden");
 }
 
+// Tính số người đang tham gia một hoạt động.
+// currentParticipants là số liệu gốc (đã gồm những hoạt động người dùng đăng ký sẵn từ đầu);
+// nếu người dùng vừa đăng ký thêm / hủy thì cộng / trừ 1 để số liệu luôn khớp.
+function getActivityParticipantCount(act) {
+    const base = act.currentParticipants || 1;
+    if (typeof myJoinedActivityIds === "undefined") {
+        return base;
+    }
+    const initial = (typeof initialJoinedActivityIds !== "undefined") ? initialJoinedActivityIds : [];
+    const joinedNow = myJoinedActivityIds.includes(act.id);
+    const joinedAtStart = initial.includes(act.id);
+    if (joinedNow && !joinedAtStart) {
+        return base + 1;
+    }
+    if (!joinedNow && joinedAtStart) {
+        return Math.max(base - 1, 0);
+    }
+    return base;
+}
+
+// Vẽ khối "đã tham gia X/Y người" kèm thanh tiến độ (dùng cho thẻ hoạt động)
+function buildParticipantsHtml(act) {
+    const count = getActivityParticipantCount(act);
+    const max = act.maxParticipants || 0;
+    if (!max) {
+        return `<div class="participants-box"><div class="participants-text"><i class="fa-solid fa-user-group"></i> <strong>${count}</strong> người đã tham gia</div></div>`;
+    }
+    const percent = Math.min(100, Math.round((count / max) * 100));
+    const isFull = count >= max;
+    return `
+        <div class="participants-box">
+            <div class="participants-text">
+                <span><i class="fa-solid fa-user-group"></i> <strong>${count}/${max}</strong> người đã tham gia</span>
+                ${isFull ? '<span class="participants-full">Đã đủ người</span>' : '<span>Còn ' + (max - count) + ' chỗ</span>'}
+            </div>
+            <div class="participants-bar"><div class="participants-bar-fill ${isFull ? 'full' : ''}" style="width:${percent}%;"></div></div>
+        </div>
+    `;
+}
+
 // Mở modal xem chi tiết Hoạt Động
 function openActivityDetailModal(activityId, customList) {
     const sourceList = customList || ((typeof activitiesList !== "undefined") ? activitiesList : []);
@@ -330,7 +370,7 @@ function openActivityDetailModal(activityId, customList) {
     headerTitle.innerHTML = `<i class="fa-solid fa-person-running" style="color: var(--accent-orange);"></i> Chi Tiết Hoạt Động`;
 
     const participantsText = act.maxParticipants
-        ? `${act.currentParticipants || 1}/${act.maxParticipants} người tham gia`
+        ? `${getActivityParticipantCount(act)}/${act.maxParticipants} người đã tham gia`
         : "Mở đăng ký tự do";
 
     modalBody.innerHTML = `
@@ -377,6 +417,150 @@ function openActivityDetailModal(activityId, customList) {
     `;
 
     modal.classList.remove("hidden");
+}
+
+// Mở modal xem chi tiết Nhóm / Câu lạc bộ (bố cục riêng cho nhóm: trưởng nhóm, nội quy, thành viên, hoạt động của nhóm)
+function openGroupDetailModal(groupId, customList) {
+    const sourceList = customList || ((typeof groupsList !== "undefined") ? groupsList : []);
+    const grp = sourceList.find(function (item) { return item.id === groupId; });
+    if (!grp) {
+        return;
+    }
+
+    const headerTitle = document.getElementById("detailModalHeaderTitle");
+    const modalBody = document.getElementById("detailModalBody");
+    const modal = document.getElementById("detailInfoModal");
+    if (!headerTitle || !modalBody || !modal) {
+        return;
+    }
+
+    headerTitle.innerHTML = `<i class="fa-solid fa-users" style="color: var(--accent-orange);"></i> Chi Tiết Nhóm`;
+
+    const leader = grp.leader || "Hào Chu Văn";
+    const highlights = (grp.highlights && grp.highlights.length > 0) ? grp.highlights : [
+        "Sinh hoạt định kỳ theo lịch của nhóm",
+        "Kết nối những người cùng sở thích tại công viên"
+    ];
+    const rules = (grp.rules && grp.rules.length > 0) ? grp.rules : [
+        "Tôn trọng các thành viên và tuân thủ hướng dẫn của trưởng nhóm",
+        "Báo trước khi vắng mặt và giữ gìn vệ sinh chung"
+    ];
+
+    let highlightsHtml = "";
+    highlights.forEach(function (text) {
+        highlightsHtml += `<li><i class="fa-solid fa-star" style="color: var(--accent-orange);"></i> ${text}</li>`;
+    });
+
+    let rulesHtml = "";
+    rules.forEach(function (text) {
+        rulesHtml += `<li><i class="fa-solid fa-circle-check" style="color: var(--accent-teal);"></i> ${text}</li>`;
+    });
+
+    // Avatar thành viên tiêu biểu (lấy chữ cái cuối của tên)
+    const previewNames = (grp.memberPreview && grp.memberPreview.length > 0) ? grp.memberPreview : [leader];
+    let avatarsHtml = "";
+    previewNames.forEach(function (name) {
+        const initial = name.trim().split(" ").pop().charAt(0).toUpperCase();
+        avatarsHtml += `<span class="member-avatar" title="${name}">${initial}</span>`;
+    });
+    const extraMembers = Math.max(grp.members - previewNames.length, 0);
+    if (extraMembers > 0) {
+        avatarsHtml += `<span class="member-avatar member-avatar-more">+${extraMembers}</span>`;
+    }
+
+    // Hoạt động sắp tới của nhóm: cùng môn và cùng công viên
+    let groupActivities = [];
+    if (typeof activitiesList !== "undefined") {
+        groupActivities = activitiesList.filter(function (act) {
+            return act.sport === grp.sport && act.park === grp.park;
+        });
+    }
+    let activitiesHtml = "";
+    if (groupActivities.length === 0) {
+        activitiesHtml = `<li><i class="fa-regular fa-calendar" style="color: var(--text-muted);"></i> Nhóm chưa đăng lịch hoạt động cụ thể. Lịch sinh hoạt định kỳ: ${grp.schedule}</li>`;
+    } else {
+        groupActivities.forEach(function (act) {
+            activitiesHtml += `<li><i class="fa-regular fa-calendar-check" style="color: #60a5fa;"></i> <span><strong>${act.title}</strong> • ${act.date ? act.date + ' • ' : ''}${act.schedule}</span></li>`;
+        });
+    }
+
+    const joined = (typeof myJoinedGroupIds !== "undefined") && myJoinedGroupIds.includes(grp.id);
+    const safeName = grp.name.replace(/'/g, "\\'");
+    const joinButton = joined
+        ? `<button type="button" class="btn-save" disabled style="opacity:0.7; cursor:default;"><i class="fa-solid fa-check"></i> Đã Gửi Yêu Cầu / Tham Gia</button>`
+        : `<button type="button" class="btn-save" onclick="handleJoinFromGroupModal(${grp.id}, '${safeName}')"><i class="fa-solid fa-user-plus"></i> Xin Tham Gia Nhóm</button>`;
+
+    modalBody.innerHTML = `
+        <div class="detail-hero-img">
+            <img src="${grp.image}" alt="${grp.name}">
+            <span class="detail-hero-badge">${grp.statusLabel} • ${grp.members} thành viên</span>
+        </div>
+        <h2 class="detail-title">${grp.name}</h2>
+        <p class="detail-desc">${grp.description}</p>
+
+        <div class="detail-info-grid">
+            <div class="detail-info-item">
+                <span class="detail-info-label"><i class="fa-solid fa-user-tie" style="color: var(--accent-teal);"></i> Trưởng nhóm</span>
+                <span class="detail-info-val">${leader}</span>
+            </div>
+            <div class="detail-info-item">
+                <span class="detail-info-label"><i class="fa-solid fa-user-group" style="color: #a78bfa;"></i> Quy mô nhóm</span>
+                <span class="detail-info-val">${grp.members} thành viên${grp.founded ? ' • Thành lập ' + grp.founded : ''}</span>
+            </div>
+            <div class="detail-info-item">
+                <span class="detail-info-label"><i class="fa-regular fa-calendar-days" style="color: #60a5fa;"></i> Lịch sinh hoạt</span>
+                <span class="detail-info-val">${grp.schedule}</span>
+            </div>
+            <div class="detail-info-item">
+                <span class="detail-info-label"><i class="fa-solid fa-location-dot" style="color: var(--accent-orange);"></i> Nơi sinh hoạt</span>
+                <span class="detail-info-val">${grp.park}${grp.meetingPoint ? ' - ' + grp.meetingPoint : ''}</span>
+            </div>
+            <div class="detail-info-item">
+                <span class="detail-info-label"><i class="fa-solid fa-chart-line" style="color: #34d399;"></i> Trình độ phù hợp</span>
+                <span class="detail-info-val">${grp.level || "Mọi trình độ"}</span>
+            </div>
+            <div class="detail-info-item">
+                <span class="detail-info-label"><i class="fa-solid fa-tags" style="color: #fbbf24;"></i> Chi phí tham gia</span>
+                <span class="detail-info-val">${grp.fee || "Miễn phí"}</span>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h4>Thành viên tiêu biểu</h4>
+            <div class="member-avatars">${avatarsHtml}</div>
+        </div>
+
+        <div class="detail-section">
+            <h4>Nhóm có gì nổi bật</h4>
+            <ul class="detail-facility-list">${highlightsHtml}</ul>
+        </div>
+
+        <div class="detail-section">
+            <h4>Hoạt động sắp tới của nhóm</h4>
+            <ul class="detail-facility-list">${activitiesHtml}</ul>
+        </div>
+
+        <div class="detail-section">
+            <h4>Nội quy nhóm</h4>
+            <ul class="detail-facility-list">${rulesHtml}</ul>
+        </div>
+
+        <div class="detail-modal-footer">
+            <button type="button" class="btn-cancel" onclick="closeDetailModal()">Đóng</button>
+            ${joinButton}
+        </div>
+    `;
+
+    modal.classList.remove("hidden");
+}
+
+function handleJoinFromGroupModal(groupId, groupName) {
+    closeDetailModal();
+    if (typeof requestJoinGroupById === "function") {
+        requestJoinGroupById(groupId, groupName);
+    } else {
+        showToast('Đã gửi yêu cầu tham gia "' + groupName + '"!');
+    }
 }
 
 function handleJoinFromDetailModal(activityId, activityTitle) {
