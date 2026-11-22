@@ -198,17 +198,19 @@
         </div>
     </footer>
 
-    <!-- Modal Đăng Ký Hoạt Động -->
+    <!-- Modal Tạo Hoạt Động -->
     <div id="registerModal" class="modal-overlay hidden">
         <div class="modal-box">
             <div class="modal-header">
-                <h3><i class="fa-solid fa-pen-to-square" style="color:var(--accent-orange);"></i> Đăng Ký Hoạt Động Mới</h3>
+                <h3><i class="fa-solid fa-pen-to-square" style="color:var(--accent-orange);"></i> Tạo hoạt động</h3>
                 <button onclick="closeRegisterModal()"><i class="fa-solid fa-xmark"></i></button>
             </div>
+            
             <div class="form-group">
                 <label>Tên hoạt động / Tên nhóm</label>
                 <input type="text" placeholder="Ví dụ: Giao lưu cầu lông chiều T3" class="form-control">
             </div>
+
             <div class="form-group">
                 <label>Công viên chọn</label>
                 <select class="form-control">
@@ -218,9 +220,63 @@
                     <option>Công viên Bách Thảo</option>
                 </select>
             </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                <div class="form-group">
+                    <label>Môn thể thao</label>
+                    <select class="form-control">
+                        <option>Cầu Lông</option>
+                        <option>Chạy Bộ</option>
+                        <option>Bóng Rổ</option>
+                        <option>Gym / Calisthenics</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Chi phí</label>
+                    <input type="text" placeholder="Miễn phí hoặc số tiền" class="form-control">
+                </div>
+
+               <!-- Ngày diễn ra + Cuốn lịch mini (nằm ngoài grid 2 cột để đủ rộng 7 ngày) -->
+                <div class="form-group">
+                    <label>Ngày diễn ra</label>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <input type="text" id="regDate" readonly placeholder="Bấm để mở lịch chọn ngày" onclick="toggleMiniCalendar()" class="form-control" style="cursor:pointer;">
+                        <button type="button" onclick="toggleMiniCalendar()" style="background:var(--bg-panel); color:var(--accent-teal); border:1px solid var(--border-color); padding:9px 12px; border-radius:8px; cursor:pointer; font-size:12px; white-space:nowrap;">
+                            <i class="fa-regular fa-calendar-days"></i> Lịch
+                        </button>
+                    </div>
+
+                    <div id="miniCalendar" class="mini-cal hidden">
+                        <div class="mini-cal-header">
+                            <button type="button" onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                            <span id="calMonthLabel">Tháng 11 / 2026</span>
+                            <button type="button" onclick="changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                        <div class="mini-cal-weekdays">
+                            <span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span><span>CN</span>
+                        </div>
+                        <div id="miniCalDays" class="mini-cal-days"></div>
+                    </div>
+                </div>
+          
+                <div class="form-group">
+                    <label>Giới hạn số người tham gia</label>
+                    <input type="number" id="regMaxPeople" min="2" max="200" placeholder="Ví dụ: 12" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Trình độ</label>
+                    <select id="regLevel" class="form-control">
+                        <option value="Mọi trình độ">Mọi trình độ</option>
+                        <option value="Mới bắt đầu">Mới bắt đầu</option>
+                        <option value="Trung bình">Trung bình</option>
+                        <option value="Nâng cao">Nâng cao</option>
+                    </select>
+                </div>
+            </div>
+
             <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
-                <button onclick="closeRegisterModal()" style="background:#334155; color:white; border:none; padding:8px 16px; border-radius:8px; cursor:pointer; font-size:12px;">Hủy</button>
-                <button onclick="submitRegister()" style="background:var(--accent-orange); color:white; border:none; padding:8px 16px; border-radius:8px; cursor:pointer; font-size:12px;">Đăng Ký</button>
+                <button onclick="closeRegisterModal()" style="background:#334155; color:white; border:none; padding:8px 16px; border-radius:8px; cursor:pointer; font-size:12px; font-weight:600;">Hủy</button>
+                <button onclick="submitRegister()" style="background:var(--accent-orange); color:white; border:none; padding:8px 16px; border-radius:8px; cursor:pointer; font-size:12px; font-weight:600;">Đăng Ký</button>
             </div>
         </div>
     </div>

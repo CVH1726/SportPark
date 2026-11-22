@@ -597,6 +597,89 @@ footer {
     border-color: var(--accent-orange);
 }
 
+/* lịch */
+.mini-cal {
+    margin-top: 8px;
+    background-color: var(--bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.mini-cal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.mini-cal-header button {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.mini-cal-header button:hover {
+    border-color: var(--accent-teal);
+    color: var(--accent-teal);
+}
+
+.mini-cal-weekdays,
+.mini-cal-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    text-align: center;
+}
+
+.mini-cal-weekdays span {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+    padding-bottom: 4px;
+}
+
+.cal-day {
+    padding: 6px 0;
+    font-size: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text-main);
+    background: transparent;
+    border: none;
+    transition: background 0.15s, color 0.15s;
+}
+
+.cal-day:hover:not(:disabled) {
+    background: rgba(45, 212, 191, 0.18);
+    color: var(--accent-teal);
+}
+
+.cal-day.today {
+    border: 1px solid var(--accent-teal);
+}
+
+.cal-day.selected {
+    background: var(--accent-orange);
+    color: white;
+    font-weight: 700;
+}
+
+.cal-day.empty {
+    cursor: default;
+}
+
+input[type="time"] {
+    color-scheme: dark;
+}
+
 /* Toast thông báo */
 #toast {
     position: fixed;
