@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SportPark - Hoạt Động &amp; Quản Lý Hoạt Động</title>
+    <!-- Bộ icon FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Font chữ Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- File CSS giao diện chung -->
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+    <!-- Khung chứa Header dùng chung (do common.js tạo) -->
+    <div id="shared-header"></div>
+
+    <!-- Nội dung chính trang Hoạt động -->
+    <main class="container">
+        <div class="page-header-row">
+            <div>
+                <h1 class="page-title">
+                    <i class="fa-solid fa-person-running" style="color: var(--accent-orange);"></i> Hoạt Động Thể Thao Cộng Đồng
+                </h1>
+                <p class="page-subtitle" id="activitySummaryText">Khám phá và quản lý các buổi giao lưu, tập luyện tại công viên</p>
+            </div>
+        </div>
+
+        <!-- Thanh chuyển đổi giữa 2 khu vực: Khám phá danh sách & Quản lý của tôi -->
+        <div class="activity-tabs-bar">
+            <button type="button" class="activity-tab-btn active" id="tabExploreBtn" onclick="switchActivityTab('explore')">
+                <i class="fa-solid fa-compass"></i> Khám Phá Hoạt Động (<span id="exploreCountBadge">0</span>)
+            </button>
+            <button type="button" class="activity-tab-btn" id="tabManageBtn" onclick="switchActivityTab('manage')">
+                <i class="fa-solid fa-list-check"></i> Quản Lý Hoạt Động Của Tôi (<span id="manageCountBadge">0</span>)
+            </button>
+        </div>
+
+        <!-- ==================================================================
+             KHU VỰC 1: BỘ LỌC CHI TIẾT VÀ DANH SÁCH HOẠT ĐỘNG
+             ================================================================== -->
+        <section id="exploreSection">
+            <div class="activity-filter-panel">
+                <!-- Ô tìm kiếm theo tên hoạt động hoặc công viên -->
+                <div class="form-group">
+                    <label for="actKeywordInput"><i class="fa-solid fa-magnifying-glass"></i> Từ khóa</label>
+                    <input
+                        type="text"
+                        id="actKeywordInput"
+                        class="form-control"
+                        placeholder="Tên hoạt động, công viên..."
+                    >
+                </div>
+
+                <!-- Lọc theo môn thể thao -->
+                <div class="form-group">
+                    <label for="actFilterSport"><i class="fa-solid fa-dumbbell"></i> Môn thể thao</label>
+                    <select id="actFilterSport" class="form-control">
+                        <option value="all">Tất cả môn</option>
+                        <option value="cầu lông">Cầu lông</option>
+                        <option value="chạy bộ">Chạy bộ</option>
+                        <option value="bóng rổ">Bóng rổ</option>
+                        <option value="gym">Gym / Calisthenics</option>
+                    </select>
+                </div>
+
+                <!-- Lọc theo công viên -->
+                <div class="form-group">
+                    <label for="actFilterPark"><i class="fa-solid fa-tree"></i> Công viên</label>
+                    <select id="actFilterPark" class="form-control">
+                        <option value="all">Tất cả công viên</option>
+                        <option value="Công viên Thống Nhất">Công viên Thống Nhất</option>
+                        <option value="Công viên Cầu Giấy">Công viên Cầu Giấy</option>
+                        <option value="Công viên Nghĩa Đô">Công viên Nghĩa Đô</option>
+                    </select>
+                </div>
+
+                <!-- Lọc theo chi phí -->
+                <div class="form-group">
+                    <label for="actFilterCost"><i class="fa-solid fa-tags"></i> Chi phí</label>
+                    <select id="actFilterCost" class="form-control">
+                        <option value="all">Tất cả chi phí</option>
+                        <option value="free">Miễn phí</option>
+                        <option value="paid">Có phí</option>
+                    </select>
+                </div>
+
+                <!-- Lọc theo trình độ -->
+                <div class="form-group">
+                    <label for="actFilterLevel"><i class="fa-solid fa-chart-line"></i> Trình độ</label>
+                    <select id="actFilterLevel" class="form-control">
+                        <option value="all">Mọi trình độ</option>
+                        <option value="người mới">Người mới / Mới bắt đầu</option>
+                        <option value="trung bình">Trung bình</option>
+                        <option value="nâng cao">Nâng cao</option>
+                    </select>
+                </div>
+
+                <!-- Nút đặt lại toàn bộ bộ lọc -->
+                <button type="button" class="btn-reset-activity" onclick="resetActivityFilters()">
+                    <i class="fa-solid fa-rotate-left"></i> Đặt lại
+                </button>
+            </div>
+
+            <!-- Lưới các thẻ hoạt động -->
+            <div class="cards-grid" id="activitiesGrid"></div>
+        </section>
+
+        <!-- ==================================================================
+             KHU VỰC 2: QUẢN LÝ HOẠT ĐỘNG (ĐÃ TẠO & ĐÃ ĐĂNG KÝ)
+             ================================================================== -->
+        <section id="manageSection" class="hidden">
+            <!-- Phần A: Hoạt động do chính bạn tạo -->
+            <div class="manage-section-box">
+                <div class="manage-section-header">
+                    <h2 class="manage-section-title">
+                        <i class="fa-solid fa-pen-to-square" style="color: var(--accent-orange);"></i> Hoạt Động Do Bạn Tạo
+                    </h2>
+                    <button type="button" class="btn-primary" onclick="openActivityModal()">
+                        <i class="fa-solid fa-plus"></i> Tạo Hoạt Động Mới
+                    </button>
+                </div>
+                <div id="createdActivitiesList"></div>
+            </div>
+
+            <!-- Phần B: Hoạt động bạn đã đăng ký tham gia -->
+            <div class="manage-section-box">
+                <div class="manage-section-header">
+                    <h2 class="manage-section-title">
+                        <i class="fa-solid fa-calendar-check" style="color: var(--accent-teal);"></i> Hoạt Động Bạn Đã Đăng Ký Tham Gia
+                    </h2>
+                </div>
+                <div id="joinedActivitiesList"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal module Tạo Hoạt Động Mới -->
+    <div class="modal-overlay hidden" id="createActivityModal" onclick="closeActivityModalOnBackdrop(event)">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-calendar-plus" style="color: var(--accent-orange);"></i> Tạo Hoạt Động Mới</h3>
+                <button type="button" onclick="closeActivityModal()" title="Đóng"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <form id="createActivityForm" onsubmit="handleCreateActivitySubmit(event)">
+                <div class="form-group">
+                    <label for="newActTitle">Tên hoạt động *</label>
+                    <input type="text" id="newActTitle" class="form-control" placeholder="VD: Giao lưu cầu lông chiều Thứ 6" required>
+                </div>
+
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label for="newActSport">Môn thể thao</label>
+                        <select id="newActSport" class="form-control">
+                            <option value="cầu lông">Cầu lông</option>
+                            <option value="chạy bộ">Chạy bộ</option>
+                            <option value="bóng rổ">Bóng rổ</option>
+                            <option value="gym">Gym / Calisthenics</option>
+                            <option value="đạp xe">Đạp xe</option>
+                            <option value="yoga">Yoga ngoài trời</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newActPark">Công viên tổ chức</label>
+                        <select id="newActPark" class="form-control">
+                            <option value="Công viên Thống Nhất">Công viên Thống Nhất</option>
+                            <option value="Công viên Cầu Giấy">Công viên Cầu Giấy</option>
+                            <option value="Công viên Nghĩa Đô">Công viên Nghĩa Đô</option>
+                            <option value="Công viên Hòa Bình">Công viên Hòa Bình</option>
+                            <option value="Công viên Yên Sở">Công viên Yên Sở</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label for="newActSchedule">Lịch &amp; Khung giờ *</label>
+                        <input type="text" id="newActSchedule" class="form-control" placeholder="VD: Thứ 6, 17:30 - 19:30" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newActMaxPeople">Số người tối đa</label>
+                        <input type="number" id="newActMaxPeople" class="form-control" min="2" value="12">
+                    </div>
+                </div>
+
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label for="newActCost">Chi phí</label>
+                        <select id="newActCost" class="form-control">
+                            <option value="Miễn phí">Miễn phí</option>
+                            <option value="Có phí (30k)">Có phí (30k)</option>
+                            <option value="Có phí (50k)">Có phí (50k)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newActLevel">Trình độ</label>
+                        <select id="newActLevel" class="form-control">
+                            <option value="Mọi trình độ">Mọi trình độ</option>
+                            <option value="Người mới">Người mới</option>
+                            <option value="Trung bình">Trung bình</option>
+                            <option value="Nâng cao">Nâng cao</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="newActDesc">Mô tả chi tiết &amp; Điểm tập trung</label>
+                    <textarea id="newActDesc" class="form-control" rows="3" style="resize: none;" placeholder="Mô tả nội dung buổi tập, điểm hẹn tại cổng công viên..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeActivityModal()">Hủy</button>
+                    <button type="submit" class="btn-save"><i class="fa-solid fa-check"></i> Tạo Hoạt Động</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Khung chứa Footer, Modal và Toast dùng chung -->
+    <div id="shared-footer"></div>
+    <div id="shared-modals"></div>
+
+    <!-- Các file JavaScript -->
+    <script src="js/data.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+        // Danh sách hoạt động do người dùng tự tạo (lưu tạm trên bộ nhớ trình duyệt)
+        let myCreatedActivities = [
+            {
+                id: 101,
+                title: "Giao lưu cầu lông chiều Thứ 3",
+                sport: "cầu lông",
+                park: "Công viên Thống Nhất",
+                meetingPoint: "Sân cầu lông số 2 - Ven hồ Bảy Mẫu",
+                date: "24/11/2026",
+                schedule: "Thứ 3, 17:30 - 19:30",
+                costLabel: "Miễn phí",
+                level: "Người mới",
+                currentParticipants: 4,
+                maxParticipants: 10,
+                organizer: "Hào Chu Văn",
+                description: "Buổi đánh cầu lông giao lưu sau giờ học, chào đón tất cả các bạn mới tập.",
+                image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&q=80&w=600",
+                badgeColor: "#10b981",
+                icon: "fa-table-tennis-paddle-ball"
+            }
+        ];
+
+        // Danh sách ID hoạt động người dùng đã bấm "Tham Gia Ngay"
+        let myJoinedActivityIds = [2];
+
+        // Khởi tạo giao diện khi trang tải xong
+        document.addEventListener("DOMContentLoaded", function () {
+            setupActivityFilterEvents();
+            filterAndRenderActivities();
+            renderManagedActivities();
+        });
+
+        // Trả về danh sách hợp nhất giữa hoạt động hệ thống và hoạt động người dùng tạo
+        function getCombinedActivities() {
+            const formattedCreated = myCreatedActivities.map(function (item) {
+                const isPaid = item.costLabel.toLowerCase().includes("phí") && !item.costLabel.toLowerCase().includes("miễn");
+                return {
+                    id: item.id,
+                    title: item.title,
+                    sport: item.sport,
+                    park: item.park,
+                    meetingPoint: item.meetingPoint || item.park,
+                    date: item.date || "Hàng tuần",
+                    schedule: item.schedule,
+                    costLabel: item.costLabel,
+                    badgeStyle: isPaid ? "badge-paid" : "",
+                    level: item.level,
+                    currentParticipants: item.currentParticipants || 1,
+                    maxParticipants: item.maxParticipants || 12,
+                    organizer: item.organizer || "Hào Chu Văn",
+                    description: item.description || "Hoạt động cộng đồng do thành viên SportPark tổ chức.",
+                    image: item.image || "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&q=80&w=600",
+                    badgeColor: item.badgeColor || "#10b981",
+                    icon: item.icon || "fa-calendar-check"
+                };
+            });
+            return activitiesList.concat(formattedCreated);
+        }
+
+        // Mở / Đóng modal tạo hoạt động mới
+        function openActivityModal() {
+            const modal = document.getElementById("createActivityModal");
+            if (modal) {
+                modal.classList.remove("hidden");
+            }
+        }
+
+        function closeActivityModal() {
+            const modal = document.getElementById("createActivityModal");
+            if (modal) {
+                modal.classList.add("hidden");
+            }
+        }
+
+        function closeActivityModalOnBackdrop(event) {
+            if (event.target && event.target.id === "createActivityModal") {
+                closeActivityModal();
+            }
+        }
+
+        // Xử lý lưu hoạt động mới từ modal
+        function handleCreateActivitySubmit(event) {
+            event.preventDefault();
+
+            const title = document.getElementById("newActTitle").value.trim();
+            const sport = document.getElementById("newActSport").value;
+            const park = document.getElementById("newActPark").value;
+            const schedule = document.getElementById("newActSchedule").value.trim();
+            const maxPeople = parseInt(document.getElementById("newActMaxPeople").value, 10) || 12;
+            const costLabel = document.getElementById("newActCost").value;
+            const level = document.getElementById("newActLevel").value;
+            const desc = document.getElementById("newActDesc").value.trim();
+
+            if (!title || !schedule) {
+                return;
+            }
+
+            const newItem = {
+                id: Date.now(),
+                title: title,
+                sport: sport,
+                park: park,
+                meetingPoint: "Cổng chính " + park,
+                date: "Sắp tới",
+                schedule: schedule,
+                costLabel: costLabel,
+                level: level,
+                currentParticipants: 1,
+                maxParticipants: maxPeople,
+                organizer: "Hào Chu Văn",
+                description: desc || "Buổi giao lưu " + sport + " tại " + park + ".",
+                image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&q=80&w=600",
+                badgeColor: "#10b981",
+                icon: "fa-calendar-check"
+            };
+
+            myCreatedActivities.unshift(newItem);
+            document.getElementById("createActivityForm").reset();
+            closeActivityModal();
+            renderManagedActivities();
+            filterAndRenderActivities();
+            showToast('Đã tạo hoạt động "' + title + '" thành công!');
+        }
+
+        // Chuyển đổi giữa tab Khám phá hoạt động và tab Quản lý hoạt động
+        function switchActivityTab(tabName) {
+            const exploreSection = document.getElementById("exploreSection");
+            const manageSection = document.getElementById("manageSection");
+            const tabExploreBtn = document.getElementById("tabExploreBtn");
+            const tabManageBtn = document.getElementById("tabManageBtn");
+
+            if (tabName === "manage") {
+                exploreSection.classList.add("hidden");
+                manageSection.classList.remove("hidden");
+                tabExploreBtn.classList.remove("active");
+                tabManageBtn.classList.add("active");
+                renderManagedActivities();
+            } else {
+                manageSection.classList.add("hidden");
+                exploreSection.classList.remove("hidden");
+                tabManageBtn.classList.remove("active");
+                tabExploreBtn.classList.add("active");
+                filterAndRenderActivities();
+            }
+        }
+
+        // Gắn sự kiện thay đổi cho tất cả ô lọc chi tiết và ô tìm kiếm chung trên header
+        function setupActivityFilterEvents() {
+            const keywordInput = document.getElementById("actKeywordInput");
+            const sportSelect = document.getElementById("actFilterSport");
+            const parkSelect = document.getElementById("actFilterPark");
+            const costSelect = document.getElementById("actFilterCost");
+            const levelSelect = document.getElementById("actFilterLevel");
+            const globalSearchInput = document.getElementById("globalSearchInput");
+
+            if (keywordInput) {
+                keywordInput.addEventListener("input", filterAndRenderActivities);
+            }
+            if (sportSelect) {
+                sportSelect.addEventListener("change", filterAndRenderActivities);
+            }
+            if (parkSelect) {
+                parkSelect.addEventListener("change", filterAndRenderActivities);
+            }
+            if (costSelect) {
+                costSelect.addEventListener("change", filterAndRenderActivities);
+            }
+            if (levelSelect) {
+                levelSelect.addEventListener("change", filterAndRenderActivities);
+            }
+            if (globalSearchInput) {
+                globalSearchInput.addEventListener("keyup", function () {
+                    if (keywordInput) {
+                        keywordInput.value = globalSearchInput.value;
+                    }
+                    filterAndRenderActivities();
+                });
+            }
+        }
+
+        // Lọc danh sách hoạt động theo 5 tiêu chí chi tiết
+        function filterAndRenderActivities() {
+            const keyword = document.getElementById("actKeywordInput").value.trim().toLowerCase();
+            const selectedSport = document.getElementById("actFilterSport").value;
+            const selectedPark = document.getElementById("actFilterPark").value;
+            const selectedCost = document.getElementById("actFilterCost").value;
+            const selectedLevel = document.getElementById("actFilterLevel").value.toLowerCase();
+
+            const allActivities = getCombinedActivities();
+
+            const filteredItems = allActivities.filter(function (act) {
+                const matchKeyword =
+                    keyword === "" ||
+                    act.title.toLowerCase().includes(keyword) ||
+                    act.park.toLowerCase().includes(keyword) ||
+                    act.sport.toLowerCase().includes(keyword);
+
+                const matchSport =
+                    selectedSport === "all" ||
+                    act.sport.toLowerCase() === selectedSport.toLowerCase();
+
+                const matchPark =
+                    selectedPark === "all" ||
+                    act.park === selectedPark;
+
+                const isFree = act.costLabel.toLowerCase().includes("miễn phí");
+                let matchCost = true;
+                if (selectedCost === "free") {
+                    matchCost = isFree;
+                } else if (selectedCost === "paid") {
+                    matchCost = !isFree;
+                }
+
+                const actLevelLower = act.level.toLowerCase();
+                const matchLevel =
+                    selectedLevel === "all" ||
+                    actLevelLower.includes(selectedLevel) ||
+                    (selectedLevel === "người mới" && actLevelLower.includes("mới bắt đầu")) ||
+                    actLevelLower.includes("mọi trình độ");
+
+                return matchKeyword && matchSport && matchPark && matchCost && matchLevel;
+            });
+
+            renderActivitiesGrid(filteredItems);
+            document.getElementById("exploreCountBadge").innerText = filteredItems.length;
+        }
+
+        // Mở chi tiết hoạt động từ danh sách đầy đủ
+        function viewActivityDetail(activityId) {
+            const allActivities = getCombinedActivities();
+            openActivityDetailModal(activityId, allActivities);
+        }
+
+        // Vẽ các thẻ hoạt động ở khu vực Khám phá (bấm vào thẻ hiện chi tiết hoạt động)
+        function renderActivitiesGrid(items) {
+            const gridBox = document.getElementById("activitiesGrid");
+            if (!gridBox) {
+                return;
+            }
+
+            if (items.length === 0) {
+                gridBox.innerHTML = `
+                    <div class="empty-activity-box">
+                        <i class="fa-solid fa-person-running" style="font-size: 26px; margin-bottom: 10px; color: var(--accent-orange);"></i>
+                        <p>Không có hoạt động nào khớp với bộ lọc hiện tại.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let htmlContent = "";
+            items.forEach(function (act) {
+                const alreadyJoined = myJoinedActivityIds.includes(act.id);
+                const buttonText = alreadyJoined ? "Đã Đăng Ký Tham Gia" : "Tham Gia Ngay";
+
+                htmlContent += `
+                    <div class="grid-card" style="cursor: pointer;" onclick="viewActivityDetail(${act.id})">
+                        <div>
+                            <div class="carousel-img-box">
+                                <img src="${act.image}" alt="${act.title}">
+                                <span class="carousel-badge" style="background:${act.badgeColor};"><i class="fa-solid ${act.icon}"></i></span>
+                            </div>
+                            <div class="card-body">
+                                <div class="card-top-meta">
+                                    <span class="badge-free ${act.badgeStyle}">${act.costLabel}</span>
+                                    <span class="member-count">${act.level}</span>
+                                </div>
+                                <h3 class="card-title-white">${act.title}</h3>
+                                <p class="card-location"><i class="fa-solid fa-location-dot"></i> ${act.park}</p>
+                                <div class="card-time"><i class="fa-regular fa-clock"></i> ${act.schedule}</div>
+                            </div>
+                        </div>
+                        <div class="card-footer-action">
+                            <button type="button" class="btn-card-action" onclick="event.stopPropagation(); joinActivityById(${act.id}, '${act.title.replace(/'/g, "\\'")}')">
+                                ${buttonText}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            gridBox.innerHTML = htmlContent;
+        }
+
+        // Đăng ký tham gia hoạt động và lưu vào danh sách quản lý của người dùng
+        function joinActivityById(activityId, activityTitle) {
+            if (!myJoinedActivityIds.includes(activityId)) {
+                myJoinedActivityIds.push(activityId);
+                renderManagedActivities();
+                filterAndRenderActivities();
+                showToast('Đã đăng ký tham gia "' + activityTitle + '"!');
+            } else {
+                showToast('Bạn đã đăng ký "' + activityTitle + '" trước đó rồi.');
+            }
+        }
+
+        // Hủy đăng ký một hoạt động trong khu vực Quản lý
+        function leaveJoinedActivity(activityId) {
+            myJoinedActivityIds = myJoinedActivityIds.filter(function (id) {
+                return id !== activityId;
+            });
+            renderManagedActivities();
+            filterAndRenderActivities();
+            showToast("Đã hủy đăng ký hoạt động!");
+        }
+
+        // Xóa một hoạt động do chính người dùng tạo
+        function deleteCreatedActivity(activityId) {
+            myCreatedActivities = myCreatedActivities.filter(function (item) {
+                return item.id !== activityId;
+            });
+            myJoinedActivityIds = myJoinedActivityIds.filter(function (id) {
+                return id !== activityId;
+            });
+            renderManagedActivities();
+            filterAndRenderActivities();
+            showToast("Đã xóa hoạt động bạn đã tạo!");
+        }
+
+        // Vẽ danh sách hoạt động đã tạo và đã đăng ký trong tab Quản lý
+        function renderManagedActivities() {
+            const createdBox = document.getElementById("createdActivitiesList");
+            const joinedBox = document.getElementById("joinedActivitiesList");
+            const manageBadge = document.getElementById("manageCountBadge");
+
+            // 1. Danh sách hoạt động do bạn tạo
+            if (myCreatedActivities.length === 0) {
+                createdBox.innerHTML = `<p style="font-size: 13px; color: var(--text-muted);">Bạn chưa tạo hoạt động nào.</p>`;
+            } else {
+                let createdHtml = "";
+                myCreatedActivities.forEach(function (item) {
+                    createdHtml += `
+                        <div class="managed-item-row">
+                            <div class="managed-item-info" style="cursor: pointer;" onclick="viewActivityDetail(${item.id})">
+                                <h4>${item.title}</h4>
+                                <div class="managed-item-meta">
+                                    <span><i class="fa-solid fa-location-dot" style="color: var(--accent-orange);"></i> ${item.park}</span>
+                                    <span><i class="fa-regular fa-clock"></i> ${item.schedule}</span>
+                                    <span><i class="fa-solid fa-tags"></i> ${item.costLabel}</span>
+                                </div>
+                            </div>
+                            <div class="managed-item-actions">
+                                <button type="button" class="btn-danger-outline" onclick="deleteCreatedActivity(${item.id})">
+                                    <i class="fa-solid fa-trash"></i> Xóa hoạt động
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                createdBox.innerHTML = createdHtml;
+            }
+
+            // 2. Danh sách hoạt động bạn đã đăng ký tham gia
+            const allActivities = getCombinedActivities();
+            const joinedItems = allActivities.filter(function (act) {
+                return myJoinedActivityIds.includes(act.id);
+            });
+
+            if (joinedItems.length === 0) {
+                joinedBox.innerHTML = `<p style="font-size: 13px; color: var(--text-muted);">Bạn chưa đăng ký tham gia hoạt động nào.</p>`;
+            } else {
+                let joinedHtml = "";
+                joinedItems.forEach(function (act) {
+                    joinedHtml += `
+                        <div class="managed-item-row">
+                            <div class="managed-item-info" style="cursor: pointer;" onclick="viewActivityDetail(${act.id})">
+                                <h4>${act.title}</h4>
+                                <div class="managed-item-meta">
+                                    <span><i class="fa-solid fa-location-dot" style="color: var(--accent-orange);"></i> ${act.park}</span>
+                                    <span><i class="fa-regular fa-clock"></i> ${act.schedule}</span>
+                                    <span><i class="fa-solid fa-tags"></i> ${act.costLabel}</span>
+                                </div>
+                            </div>
+                            <div class="managed-item-actions">
+                                <button type="button" class="btn-danger-outline" onclick="leaveJoinedActivity(${act.id})">
+                                    <i class="fa-solid fa-circle-xmark"></i> Hủy đăng ký
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                joinedBox.innerHTML = joinedHtml;
+            }
+
+            if (manageBadge) {
+                manageBadge.innerText = myCreatedActivities.length + joinedItems.length;
+            }
+        }
+
+        // Đặt lại toàn bộ bộ lọc chi tiết về mặc định
+        function resetActivityFilters() {
+            document.getElementById("actKeywordInput").value = "";
+            document.getElementById("actFilterSport").value = "all";
+            document.getElementById("actFilterPark").value = "all";
+            document.getElementById("actFilterCost").value = "all";
+            document.getElementById("actFilterLevel").value = "all";
+
+            const globalSearchInput = document.getElementById("globalSearchInput");
+            if (globalSearchInput) {
+                globalSearchInput.value = "";
+            }
+
+            filterAndRenderActivities();
+            showToast("Đã đặt lại bộ lọc hoạt động!");
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SportPark - Nhóm &amp; Quản Lý Nhóm Thể Thao</title>
+    <!-- Bộ icon FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Font chữ Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- File CSS giao diện chung -->
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+    <!-- Khung chứa Header dùng chung (do common.js tạo) -->
+    <div id="shared-header"></div>
+
+    <!-- Nội dung chính trang Nhóm (đồng bộ bố cục với trang Hoạt động) -->
+    <main class="container">
+        <div class="page-header-row">
+            <div>
+                <h1 class="page-title">
+                    <i class="fa-solid fa-users" style="color: var(--accent-orange);"></i> Nhóm &amp; Câu Lạc Bộ Thể Thao
+                </h1>
+                <p class="page-subtitle">Kết nối và quản lý các câu lạc bộ tập luyện thường xuyên tại hệ thống công viên Hà Nội</p>
+            </div>
+        </div>
+
+        <!-- Thanh chuyển đổi giữa 2 khu vực: Khám phá nhóm & Quản lý nhóm của tôi -->
+        <div class="activity-tabs-bar">
+            <button type="button" class="activity-tab-btn active" id="tabGroupExploreBtn" onclick="switchGroupTab('explore')">
+                <i class="fa-solid fa-compass"></i> Khám Phá Nhóm (<span id="groupExploreCountBadge">0</span>)
+            </button>
+            <button type="button" class="activity-tab-btn" id="tabGroupManageBtn" onclick="switchGroupTab('manage')">
+                <i class="fa-solid fa-list-check"></i> Quản Lý Nhóm Của Tôi (<span id="groupManageCountBadge">0</span>)
+            </button>
+        </div>
+
+        <!-- ==================================================================
+             KHU VỰC 1: BỘ LỌC CHI TIẾT VÀ DANH SÁCH NHÓM
+             ================================================================== -->
+        <section id="groupExploreSection">
+            <div class="activity-filter-panel">
+                <!-- Ô tìm kiếm theo tên nhóm hoặc công viên -->
+                <div class="form-group">
+                    <label for="grpKeywordInput"><i class="fa-solid fa-magnifying-glass"></i> Từ khóa</label>
+                    <input
+                        type="text"
+                        id="grpKeywordInput"
+                        class="form-control"
+                        placeholder="Tên nhóm, công viên..."
+                    >
+                </div>
+
+                <!-- Lọc theo môn thể thao -->
+                <div class="form-group">
+                    <label for="grpFilterSport"><i class="fa-solid fa-dumbbell"></i> Môn thể thao</label>
+                    <select id="grpFilterSport" class="form-control">
+                        <option value="all">Tất cả môn</option>
+                        <option value="cầu lông">Cầu lông</option>
+                        <option value="chạy bộ">Chạy bộ</option>
+                        <option value="bóng rổ">Bóng rổ</option>
+                        <option value="gym">Gym / Calisthenics</option>
+                    </select>
+                </div>
+
+                <!-- Lọc theo công viên -->
+                <div class="form-group">
+                    <label for="grpFilterPark"><i class="fa-solid fa-tree"></i> Công viên</label>
+                    <select id="grpFilterPark" class="form-control">
+                        <option value="all">Tất cả công viên</option>
+                        <option value="Công viên Thống Nhất">Công viên Thống Nhất</option>
+                        <option value="Công viên Cầu Giấy">Công viên Cầu Giấy</option>
+                        <option value="Công viên Nghĩa Đô">Công viên Nghĩa Đô</option>
+                    </select>
+                </div>
+
+                <!-- Lọc theo hình thức tham gia -->
+                <div class="form-group">
+                    <label for="grpFilterStatus"><i class="fa-solid fa-shield-halved"></i> Hình thức</label>
+                    <select id="grpFilterStatus" class="form-control">
+                        <option value="all">Tất cả hình thức</option>
+                        <option value="công khai">Hoạt động công khai</option>
+                        <option value="phê duyệt">Cần phê duyệt</option>
+                    </select>
+                </div>
+
+                <!-- Lọc theo quy mô thành viên -->
+                <div class="form-group">
+                    <label for="grpFilterSize"><i class="fa-solid fa-user-group"></i> Quy mô thành viên</label>
+                    <select id="grpFilterSize" class="form-control">
+                        <option value="all">Mọi quy mô</option>
+                        <option value="small">Dưới 40 thành viên</option>
+                        <option value="medium">40 - 100 thành viên</option>
+                        <option value="large">Trên 100 thành viên</option>
+                    </select>
+                </div>
+
+                <!-- Nút đặt lại toàn bộ bộ lọc -->
+                <button type="button" class="btn-reset-activity" onclick="resetGroupFilters()">
+                    <i class="fa-solid fa-rotate-left"></i> Đặt lại
+                </button>
+            </div>
+
+            <!-- Lưới các thẻ nhóm -->
+            <div class="cards-grid" id="groupsGrid"></div>
+        </section>
+
+        <!-- ==================================================================
+             KHU VỰC 2: QUẢN LÝ NHÓM (ĐÃ TẠO & ĐÃ THAM GIA)
+             ================================================================== -->
+        <section id="groupManageSection" class="hidden">
+            <!-- Phần A: Nhóm do chính bạn tạo -->
+            <div class="manage-section-box">
+                <div class="manage-section-header">
+                    <h2 class="manage-section-title">
+                        <i class="fa-solid fa-pen-to-square" style="color: var(--accent-orange);"></i> Nhóm Do Bạn Tạo
+                    </h2>
+                    <button type="button" class="btn-primary" onclick="openGroupModal()">
+                        <i class="fa-solid fa-plus"></i> Tạo Nhóm Mới
+                    </button>
+                </div>
+                <div id="createdGroupsList"></div>
+            </div>
+
+            <!-- Phần B: Nhóm bạn đã đăng ký tham gia -->
+            <div class="manage-section-box">
+                <div class="manage-section-header">
+                    <h2 class="manage-section-title">
+                        <i class="fa-solid fa-user-check" style="color: var(--accent-teal);"></i> Nhóm Bạn Đã Tham Gia
+                    </h2>
+                </div>
+                <div id="joinedGroupsList"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal module Tạo Nhóm Mới -->
+    <div class="modal-overlay hidden" id="createGroupModal" onclick="closeGroupModalOnBackdrop(event)">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-users-gear" style="color: var(--accent-orange);"></i> Tạo Nhóm Mới</h3>
+                <button type="button" onclick="closeGroupModal()" title="Đóng"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <form id="createGroupForm" onsubmit="handleCreateGroupSubmit(event)">
+                <div class="form-group">
+                    <label for="newGroupName">Tên nhóm / Câu lạc bộ *</label>
+                    <input type="text" id="newGroupName" class="form-control" placeholder="VD: CLB Cầu Lông Bách Khoa - Thống Nhất" required>
+                </div>
+
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label for="newGroupSport">Môn thể thao chính</label>
+                        <select id="newGroupSport" class="form-control">
+                            <option value="cầu lông">Cầu lông</option>
+                            <option value="chạy bộ">Chạy bộ</option>
+                            <option value="bóng rổ">Bóng rổ</option>
+                            <option value="gym">Gym / Calisthenics</option>
+                            <option value="đạp xe">Đạp xe</option>
+                            <option value="yoga">Yoga ngoài trời</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newGroupPark">Công viên sinh hoạt</label>
+                        <select id="newGroupPark" class="form-control">
+                            <option value="Công viên Thống Nhất">Công viên Thống Nhất</option>
+                            <option value="Công viên Cầu Giấy">Công viên Cầu Giấy</option>
+                            <option value="Công viên Nghĩa Đô">Công viên Nghĩa Đô</option>
+                            <option value="Công viên Hòa Bình">Công viên Hòa Bình</option>
+                            <option value="Công viên Yên Sở">Công viên Yên Sở</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label for="newGroupPrivacy">Chế độ tham gia</label>
+                        <select id="newGroupPrivacy" class="form-control">
+                            <option value="Hoạt động công khai">Hoạt động công khai</option>
+                            <option value="Cần phê duyệt">Cần phê duyệt</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newGroupSchedule">Lịch sinh hoạt định kỳ</label>
+                        <input type="text" id="newGroupSchedule" class="form-control" placeholder="VD: Thứ 4 & CN (17:30)">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="newGroupDesc">Giới thiệu nhóm &amp; Nội quy *</label>
+                    <textarea id="newGroupDesc" class="form-control" rows="3" style="resize: none;" placeholder="Mô tả mục tiêu tập luyện, trình độ hướng tới và tiêu chí kết nối thành viên..." required></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeGroupModal()">Hủy</button>
+                    <button type="submit" class="btn-save"><i class="fa-solid fa-check"></i> Tạo Nhóm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Khung chứa Footer, Modal và Toast dùng chung -->
+    <div id="shared-footer"></div>
+    <div id="shared-modals"></div>
+
+    <!-- Các file JavaScript -->
+    <script src="js/data.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+        // Danh sách nhóm do người dùng tự tạo
+        let myCreatedGroups = [
+            {
+                id: 201,
+                name: "Nhóm Chạy Bộ Sáng Cuối Tuần",
+                sport: "chạy bộ",
+                statusLabel: "Hoạt động công khai",
+                badgeStyle: "badge-blue",
+                members: 14,
+                park: "Công viên Thống Nhất",
+                schedule: "Thứ 7 & CN (06:00 - 07:30)",
+                description: "Nhóm chạy bộ nhẹ nhàng quanh hồ Bảy Mẫu vào sáng cuối tuần, phù hợp cho sinh viên và người đi làm.",
+                image: "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&q=80&w=400",
+                badgeColor: "#2563eb",
+                icon: "fa-person-running"
+            }
+        ];
+
+        // Danh sách ID nhóm người dùng đã xin tham gia
+        let myJoinedGroupIds = [1];
+
+        document.addEventListener("DOMContentLoaded", function () {
+            setupGroupFilterEvents();
+            filterAndRenderGroups();
+            renderManagedGroups();
+        });
+
+        function getCombinedGroups() {
+            return groupsList.concat(myCreatedGroups);
+        }
+
+        // Mở / Đóng modal tạo nhóm mới
+        function openGroupModal() {
+            const modal = document.getElementById("createGroupModal");
+            if (modal) {
+                modal.classList.remove("hidden");
+            }
+        }
+
+        function closeGroupModal() {
+            const modal = document.getElementById("createGroupModal");
+            if (modal) {
+                modal.classList.add("hidden");
+            }
+        }
+
+        function closeGroupModalOnBackdrop(event) {
+            if (event.target && event.target.id === "createGroupModal") {
+                closeGroupModal();
+            }
+        }
+
+        // Xử lý lưu nhóm mới từ modal
+        function handleCreateGroupSubmit(event) {
+            event.preventDefault();
+
+            const name = document.getElementById("newGroupName").value.trim();
+            const sport = document.getElementById("newGroupSport").value;
+            const park = document.getElementById("newGroupPark").value;
+            const privacy = document.getElementById("newGroupPrivacy").value;
+            const schedule = document.getElementById("newGroupSchedule").value.trim() || "Linh hoạt hàng tuần";
+            const desc = document.getElementById("newGroupDesc").value.trim();
+
+            if (!name || !desc) {
+                return;
+            }
+
+            const newGroup = {
+                id: Date.now(),
+                name: name,
+                sport: sport,
+                statusLabel: privacy,
+                badgeStyle: privacy === "Cần phê duyệt" ? "badge-paid" : "",
+                members: 1,
+                park: park,
+                schedule: schedule,
+                description: desc,
+                image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&q=80&w=400",
+                badgeColor: "#10b981",
+                icon: "fa-users"
+            };
+
+            myCreatedGroups.unshift(newGroup);
+            document.getElementById("createGroupForm").reset();
+            closeGroupModal();
+            renderManagedGroups();
+            filterAndRenderGroups();
+            showToast('Đã tạo nhóm "' + name + '" thành công!');
+        }
+
+        // Chuyển đổi giữa tab Khám phá nhóm và tab Quản lý nhóm
+        function switchGroupTab(tabName) {
+            const exploreSection = document.getElementById("groupExploreSection");
+            const manageSection = document.getElementById("groupManageSection");
+            const tabExploreBtn = document.getElementById("tabGroupExploreBtn");
+            const tabManageBtn = document.getElementById("tabGroupManageBtn");
+
+            if (tabName === "manage") {
+                exploreSection.classList.add("hidden");
+                manageSection.classList.remove("hidden");
+                tabExploreBtn.classList.remove("active");
+                tabManageBtn.classList.add("active");
+                renderManagedGroups();
+            } else {
+                manageSection.classList.add("hidden");
+                exploreSection.classList.remove("hidden");
+                tabManageBtn.classList.remove("active");
+                tabExploreBtn.classList.add("active");
+                filterAndRenderGroups();
+            }
+        }
+
+        // Gắn sự kiện cho các bộ lọc
+        function setupGroupFilterEvents() {
+            const keywordInput = document.getElementById("grpKeywordInput");
+            const sportSelect = document.getElementById("grpFilterSport");
+            const parkSelect = document.getElementById("grpFilterPark");
+            const statusSelect = document.getElementById("grpFilterStatus");
+            const sizeSelect = document.getElementById("grpFilterSize");
+            const globalSearchInput = document.getElementById("globalSearchInput");
+
+            if (keywordInput) {
+                keywordInput.addEventListener("input", filterAndRenderGroups);
+            }
+            if (sportSelect) {
+                sportSelect.addEventListener("change", filterAndRenderGroups);
+            }
+            if (parkSelect) {
+                parkSelect.addEventListener("change", filterAndRenderGroups);
+            }
+            if (statusSelect) {
+                statusSelect.addEventListener("change", filterAndRenderGroups);
+            }
+            if (sizeSelect) {
+                sizeSelect.addEventListener("change", filterAndRenderGroups);
+            }
+            if (globalSearchInput) {
+                globalSearchInput.addEventListener("keyup", function () {
+                    if (keywordInput) {
+                        keywordInput.value = globalSearchInput.value;
+                    }
+                    filterAndRenderGroups();
+                });
+            }
+        }
+
+        // Lọc danh sách nhóm theo 5 tiêu chí
+        function filterAndRenderGroups() {
+            const keyword = document.getElementById("grpKeywordInput").value.trim().toLowerCase();
+            const selectedSport = document.getElementById("grpFilterSport").value;
+            const selectedPark = document.getElementById("grpFilterPark").value;
+            const selectedStatus = document.getElementById("grpFilterStatus").value;
+            const selectedSize = document.getElementById("grpFilterSize").value;
+
+            const allGroups = getCombinedGroups();
+
+            const matched = allGroups.filter(function (grp) {
+                const matchKeyword =
+                    keyword === "" ||
+                    grp.name.toLowerCase().includes(keyword) ||
+                    grp.park.toLowerCase().includes(keyword) ||
+                    grp.description.toLowerCase().includes(keyword);
+
+                const matchSport =
+                    selectedSport === "all" ||
+                    grp.sport.toLowerCase() === selectedSport.toLowerCase();
+
+                const matchPark =
+                    selectedPark === "all" ||
+                    grp.park === selectedPark;
+
+                const statusLower = grp.statusLabel.toLowerCase();
+                const matchStatus =
+                    selectedStatus === "all" ||
+                    statusLower.includes(selectedStatus);
+
+                let matchSize = true;
+                if (selectedSize === "small") {
+                    matchSize = grp.members < 40;
+                } else if (selectedSize === "medium") {
+                    matchSize = grp.members >= 40 && grp.members <= 100;
+                } else if (selectedSize === "large") {
+                    matchSize = grp.members > 100;
+                }
+
+                return matchKeyword && matchSport && matchPark && matchStatus && matchSize;
+            });
+
+            renderGroupsGrid(matched);
+            document.getElementById("groupExploreCountBadge").innerText = matched.length;
+        }
+
+        // Vẽ danh sách các nhóm và câu lạc bộ thể thao
+        function renderGroupsGrid(items) {
+            const gridBox = document.getElementById("groupsGrid");
+            if (!gridBox) {
+                return;
+            }
+
+            if (items.length === 0) {
+                gridBox.innerHTML = `
+                    <div class="empty-activity-box">
+                        <i class="fa-solid fa-users" style="font-size: 26px; margin-bottom: 10px; color: var(--accent-orange);"></i>
+                        <p>Không có nhóm nào khớp với bộ lọc hiện tại.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let htmlContent = "";
+            items.forEach(function (grp) {
+                const alreadyJoined = myJoinedGroupIds.includes(grp.id);
+                const buttonHtml = alreadyJoined
+                    ? `<i class="fa-solid fa-check"></i> Đã Gửi Yêu Cầu / Tham Gia`
+                    : `<i class="fa-solid fa-user-plus"></i> Xin Tham Gia Nhóm`;
+
+                htmlContent += `
+                    <div class="grid-card">
+                        <div>
+                            <div class="carousel-img-box">
+                                <img src="${grp.image}" alt="${grp.name}">
+                                <span class="carousel-badge" style="background:${grp.badgeColor};"><i class="fa-solid ${grp.icon}"></i></span>
+                            </div>
+                            <div class="card-body">
+                                <div class="card-top-meta">
+                                    <span class="badge-free ${grp.badgeStyle}">${grp.statusLabel}</span>
+                                    <span class="member-count"><i class="fa-solid fa-user-group"></i> ${grp.members} thành viên</span>
+                                </div>
+                                <h3 class="card-title-white">${grp.name}</h3>
+                                <p class="card-location"><i class="fa-solid fa-location-dot"></i> ${grp.park}</p>
+                                <p class="card-desc">${grp.description}</p>
+                            </div>
+                        </div>
+                        <div class="card-footer-action">
+                            <button type="button" class="btn-card-action" onclick="requestJoinGroupById(${grp.id}, '${grp.name.replace(/'/g, "\\'")}')">
+                                ${buttonHtml}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            gridBox.innerHTML = htmlContent;
+        }
+
+        function requestJoinGroupById(groupId, groupName) {
+            if (!myJoinedGroupIds.includes(groupId)) {
+                myJoinedGroupIds.push(groupId);
+                renderManagedGroups();
+                filterAndRenderGroups();
+                showToast('Đã gửi yêu cầu tham gia "' + groupName + '" thành công!');
+            } else {
+                showToast('Bạn đã tham gia hoặc gửi yêu cầu tới "' + groupName + '" rồi.');
+            }
+        }
+
+        function leaveJoinedGroup(groupId) {
+            myJoinedGroupIds = myJoinedGroupIds.filter(function (id) {
+                return id !== groupId;
+            });
+            renderManagedGroups();
+            filterAndRenderGroups();
+            showToast("Đã rời khỏi nhóm!");
+        }
+
+        function deleteCreatedGroup(groupId) {
+            myCreatedGroups = myCreatedGroups.filter(function (item) {
+                return item.id !== groupId;
+            });
+            myJoinedGroupIds = myJoinedGroupIds.filter(function (id) {
+                return id !== groupId;
+            });
+            renderManagedGroups();
+            filterAndRenderGroups();
+            showToast("Đã giải tán nhóm bạn đã tạo!");
+        }
+
+        // Vẽ danh sách nhóm đã tạo và đã tham gia trong tab Quản lý
+        function renderManagedGroups() {
+            const createdBox = document.getElementById("createdGroupsList");
+            const joinedBox = document.getElementById("joinedGroupsList");
+            const manageBadge = document.getElementById("groupManageCountBadge");
+
+            if (myCreatedGroups.length === 0) {
+                createdBox.innerHTML = `<p style="font-size: 13px; color: var(--text-muted);">Bạn chưa tạo nhóm nào.</p>`;
+            } else {
+                let createdHtml = "";
+                myCreatedGroups.forEach(function (item) {
+                    createdHtml += `
+                        <div class="managed-item-row">
+                            <div class="managed-item-info">
+                                <h4>${item.name}</h4>
+                                <div class="managed-item-meta">
+                                    <span><i class="fa-solid fa-location-dot" style="color: var(--accent-orange);"></i> ${item.park}</span>
+                                    <span><i class="fa-solid fa-user-group"></i> ${item.members} thành viên</span>
+                                    <span><i class="fa-solid fa-shield-halved"></i> ${item.statusLabel}</span>
+                                </div>
+                            </div>
+                            <div class="managed-item-actions">
+                                <button type="button" class="btn-danger-outline" onclick="deleteCreatedGroup(${item.id})">
+                                    <i class="fa-solid fa-trash"></i> Xóa nhóm
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                createdBox.innerHTML = createdHtml;
+            }
+
+            const allGroups = getCombinedGroups();
+            const joinedItems = allGroups.filter(function (grp) {
+                return myJoinedGroupIds.includes(grp.id);
+            });
+
+            if (joinedItems.length === 0) {
+                joinedBox.innerHTML = `<p style="font-size: 13px; color: var(--text-muted);">Bạn chưa tham gia nhóm nào.</p>`;
+            } else {
+                let joinedHtml = "";
+                joinedItems.forEach(function (grp) {
+                    joinedHtml += `
+                        <div class="managed-item-row">
+                            <div class="managed-item-info">
+                                <h4>${grp.name}</h4>
+                                <div class="managed-item-meta">
+                                    <span><i class="fa-solid fa-location-dot" style="color: var(--accent-orange);"></i> ${grp.park}</span>
+                                    <span><i class="fa-solid fa-user-group"></i> ${grp.members} thành viên</span>
+                                    <span><i class="fa-solid fa-shield-halved"></i> ${grp.statusLabel}</span>
+                                </div>
+                            </div>
+                            <div class="managed-item-actions">
+                                <button type="button" class="btn-danger-outline" onclick="leaveJoinedGroup(${grp.id})">
+                                    <i class="fa-solid fa-right-from-bracket"></i> Rời nhóm
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                joinedBox.innerHTML = joinedHtml;
+            }
+
+            if (manageBadge) {
+                manageBadge.innerText = myCreatedGroups.length + joinedItems.length;
+            }
+        }
+
+        // Đặt lại toàn bộ bộ lọc nhóm về mặc định
+        function resetGroupFilters() {
+            document.getElementById("grpKeywordInput").value = "";
+            document.getElementById("grpFilterSport").value = "all";
+            document.getElementById("grpFilterPark").value = "all";
+            document.getElementById("grpFilterStatus").value = "all";
+            document.getElementById("grpFilterSize").value = "all";
+
+            const globalSearchInput = document.getElementById("globalSearchInput");
+            if (globalSearchInput) {
+                globalSearchInput.value = "";
+            }
+
+            filterAndRenderGroups();
+            showToast("Đã đặt lại bộ lọc nhóm!");
+        }
+    </script>
+</body>
+</html>

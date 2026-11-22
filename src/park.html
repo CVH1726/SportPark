@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SportPark - Danh Sách Công Viên Thể Thao</title>
+    <!-- Bộ icon FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Font chữ Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- File CSS giao diện chung -->
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+    <!-- Khung chứa Header dùng chung (do common.js tạo) -->
+    <div id="shared-header"></div>
+
+    <!-- Nội dung chính trang Công viên -->
+    <main class="container">
+        <div class="page-header-row">
+            <div>
+                <h1 class="page-title">
+                    <i class="fa-solid fa-tree" style="color: var(--accent-teal);"></i> Hệ Thống Công Viên Thể Thao Tại Hà Nội
+                </h1>
+                <p class="page-subtitle" id="parkCountText">Đang tải danh sách công viên...</p>
+            </div>
+        </div>
+
+        <!-- Bộ lọc tìm kiếm công viên hoàn chỉnh -->
+        <section class="park-filter-bar" aria-label="Bộ lọc tìm kiếm công viên">
+            <!-- 1. Từ khóa tên công viên -->
+            <div class="form-group">
+                <label for="parkKeywordInput"><i class="fa-solid fa-magnifying-glass"></i> Tên công viên</label>
+                <input
+                    type="text"
+                    id="parkKeywordInput"
+                    class="form-control"
+                    placeholder="Thống Nhất, Cầu Giấy, Yên Sở..."
+                >
+            </div>
+
+            <!-- 2. Địa điểm theo các quận / xã trong Hà Nội -->
+            <div class="form-group">
+                <label for="parkDistrictSelect"><i class="fa-solid fa-location-dot"></i> Địa điểm (Quận / Huyện / Xã)</label>
+                <select id="parkDistrictSelect" class="form-control">
+                    <option value="all">Tất cả quận / huyện Hà Nội</option>
+                    <option value="Quận Ba Đình">Quận Ba Đình</option>
+                    <option value="Quận Hoàn Kiếm">Quận Hoàn Kiếm</option>
+                    <option value="Quận Hai Bà Trưng">Quận Hai Bà Trưng</option>
+                    <option value="Quận Đống Đa">Quận Đống Đa</option>
+                    <option value="Quận Cầu Giấy">Quận Cầu Giấy</option>
+                    <option value="Quận Thanh Xuân">Quận Thanh Xuân</option>
+                    <option value="Quận Hoàng Mai">Quận Hoàng Mai</option>
+                    <option value="Quận Tây Hồ">Quận Tây Hồ</option>
+                    <option value="Quận Long Biên">Quận Long Biên</option>
+                    <option value="Quận Nam Từ Liêm">Quận Nam Từ Liêm</option>
+                    <option value="Quận Bắc Từ Liêm">Quận Bắc Từ Liêm</option>
+                    <option value="Quận Hà Đông">Quận Hà Đông</option>
+                    <option value="Huyện Gia Lâm">Huyện Gia Lâm</option>
+                    <option value="Huyện Đông Anh">Huyện Đông Anh</option>
+                    <option value="Huyện Thanh Trì">Huyện Thanh Trì</option>
+                </select>
+            </div>
+
+            <!-- 3. Các môn thể thao có cơ sở vật chất đáp ứng -->
+            <div class="form-group">
+                <label for="parkSportSelect"><i class="fa-solid fa-dumbbell"></i> Môn có cơ sở vật chất</label>
+                <select id="parkSportSelect" class="form-control">
+                    <option value="all">Tất cả môn thể thao</option>
+                    <option value="cầu lông">Sân Cầu lông</option>
+                    <option value="chạy bộ">Đường Chạy bộ</option>
+                    <option value="bóng rổ">Sân Bóng rổ</option>
+                    <option value="gym">Khu Gym / Calisthenics</option>
+                    <option value="đạp xe">Tuyến Đạp xe</option>
+                    <option value="yoga">Bãi cỏ Yoga ngoài trời</option>
+                </select>
+            </div>
+
+            <!-- 4. Mức độ đông đúc -->
+            <div class="form-group">
+                <label for="parkCrowdSelect"><i class="fa-solid fa-users"></i> Mức độ đông đúc</label>
+                <select id="parkCrowdSelect" class="form-control">
+                    <option value="all">Tất cả mức độ</option>
+                    <option value="thoáng đãng">Thoáng đãng (Ít người)</option>
+                    <option value="trung bình">Trung bình (Vừa phải)</option>
+                    <option value="đông đúc">Đông đúc (Sôi động)</option>
+                </select>
+            </div>
+
+            <!-- 5. Khoảng cách -->
+            <div class="form-group">
+                <label for="parkDistanceSelect"><i class="fa-solid fa-route"></i> Khoảng cách tối đa</label>
+                <select id="parkDistanceSelect" class="form-control">
+                    <option value="all">Mọi khoảng cách</option>
+                    <option value="3">Dưới 3 km</option>
+                    <option value="5">Dưới 5 km</option>
+                    <option value="8">Dưới 8 km</option>
+                    <option value="12">Dưới 12 km</option>
+                </select>
+            </div>
+
+            <!-- Nút đặt lại bộ lọc -->
+            <button type="button" class="btn-reset-park" onclick="resetParkFilters()">
+                <i class="fa-solid fa-rotate-left"></i> Đặt lại
+            </button>
+        </section>
+
+        <!-- Lưới hiển thị các thẻ công viên -->
+        <div class="cards-grid" id="parksGrid"></div>
+    </main>
+
+    <!-- Khung chứa Footer, Modal và Toast dùng chung -->
+    <div id="shared-footer"></div>
+    <div id="shared-modals"></div>
+
+    <!-- Các file JavaScript -->
+    <script src="js/data.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+        // Khởi chạy khi trang HTML tải xong
+        document.addEventListener("DOMContentLoaded", function () {
+            setupParkFilterEvents();
+            filterAndRenderParks();
+        });
+
+        // Gắn sự kiện cho các ô lọc và ô tìm kiếm chung trên header
+        function setupParkFilterEvents() {
+            const keywordInput = document.getElementById("parkKeywordInput");
+            const districtSelect = document.getElementById("parkDistrictSelect");
+            const sportSelect = document.getElementById("parkSportSelect");
+            const crowdSelect = document.getElementById("parkCrowdSelect");
+            const distanceSelect = document.getElementById("parkDistanceSelect");
+            const globalSearchInput = document.getElementById("globalSearchInput");
+
+            if (keywordInput) {
+                keywordInput.addEventListener("input", filterAndRenderParks);
+            }
+            if (districtSelect) {
+                districtSelect.addEventListener("change", filterAndRenderParks);
+            }
+            if (sportSelect) {
+                sportSelect.addEventListener("change", filterAndRenderParks);
+            }
+            if (crowdSelect) {
+                crowdSelect.addEventListener("change", filterAndRenderParks);
+            }
+            if (distanceSelect) {
+                distanceSelect.addEventListener("change", filterAndRenderParks);
+            }
+            if (globalSearchInput) {
+                globalSearchInput.addEventListener("keyup", function () {
+                    if (keywordInput) {
+                        keywordInput.value = globalSearchInput.value;
+                    }
+                    filterAndRenderParks();
+                });
+            }
+        }
+
+        // Lọc danh sách công viên theo từ khóa, quận/xã, môn có cơ sở vật chất, mức độ đông đúc và khoảng cách
+        function filterAndRenderParks() {
+            const keyword = document.getElementById("parkKeywordInput").value.trim().toLowerCase();
+            const selectedDistrict = document.getElementById("parkDistrictSelect").value;
+            const selectedSport = document.getElementById("parkSportSelect").value.toLowerCase();
+            const selectedCrowd = document.getElementById("parkCrowdSelect").value.toLowerCase();
+            const selectedDistance = document.getElementById("parkDistanceSelect").value;
+
+            const maxDistance = selectedDistance === "all" ? null : parseFloat(selectedDistance);
+
+            const matchedParks = parksList.filter(function (park) {
+                const matchKeyword =
+                    keyword === "" ||
+                    park.name.toLowerCase().includes(keyword) ||
+                    park.district.toLowerCase().includes(keyword) ||
+                    (park.ward && park.ward.toLowerCase().includes(keyword)) ||
+                    park.description.toLowerCase().includes(keyword);
+
+                const matchDistrict =
+                    selectedDistrict === "all" ||
+                    park.district === selectedDistrict;
+
+                const matchSport =
+                    selectedSport === "all" ||
+                    park.sports.some(function (sportItem) {
+                        return (
+                            (sportItem.key && sportItem.key.toLowerCase().includes(selectedSport)) ||
+                            sportItem.name.toLowerCase().includes(selectedSport)
+                        );
+                    });
+
+                const matchCrowd =
+                    selectedCrowd === "all" ||
+                    (park.crowdLevel && park.crowdLevel.toLowerCase() === selectedCrowd);
+
+                const matchDistance =
+                    maxDistance === null ||
+                    (typeof park.distanceKm === "number" && park.distanceKm <= maxDistance);
+
+                return matchKeyword && matchDistrict && matchSport && matchCrowd && matchDistance;
+            });
+
+            renderParksGrid(matchedParks);
+            updateParkCounter(matchedParks.length);
+        }
+
+        // Cập nhật dòng mô tả số lượng công viên tìm được
+        function updateParkCounter(count) {
+            const countText = document.getElementById("parkCountText");
+            if (!countText) {
+                return;
+            }
+            countText.innerText =
+                "Hiển thị " + count + " công viên — Khám phá không gian xanh, đường chạy và các khu vực tập luyện ngoài trời";
+        }
+
+        // Vẽ danh sách thẻ công viên ra màn hình (bấm vào thẻ hoặc nút mở chi tiết công viên)
+        function renderParksGrid(items) {
+            const gridBox = document.getElementById("parksGrid");
+            if (!gridBox) {
+                return;
+            }
+
+            if (items.length === 0) {
+                gridBox.innerHTML = `
+                    <div class="empty-park-box">
+                        <i class="fa-solid fa-tree" style="font-size: 26px; margin-bottom: 10px; color: var(--accent-teal);"></i>
+                        <p>Không tìm thấy công viên nào phù hợp với điều kiện lọc hiện tại.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let htmlContent = "";
+            items.forEach(function (park) {
+                let sportsHtml = "";
+                park.sports.forEach(function (sp) {
+                    sportsHtml += `<span><i class="fa-solid ${sp.icon}" style="color: ${sp.color};"></i> ${sp.name}</span>`;
+                });
+
+                htmlContent += `
+                    <div class="grid-card" style="cursor: pointer;" onclick="openParkDetailModal('${park.slug}')">
+                        <div>
+                            <div class="carousel-img-box">
+                                <img src="${park.image}" alt="${park.name}">
+                                <span class="carousel-badge"><i class="fa-solid ${park.sports[0] ? park.sports[0].icon : 'fa-location-dot'}"></i></span>
+                            </div>
+                            <div class="card-body">
+                                <div class="card-top-meta">
+                                    <span class="card-district">${park.district}</span>
+                                    <span class="member-count"><i class="fa-solid fa-route" style="color: var(--accent-orange);"></i> ${park.distanceKm} km • ${park.crowdLabel}</span>
+                                </div>
+                                <h3 class="card-title-white">${park.name}</h3>
+                                <p class="card-desc">${park.description}</p>
+                                <div class="card-sports-row">${sportsHtml}</div>
+                            </div>
+                        </div>
+                        <div class="card-footer-action">
+                            <button type="button" class="btn-card-action" onclick="event.stopPropagation(); openParkDetailModal('${park.slug}')">
+                                <i class="fa-solid fa-circle-info"></i> Xem Chi Tiết Công Viên
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            gridBox.innerHTML = htmlContent;
+        }
+
+        // Đặt lại toàn bộ bộ lọc về trạng thái mặc định
+        function resetParkFilters() {
+            document.getElementById("parkKeywordInput").value = "";
+            document.getElementById("parkDistrictSelect").value = "all";
+            document.getElementById("parkSportSelect").value = "all";
+            document.getElementById("parkCrowdSelect").value = "all";
+            document.getElementById("parkDistanceSelect").value = "all";
+
+            const globalSearchInput = document.getElementById("globalSearchInput");
+            if (globalSearchInput) {
+                globalSearchInput.value = "";
+            }
+
+            filterAndRenderParks();
+            showToast("Đã đặt lại bộ lọc công viên!");
+        }
+    </script>
+</body>
+</html>

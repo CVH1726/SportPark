@@ -1,15 +1,10 @@
-// Biến lưu tháng/năm đang xem trên lịch chọn ngày mini
-let calendarViewDate = new Date();
-
-// Biến lưu chuỗi ngày người dùng đã chọn (định dạng dd/mm/yyyy)
-let chosenDateText = "";
-
 // Tự động chạy khi toàn bộ cấu trúc HTML của trang đã tải xong
 document.addEventListener("DOMContentLoaded", function () {
     renderSharedHeader();
     renderSharedFooter();
-    renderSharedModalAndToast();
+    renderSharedModalsAndToast();
     highlightCurrentNavLink();
+    setupNotificationDropdown();
 });
 
 // Tạo phần Header và thanh điều hướng dùng chung cho mọi trang
@@ -18,6 +13,10 @@ function renderSharedHeader() {
     if (!headerPlaceholder) {
         return;
     }
+
+    const unreadCount = (typeof notificationsList !== "undefined")
+        ? notificationsList.filter(function (item) { return item.unread; }).length
+        : 0;
 
     headerPlaceholder.innerHTML = `
         <header>
@@ -39,10 +38,21 @@ function renderSharedHeader() {
                     </div>
 
                     <div class="user-profile">
-                        <button type="button" class="bell-btn" onclick="showToast('Bạn không có thông báo mới nào!')">
-                            <i class="fa-regular fa-bell"></i>
-                            <span class="bell-dot"></span>
-                        </button>
+                        <div class="notification-wrapper" id="notificationWrapper">
+                            <button type="button" class="bell-btn" id="bellBtn" onclick="toggleNotificationDropdown(event)" title="Thông báo">
+                                <i class="fa-regular fa-bell"></i>
+                                ${unreadCount > 0 ? '<span class="bell-dot" id="bellDot"></span>' : ''}
+                            </button>
+
+                            <div class="notification-dropdown hidden" id="notificationDropdown">
+                                <div class="notification-dropdown-header">
+                                    <span><i class="fa-solid fa-bell" style="color: var(--accent-orange);"></i> Thông báo</span>
+                                    <button type="button" class="mark-read-btn" onclick="markAllNotificationsRead()">Đánh dấu đã đọc</button>
+                                </div>
+                                <div class="notification-scroll-list" id="notificationListBody"></div>
+                            </div>
+                        </div>
+
                         <a href="account.html" class="profile-link">
                             <img src="https://marketplace.canva.com/tXH-Q/MAG7IGtXH-Q/1/tl/canva-MAG7IGtXH-Q.jpg" alt="Avatar" class="avatar">
                             <span class="profile-name">Hào Chu Văn</span>
@@ -61,13 +71,103 @@ function renderSharedHeader() {
                         <a href="group.html" data-page="group.html"><i class="fa-solid fa-users"></i> Nhóm</a>
                         <a href="account.html" data-page="account.html"><i class="fa-solid fa-user"></i> Tài Khoản</a>
                     </nav>
-                    <button type="button" onclick="openActivityModal()" class="btn-primary">
-                        <i class="fa-solid fa-plus"></i> Tạo Hoạt Động
-                    </button>
                 </div>
             </div>
         </header>
     `;
+
+    renderNotificationsList();
+}
+
+// Vẽ danh sách thông báo vào thanh trượt xuống của chuông thông báo
+function renderNotificationsList() {
+    const listBody = document.getElementById("notificationListBody");
+    if (!listBody) {
+        return;
+    }
+
+    const items = (typeof notificationsList !== "undefined") ? notificationsList : [];
+    if (items.length === 0) {
+        listBody.innerHTML = `<div class="notification-empty">Bạn chưa có thông báo nào.</div>`;
+        return;
+    }
+
+    let htmlContent = "";
+    items.forEach(function (item) {
+        htmlContent += `
+            <div class="notification-item ${item.unread ? 'unread' : ''}" onclick="handleNotificationItemClick(${item.id})">
+                <div class="notification-item-icon">
+                    <i class="fa-solid ${item.icon}"></i>
+                </div>
+                <div class="notification-item-content">
+                    <div class="notification-item-title">${item.title}</div>
+                    <div class="notification-item-msg">${item.message}</div>
+                    <div class="notification-item-time">${item.time}</div>
+                </div>
+            </div>
+        `;
+    });
+
+    listBody.innerHTML = htmlContent;
+}
+
+// Bật / tắt thanh trượt xuống thông báo
+function toggleNotificationDropdown(event) {
+    if (event) {
+        event.stopPropagation();
+    }
+    const dropdown = document.getElementById("notificationDropdown");
+    if (!dropdown) {
+        return;
+    }
+    dropdown.classList.toggle("hidden");
+}
+
+// Đóng dropdown thông báo khi bấm ra ngoài
+function setupNotificationDropdown() {
+    document.addEventListener("click", function (event) {
+        const wrapper = document.getElementById("notificationWrapper");
+        const dropdown = document.getElementById("notificationDropdown");
+        if (wrapper && dropdown && !wrapper.contains(event.target)) {
+            dropdown.classList.add("hidden");
+        }
+    });
+}
+
+// Đánh dấu đã đọc một thông báo
+function handleNotificationItemClick(notificationId) {
+    if (typeof notificationsList !== "undefined") {
+        const target = notificationsList.find(function (item) { return item.id === notificationId; });
+        if (target) {
+            target.unread = false;
+        }
+        renderNotificationsList();
+        updateBellDotVisibility();
+    }
+}
+
+// Đánh dấu đã đọc tất cả thông báo
+function markAllNotificationsRead() {
+    if (typeof notificationsList !== "undefined") {
+        notificationsList.forEach(function (item) {
+            item.unread = false;
+        });
+        renderNotificationsList();
+        updateBellDotVisibility();
+        showToast("Đã đánh dấu tất cả thông báo là đã đọc!");
+    }
+}
+
+// Ẩn chấm đỏ trên chuông nếu không còn thông báo chưa đọc
+function updateBellDotVisibility() {
+    const bellDot = document.getElementById("bellDot");
+    if (!bellDot || typeof notificationsList === "undefined") {
+        return;
+    }
+    const hasUnread = notificationsList.some(function (item) { return item.unread; });
+    if (!hasUnread) {
+        bellDot.style.display = "none";
+    }
 }
 
 // Tạo phần Footer dùng chung cho mọi trang
@@ -95,97 +195,33 @@ function renderSharedFooter() {
     `;
 }
 
-// Tạo cửa sổ Modal tạo hoạt động, lịch chọn ngày mini và khung thông báo Toast
-function renderSharedModalAndToast() {
-    const modalPlaceholder = document.getElementById("shared-modals");
-    if (!modalPlaceholder) {
+// Tạo khung thông báo Toast và Modal chi tiết dùng chung cho mọi trang
+function renderSharedModalsAndToast() {
+    const placeholder =
+        document.getElementById("shared-modals") ||
+        document.getElementById("shared-toast");
+
+    if (!placeholder) {
         return;
     }
 
-    modalPlaceholder.innerHTML = `
-        <div id="activityModal" class="modal-overlay hidden">
-            <div class="modal-box">
+    placeholder.innerHTML = `
+        <!-- Modal hiển thị thông tin chi tiết Công Viên hoặc Hoạt Động -->
+        <div class="modal-overlay hidden" id="detailInfoModal" onclick="closeDetailModalOnBackdrop(event)">
+            <div class="modal-box detail-modal-box">
                 <div class="modal-header">
-                    <h3><i class="fa-solid fa-pen-to-square" style="color:var(--accent-orange);"></i> Tạo hoạt động</h3>
-                    <button type="button" onclick="closeActivityModal()"><i class="fa-solid fa-xmark"></i></button>
+                    <h3 id="detailModalHeaderTitle">
+                        <i class="fa-solid fa-circle-info" style="color: var(--accent-teal);"></i> Chi Tiết
+                    </h3>
+                    <button type="button" onclick="closeDetailModal()" title="Đóng">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
                 </div>
-
-                <div class="form-group">
-                    <label>Tên hoạt động / Tên nhóm</label>
-                    <input type="text" id="actTitleInput" placeholder="Ví dụ: Giao lưu cầu lông chiều T3" class="form-control">
-                </div>
-
-                <div class="form-group">
-                    <label>Công viên chọn</label>
-                    <select id="actParkSelect" class="form-control">
-                        <option>Công viên Thống Nhất</option>
-                        <option>Công viên Cầu Giấy</option>
-                        <option>Công viên Nghĩa Đô</option>
-                        <option>Công viên Bách Thảo</option>
-                    </select>
-                </div>
-
-                <div class="form-grid-compact">
-                    <div class="form-group">
-                        <label>Môn thể thao</label>
-                        <select id="actSportSelect" class="form-control">
-                            <option>Cầu Lông</option>
-                            <option>Chạy Bộ</option>
-                            <option>Bóng Rổ</option>
-                            <option>Gym / Calisthenics</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Chi phí</label>
-                        <input type="text" id="actCostInput" placeholder="Miễn phí hoặc số tiền" class="form-control">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Ngày diễn ra</label>
-                    <div class="date-picker-row">
-                        <input type="text" id="regDate" readonly placeholder="Bấm để mở lịch chọn ngày" onclick="toggleMiniCalendar()" class="form-control" style="cursor:pointer;">
-                        <button type="button" onclick="toggleMiniCalendar()" class="btn-calendar-toggle">
-                            <i class="fa-regular fa-calendar-days"></i> Lịch
-                        </button>
-                    </div>
-
-                    <div id="miniCalendar" class="mini-cal hidden">
-                        <div class="mini-cal-header">
-                            <button type="button" onclick="changeCalendarMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
-                            <span id="calMonthLabel">Tháng 11 / 2026</span>
-                            <button type="button" onclick="changeCalendarMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
-                        </div>
-                        <div class="mini-cal-weekdays">
-                            <span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span><span>CN</span>
-                        </div>
-                        <div id="miniCalDays" class="mini-cal-days"></div>
-                    </div>
-                </div>
-
-                <div class="form-grid-compact">
-                    <div class="form-group">
-                        <label>Giới hạn số người tham gia</label>
-                        <input type="number" id="regMaxPeople" min="2" max="200" placeholder="Ví dụ: 12" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label>Trình độ</label>
-                        <select id="regLevel" class="form-control">
-                            <option value="Mọi trình độ">Mọi trình độ</option>
-                            <option value="Mới bắt đầu">Mới bắt đầu</option>
-                            <option value="Trung bình">Trung bình</option>
-                            <option value="Nâng cao">Nâng cao</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button type="button" onclick="closeActivityModal()" class="btn-cancel">Hủy</button>
-                    <button type="button" onclick="submitNewActivity()" class="btn-save">Đăng Ký</button>
-                </div>
+                <div id="detailModalBody" class="detail-modal-body"></div>
             </div>
         </div>
 
+        <!-- Toast thông báo nổi -->
         <div id="toast">
             <i class="fa-solid fa-circle-check" style="font-size: 16px;"></i>
             <span id="toastMsg">Thao tác thành công!</span>
@@ -193,11 +229,183 @@ function renderSharedModalAndToast() {
     `;
 }
 
+// Mở modal xem chi tiết Công Viên
+function openParkDetailModal(parkSlug) {
+    if (typeof parksList === "undefined") {
+        return;
+    }
+    const park = parksList.find(function (p) { return p.slug === parkSlug; });
+    if (!park) {
+        return;
+    }
+
+    const headerTitle = document.getElementById("detailModalHeaderTitle");
+    const modalBody = document.getElementById("detailModalBody");
+    const modal = document.getElementById("detailInfoModal");
+    if (!headerTitle || !modalBody || !modal) {
+        return;
+    }
+
+    headerTitle.innerHTML = `<i class="fa-solid fa-tree" style="color: var(--accent-teal);"></i> Chi Tiết Công Viên`;
+
+    let sportsTagsHtml = "";
+    park.sports.forEach(function (sp) {
+        sportsTagsHtml += `
+            <span class="detail-sport-tag">
+                <i class="fa-solid ${sp.icon}" style="color: ${sp.color};"></i> ${sp.name}
+            </span>
+        `;
+    });
+
+    let facilitiesHtml = "";
+    if (park.facilities && park.facilities.length > 0) {
+        park.facilities.forEach(function (fac) {
+            facilitiesHtml += `<li><i class="fa-solid fa-check" style="color: var(--accent-teal);"></i> ${fac}</li>`;
+        });
+    }
+
+    modalBody.innerHTML = `
+        <div class="detail-hero-img">
+            <img src="${park.image}" alt="${park.name}">
+            <span class="detail-hero-badge">${park.district} • ${park.ward || ''}</span>
+        </div>
+        <h2 class="detail-title">${park.name}</h2>
+        <p class="detail-desc">${park.description}</p>
+
+        <div class="detail-info-grid">
+            <div class="detail-info-item">
+                <span class="detail-info-label"><i class="fa-solid fa-location-dot" style="color: var(--accent-orange);"></i> Địa chỉ</span>
+                <span class="detail-info-val">${park.address}</span>
+            </div>
+            <div class="detail-info-item">
+                <span class="detail-info-label"><i class="fa-regular fa-clock" style="color: var(--accent-teal);"></i> Giờ mở cửa</span>
+                <span class="detail-info-val">${park.openHours}</span>
+            </div>
+            <div class="detail-info-item">
+                <span class="detail-info-label"><i class="fa-solid fa-users" style="color: #60a5fa;"></i> Mức độ đông đúc</span>
+                <span class="detail-info-val">${park.crowdLabel} (${park.distanceKm} km)</span>
+            </div>
+            <div class="detail-info-item">
+                <span class="detail-info-label"><i class="fa-solid fa-ruler-combined" style="color: #a78bfa;"></i> Diện tích &amp; Đánh giá</span>
+                <span class="detail-info-val">${park.areaSize} • ⭐ ${park.rating}/5</span>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h4>Môn thể thao đáp ứng cơ sở vật chất</h4>
+            <div class="detail-sports-wrap">${sportsTagsHtml}</div>
+        </div>
+
+        <div class="detail-section">
+            <h4>Cơ sở vật chất &amp; Tiện ích nổi bật</h4>
+            <ul class="detail-facility-list">${facilitiesHtml}</ul>
+        </div>
+
+        <div class="detail-modal-footer">
+            <button type="button" class="btn-cancel" onclick="closeDetailModal()">Đóng</button>
+            <button type="button" class="btn-save" onclick="window.location.href='map.html'">
+                <i class="fa-solid fa-map-location-dot"></i> Xem Trên Bản Đồ
+            </button>
+        </div>
+    `;
+
+    modal.classList.remove("hidden");
+}
+
+// Mở modal xem chi tiết Hoạt Động
+function openActivityDetailModal(activityId, customList) {
+    const sourceList = customList || ((typeof activitiesList !== "undefined") ? activitiesList : []);
+    const act = sourceList.find(function (item) { return item.id === activityId; });
+    if (!act) {
+        return;
+    }
+
+    const headerTitle = document.getElementById("detailModalHeaderTitle");
+    const modalBody = document.getElementById("detailModalBody");
+    const modal = document.getElementById("detailInfoModal");
+    if (!headerTitle || !modalBody || !modal) {
+        return;
+    }
+
+    headerTitle.innerHTML = `<i class="fa-solid fa-person-running" style="color: var(--accent-orange);"></i> Chi Tiết Hoạt Động`;
+
+    const participantsText = act.maxParticipants
+        ? `${act.currentParticipants || 1}/${act.maxParticipants} người tham gia`
+        : "Mở đăng ký tự do";
+
+    modalBody.innerHTML = `
+        <div class="detail-hero-img">
+            <img src="${act.image}" alt="${act.title}">
+            <span class="detail-hero-badge">${act.costLabel} • ${act.level}</span>
+        </div>
+        <h2 class="detail-title">${act.title}</h2>
+        <p class="detail-desc">${act.description || "Buổi giao lưu thể thao cộng đồng ngoài trời tại công viên Hà Nội."}</p>
+
+        <div class="detail-info-grid">
+            <div class="detail-info-item">
+                <span class="detail-info-label"><i class="fa-solid fa-tree" style="color: var(--accent-teal);"></i> Địa điểm công viên</span>
+                <span class="detail-info-val">${act.park}</span>
+            </div>
+            <div class="detail-info-item">
+                <span class="detail-info-label"><i class="fa-solid fa-map-pin" style="color: var(--accent-orange);"></i> Điểm tập trung</span>
+                <span class="detail-info-val">${act.meetingPoint || act.park}</span>
+            </div>
+            <div class="detail-info-item">
+                <span class="detail-info-label"><i class="fa-regular fa-calendar-days" style="color: #60a5fa;"></i> Thời gian tổ chức</span>
+                <span class="detail-info-val">${act.date ? act.date + ' • ' : ''}${act.schedule}</span>
+            </div>
+            <div class="detail-info-item">
+                <span class="detail-info-label"><i class="fa-solid fa-user-group" style="color: #a78bfa;"></i> Số lượng &amp; Trình độ</span>
+                <span class="detail-info-val">${participantsText} (${act.level})</span>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h4>Người tổ chức &amp; Lưu ý chuẩn bị</h4>
+            <ul class="detail-facility-list">
+                <li><i class="fa-solid fa-user-tie" style="color: var(--accent-teal);"></i> Phụ trách: <strong>${act.organizer || "Ban điều hành SportPark"}</strong></li>
+                <li><i class="fa-solid fa-circle-exclamation" style="color: var(--accent-orange);"></i> ${act.equipmentNote || "Mang theo trang phục thể thao thoải mái và nước uống cá nhân."}</li>
+            </ul>
+        </div>
+
+        <div class="detail-modal-footer">
+            <button type="button" class="btn-cancel" onclick="closeDetailModal()">Đóng</button>
+            <button type="button" class="btn-save" onclick="handleJoinFromDetailModal(${act.id}, '${act.title.replace(/'/g, "\\'")}')">
+                <i class="fa-solid fa-check"></i> Tham Gia Hoạt Động
+            </button>
+        </div>
+    `;
+
+    modal.classList.remove("hidden");
+}
+
+function handleJoinFromDetailModal(activityId, activityTitle) {
+    closeDetailModal();
+    if (typeof joinActivityById === "function") {
+        joinActivityById(activityId, activityTitle);
+    } else {
+        showToast('Đã đăng ký tham gia "' + activityTitle + '"!');
+    }
+}
+
+function closeDetailModal() {
+    const modal = document.getElementById("detailInfoModal");
+    if (modal) {
+        modal.classList.add("hidden");
+    }
+}
+
+function closeDetailModalOnBackdrop(event) {
+    if (event.target && event.target.id === "detailInfoModal") {
+        closeDetailModal();
+    }
+}
+
 // Tự động tô sáng mục menu tương ứng với tên file HTML hiện tại
 function highlightCurrentNavLink() {
     const pathParts = window.location.pathname.split("/");
     let currentFile = pathParts[pathParts.length - 1];
-    if (currentFile === "") {
+    if (currentFile === "" || currentFile === "html") {
         currentFile = "index.html";
     }
 
@@ -221,32 +429,6 @@ function handleLogoClick() {
     }
 }
 
-// Mở hộp thoại tạo hoạt động
-function openActivityModal() {
-    const modal = document.getElementById("activityModal");
-    if (modal) {
-        modal.classList.remove("hidden");
-    }
-}
-
-// Đóng hộp thoại tạo hoạt động và ẩn luôn lịch mini nếu đang mở
-function closeActivityModal() {
-    const modal = document.getElementById("activityModal");
-    const calendar = document.getElementById("miniCalendar");
-    if (modal) {
-        modal.classList.add("hidden");
-    }
-    if (calendar) {
-        calendar.classList.add("hidden");
-    }
-}
-
-// Xử lý khi bấm nút Đăng Ký trong Modal tạo hoạt động
-function submitNewActivity() {
-    closeActivityModal();
-    showToast("Đăng ký hoạt động thành công!");
-}
-
 // Hiển thị thông báo ngắn ở góc dưới bên phải trong 3 giây
 function showToast(message) {
     const toast = document.getElementById("toast");
@@ -261,88 +443,4 @@ function showToast(message) {
     setTimeout(function () {
         toast.classList.remove("show");
     }, 3000);
-}
-
-// Bật hoặc tắt lịch chọn ngày mini
-function toggleMiniCalendar() {
-    const calendar = document.getElementById("miniCalendar");
-    if (!calendar) {
-        return;
-    }
-
-    calendar.classList.toggle("hidden");
-    if (!calendar.classList.contains("hidden")) {
-        renderMiniCalendar();
-    }
-}
-
-// Chuyển sang tháng trước (step = -1) hoặc tháng sau (step = 1)
-function changeCalendarMonth(step) {
-    calendarViewDate.setMonth(calendarViewDate.getMonth() + step);
-    renderMiniCalendar();
-}
-
-// Vẽ các ô ngày của tháng hiện tại vào lịch mini
-function renderMiniCalendar() {
-    const year = calendarViewDate.getFullYear();
-    const month = calendarViewDate.getMonth(); // Tháng tính từ 0 (Tháng 1) đến 11 (Tháng 12)
-
-    const monthLabel = document.getElementById("calMonthLabel");
-    const daysContainer = document.getElementById("miniCalDays");
-    if (!monthLabel || !daysContainer) {
-        return;
-    }
-
-    monthLabel.innerText = "Tháng " + (month + 1) + " / " + year;
-    daysContainer.innerHTML = "";
-
-    /*
-       getDay() của JS trả về 0 cho Chủ Nhật, 1 cho Thứ 2... 6 cho Thứ 7.
-       Công thức (firstDay + 6) % 7 giúp đổi Thứ 2 thành vị trí 0, Chủ Nhật thành vị trí 6
-       để hàng thứ trong lịch luôn bắt đầu từ Thứ 2 (T2 -> CN).
-    */
-    const firstDayInWeek = new Date(year, month, 1).getDay();
-    const emptyCellsCount = (firstDayInWeek + 6) % 7;
-    const totalDaysInMonth = new Date(year, month + 1, 0).getDate();
-
-    const now = new Date();
-    const todayString =
-        String(now.getDate()).padStart(2, "0") + "/" +
-        String(now.getMonth() + 1).padStart(2, "0") + "/" +
-        now.getFullYear();
-
-    // Tạo các ô trống trước ngày mùng 1
-    for (let i = 0; i < emptyCellsCount; i++) {
-        const emptySpan = document.createElement("span");
-        emptySpan.className = "cal-day empty";
-        daysContainer.appendChild(emptySpan);
-    }
-
-    // Tạo nút chọn cho từng ngày trong tháng
-    for (let day = 1; day <= totalDaysInMonth; day++) {
-        const formattedDate =
-            String(day).padStart(2, "0") + "/" +
-            String(month + 1).padStart(2, "0") + "/" +
-            year;
-
-        const dayBtn = document.createElement("button");
-        dayBtn.type = "button";
-        dayBtn.className = "cal-day";
-        dayBtn.innerText = day;
-
-        if (formattedDate === todayString) {
-            dayBtn.classList.add("today");
-        }
-        if (formattedDate === chosenDateText) {
-            dayBtn.classList.add("selected");
-        }
-
-        dayBtn.onclick = function () {
-            chosenDateText = formattedDate;
-            document.getElementById("regDate").value = formattedDate;
-            document.getElementById("miniCalendar").classList.add("hidden");
-        };
-
-        daysContainer.appendChild(dayBtn);
-    }
 }

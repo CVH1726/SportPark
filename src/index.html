@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SportPark - Khám phá thể thao công viên</title>
+    <!-- Thư viện bản đồ Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Bộ icon FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Font chữ Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- File CSS giao diện chung -->
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+    <!-- Khung chứa Header dùng chung (do common.js tạo) -->
+    <div id="shared-header"></div>
+
+    <!-- Nội dung chính Trang chủ -->
+    <main class="container">
+        <!-- Khu vực trên: Bản đồ bên trái + Bộ lọc thông minh hoàn chỉnh bên phải -->
+        <div class="grid-2cols" style="margin-bottom: 24px;">
+            <div class="col-8 map-card">
+                <div class="map-badge">
+                    <span class="dot-pulse"></span>
+                    <span id="mapCounter">Đang tải bản đồ...</span>
+                </div>
+                <div id="map"></div>
+            </div>
+
+            <div class="col-4 filter-panel">
+                <div class="filter-header">
+                    <h2><i class="fa-solid fa-sliders" style="color:var(--accent-teal);"></i> Bộ lọc thông minh</h2>
+                    <button type="button" onclick="resetHomeFilters()">Đặt lại</button>
+                </div>
+
+                <div class="filter-scroll-area">
+                    <!-- 1. Môn Thể Thao (thanh trượt xuống / dropdown) -->
+                    <div class="filter-group">
+                        <label for="homeSportSelect"><i class="fa-solid fa-dumbbell"></i> Môn Thể Thao</label>
+                        <select id="homeSportSelect" class="filter-select">
+                            <option value="all">-- Tất cả môn thể thao --</option>
+                            <option value="cầu lông">Cầu lông</option>
+                            <option value="chạy bộ">Chạy bộ</option>
+                            <option value="bóng rổ">Bóng rổ</option>
+                            <option value="gym">Gym / Calisthenics</option>
+                            <option value="đạp xe">Đạp xe</option>
+                            <option value="yoga">Yoga ngoài trời</option>
+                            <option value="bóng đá">Bóng đá</option>
+                        </select>
+                    </div>
+
+                    <!-- 2. Địa Điểm (thanh trượt xuống / dropdown) -->
+                    <div class="filter-group">
+                        <label for="homeLocationSelect"><i class="fa-solid fa-location-dot"></i> Địa Điểm</label>
+                        <select id="homeLocationSelect" class="filter-select">
+                            <option value="all">-- Tất cả địa điểm / công viên --</option>
+                            <option value="Thống Nhất">Công viên Thống Nhất (Hai Bà Trưng)</option>
+                            <option value="Cầu Giấy">Công viên Cầu Giấy (Cầu Giấy)</option>
+                            <option value="Nghĩa Đô">Công viên Nghĩa Đô (Cầu Giấy)</option>
+                            <option value="Hòa Bình">Công viên Hòa Bình (Bắc Từ Liêm)</option>
+                            <option value="Yên Sở">Công viên Yên Sở (Hoàng Mai)</option>
+                        </select>
+                    </div>
+
+                    <!-- 3. Chi Phí (nhập giá min và max) -->
+                    <div class="filter-group">
+                        <label><i class="fa-solid fa-tags"></i> Chi Phí (VNĐ)</label>
+                        <div class="form-grid-compact">
+                            <input type="number" id="homeCostMin" class="form-control" min="0" step="5000" placeholder="Giá tối thiểu (VD: 0)">
+                            <input type="number" id="homeCostMax" class="form-control" min="0" step="5000" placeholder="Giá tối đa (VD: 100000)">
+                        </div>
+                    </div>
+
+                    <!-- 4. Thời Gian (Ngày tháng năm bấm vào hiện lịch + Khung giờ min và max) -->
+                    <div class="filter-group">
+                        <label><i class="fa-regular fa-calendar-days"></i> Thời Gian (Ngày &amp; Khung giờ)</label>
+                        <div class="date-picker-row">
+                            <input type="text" id="homeDateInput" class="form-control" placeholder="Chọn ngày (dd/mm/yyyy)..." readonly onclick="toggleHomeMiniCalendar()">
+                            <button type="button" class="btn-calendar-toggle" onclick="toggleHomeMiniCalendar()">
+                                <i class="fa-regular fa-calendar"></i> Lịch
+                            </button>
+                        </div>
+
+                        <!-- Khung lịch mini bật ra khi bấm vào ô ngày -->
+                        <div class="mini-cal hidden" id="homeMiniCalendar">
+                            <div class="mini-cal-header">
+                                <button type="button" onclick="changeHomeCalMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                                <span id="homeCalMonthLabel">Tháng 11 / 2026</span>
+                                <button type="button" onclick="changeHomeCalMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+                            </div>
+                            <div class="mini-cal-weekdays">
+                                <span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span><span>CN</span>
+                            </div>
+                            <div class="mini-cal-days" id="homeCalDaysGrid"></div>
+                        </div>
+
+                        <!-- Khung giờ min và max -->
+                        <div class="form-grid-compact" style="margin-top: 8px;">
+                            <select id="homeTimeMin" class="filter-select">
+                                <option value="">Giờ bắt đầu (Min)</option>
+                                <option value="05:00">05:00</option>
+                                <option value="06:00">06:00</option>
+                                <option value="07:00">07:00</option>
+                                <option value="08:00">08:00</option>
+                                <option value="14:00">14:00</option>
+                                <option value="16:00">16:00</option>
+                                <option value="17:00">17:00</option>
+                                <option value="18:00">18:00</option>
+                                <option value="19:00">19:00</option>
+                            </select>
+                            <select id="homeTimeMax" class="filter-select">
+                                <option value="">Giờ kết thúc (Max)</option>
+                                <option value="08:00">08:00</option>
+                                <option value="09:00">09:00</option>
+                                <option value="10:00">10:00</option>
+                                <option value="17:00">17:00</option>
+                                <option value="18:00">18:00</option>
+                                <option value="19:00">19:00</option>
+                                <option value="20:00">20:00</option>
+                                <option value="21:00">21:00</option>
+                                <option value="22:00">22:00</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 5. Trình Độ -->
+                    <div class="filter-group">
+                        <label for="homeLevelSelect"><i class="fa-solid fa-chart-line"></i> Trình Độ</label>
+                        <select id="homeLevelSelect" class="filter-select">
+                            <option value="all">-- Mọi trình độ --</option>
+                            <option value="mới bắt đầu">Mới bắt đầu</option>
+                            <option value="trung bình">Trung bình</option>
+                            <option value="nâng cao">Nâng cao</option>
+                        </select>
+                    </div>
+
+                    <!-- 6. Số Lượng Người (điền số vào) -->
+                    <div class="filter-group">
+                        <label for="homePeopleInput"><i class="fa-solid fa-user-group"></i> Số Lượng Người Tối Thiểu</label>
+                        <input type="number" id="homePeopleInput" class="form-control" min="1" placeholder="Nhập số lượng người (VD: 10)">
+                    </div>
+                </div>
+
+                <button type="button" onclick="applyHomeFilters()" class="btn-apply-filter">Áp Dụng Bộ Lọc</button>
+            </div>
+        </div>
+
+        <!-- Khu vực dưới: Hàng thẻ công viên nổi bật + Danh sách hoạt động sắp tới -->
+        <div class="grid-2cols">
+            <div class="col-8">
+                <div class="section-header-row">
+                    <h2 class="section-title"><i class="fa-solid fa-fire" style="color:var(--accent-orange);"></i> Địa điểm &amp; Công Viên Nổi Bật</h2>
+                    <div class="carousel-controls">
+                        <button type="button" onclick="scrollCarousel(-1)" class="carousel-arrow-btn"><i class="fa-solid fa-chevron-left"></i></button>
+                        <button type="button" onclick="scrollCarousel(1)" class="carousel-arrow-btn"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div class="carousel-container" id="carouselContainer"></div>
+            </div>
+
+            <div class="col-4">
+                <h2 class="section-title"><i class="fa-solid fa-calendar-days" style="color:var(--accent-teal);"></i> Hoạt Động Sắp Tới</h2>
+                <div class="activity-list" id="upcomingActivities"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Khung chứa Footer và Modal/Toast dùng chung -->
+    <div id="shared-footer"></div>
+    <div id="shared-toast"></div>
+
+    <!-- Các file JavaScript -->
+    <script src="js/data.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/home.js"></script>
+</body>
+</html>

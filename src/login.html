@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SportPark - Đăng Nhập</title>
+    <!-- Bộ icon FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Font chữ Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- File CSS giao diện chung (đổi thành ../css/main.css nếu login.html nằm trong thư mục html/) -->
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body class="login-standalone-page">
+
+    <!-- Khu vực khung đăng nhập nằm chính giữa màn hình -->
+    <main class="login-center-area">
+        <div class="login-card">
+            <!-- Logo và lời chào đầu khung đăng nhập -->
+            <div class="login-header">
+                <div class="login-brand-row">
+                    <div class="login-brand-icon">
+                        <i class="fa-solid fa-leaf"></i>
+                    </div>
+                    <span class="login-brand-name">Sport<em>Park</em></span>
+                </div>
+                <h1 class="login-title">Chào mừng trở lại!</h1>
+                <p class="login-subtitle">Đăng nhập để tham gia các hoạt động thể thao công viên</p>
+            </div>
+
+            <!-- Biểu mẫu đăng nhập -->
+            <form id="loginForm" onsubmit="handleLoginSubmit(event)" novalidate>
+                <div class="form-group">
+                    <label for="loginEmail"><i class="fa-regular fa-envelope"></i> Email hoặc Tên đăng nhập</label>
+                    <input
+                        type="text"
+                        id="loginEmail"
+                        class="form-control"
+                        placeholder="Ví dụ: haochuvan@example.com"
+                    >
+                    <div id="emailError" class="error-text">Vui lòng nhập email hoặc tên đăng nhập.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword"><i class="fa-solid fa-lock"></i> Mật khẩu</label>
+                    <div class="password-input-wrap">
+                        <input
+                            type="password"
+                            id="loginPassword"
+                            class="form-control"
+                            placeholder="Nhập mật khẩu của bạn"
+                        >
+                        <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility()" title="Hiện/Ẩn mật khẩu">
+                            <i id="passwordEyeIcon" class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
+                    <div id="passwordError" class="error-text">Vui lòng nhập mật khẩu (tối thiểu 6 ký tự).</div>
+                </div>
+
+                <div class="login-options-row">
+                    <label class="remember-label">
+                        <input type="checkbox" id="rememberAccount">
+                        <span>Ghi nhớ đăng nhập</span>
+                    </label>
+                    <a href="#" class="forgot-link" onclick="handleForgotPassword(event)">Quên mật khẩu?</a>
+                </div>
+
+                <button type="submit" class="btn-login-submit">
+                    <i class="fa-solid fa-right-to-bracket"></i> Đăng Nhập
+                </button>
+            </form>
+
+            <div class="login-divider">HOẶC</div>
+
+            <!-- Nút điền nhanh tài khoản mẫu -->
+            <button type="button" class="btn-demo-login" onclick="fillDemoAccount()">
+                <i class="fa-solid fa-user-check" style="color: var(--accent-teal);"></i>
+                Dùng nhanh tài khoản thành viên mẫu
+            </button>
+
+            <div class="login-footer-note">
+                Chưa có tài khoản SportPark?
+                <a href="account.html">Đăng ký thành viên</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Dòng bản quyền gọn nhẹ ở đáy trang -->
+    <div class="login-bottom-copyright">
+        &copy; 2026 SportPark - Khám phá thể thao công viên
+    </div>
+
+    <!-- Thông báo nổi góc dưới phải -->
+    <div id="toast">
+        <i class="fa-solid fa-circle-check" style="font-size: 16px;"></i>
+        <span id="toastMsg">Thao tác thành công!</span>
+    </div>
+
+    <script>
+        // Khi trang tải xong, tự điền lại email nếu trước đó đã chọn "Ghi nhớ đăng nhập"
+        document.addEventListener("DOMContentLoaded", function () {
+            loadRememberedEmail();
+        });
+
+        function loadRememberedEmail() {
+            const savedEmail = localStorage.getItem("sportpark_saved_email");
+            const emailInput = document.getElementById("loginEmail");
+            const rememberCheckbox = document.getElementById("rememberAccount");
+
+            if (savedEmail && emailInput && rememberCheckbox) {
+                emailInput.value = savedEmail;
+                rememberCheckbox.checked = true;
+            }
+        }
+
+        // Ẩn hoặc hiện mật khẩu khi bấm vào biểu tượng con mắt
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById("loginPassword");
+            const eyeIcon = document.getElementById("passwordEyeIcon");
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                eyeIcon.classList.remove("fa-eye");
+                eyeIcon.classList.add("fa-eye-slash");
+            } else {
+                passwordInput.type = "password";
+                eyeIcon.classList.remove("fa-eye-slash");
+                eyeIcon.classList.add("fa-eye");
+            }
+        }
+
+        // Kiểm tra thông tin và xử lý đăng nhập
+        function handleLoginSubmit(event) {
+            event.preventDefault();
+
+            const emailInput = document.getElementById("loginEmail");
+            const passwordInput = document.getElementById("loginPassword");
+            const rememberCheckbox = document.getElementById("rememberAccount");
+            const emailError = document.getElementById("emailError");
+            const passwordError = document.getElementById("passwordError");
+
+            const emailValue = emailInput.value.trim();
+            const passwordValue = passwordInput.value.trim();
+
+            let isFormValid = true;
+
+            if (emailValue === "") {
+                emailError.classList.add("visible");
+                isFormValid = false;
+            } else {
+                emailError.classList.remove("visible");
+            }
+
+            if (passwordValue.length < 6) {
+                passwordError.classList.add("visible");
+                isFormValid = false;
+            } else {
+                passwordError.classList.remove("visible");
+            }
+
+            if (!isFormValid) {
+                return;
+            }
+
+            if (rememberCheckbox.checked) {
+                localStorage.setItem("sportpark_saved_email", emailValue);
+            } else {
+                localStorage.removeItem("sportpark_saved_email");
+            }
+
+            showLoginToast("Đăng nhập thành công! Đang chuyển về Trang Chủ...");
+
+            setTimeout(function () {
+                window.location.href = "index.html";
+            }, 1000);
+        }
+
+        // Điền sẵn thông tin mẫu để kiểm tra nhanh
+        function fillDemoAccount() {
+            document.getElementById("loginEmail").value = "haochuvan@example.com";
+            document.getElementById("loginPassword").value = "123456";
+            document.getElementById("emailError").classList.remove("visible");
+            document.getElementById("passwordError").classList.remove("visible");
+            showLoginToast("Đã điền tài khoản mẫu!");
+        }
+
+        function handleForgotPassword(event) {
+            event.preventDefault();
+            showLoginToast("Hướng dẫn đặt lại mật khẩu đã được gửi tới email!");
+        }
+
+        // Hiển thị thông báo ngắn góc dưới bên phải
+        function showLoginToast(message) {
+            const toast = document.getElementById("toast");
+            const toastMsg = document.getElementById("toastMsg");
+            if (!toast || !toastMsg) {
+                return;
+            }
+
+            toastMsg.innerText = message;
+            toast.classList.add("show");
+
+            setTimeout(function () {
+                toast.classList.remove("show");
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
