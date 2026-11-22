@@ -1,17 +1,20 @@
-/* === CSS THUẦN (CUSTOM CSS) TỐI ƯU, DỄ ĐỌC === */
+/* ==========================================================================
+   BIẾN MÀU SẮC VÀ GIAO DIỆN CHUNG (GIỮ NGUYÊN BẢNG MÀU SPORTPARK CŨ)
+   ========================================================================== */
 :root {
-    --bg-main: #0f1923;
-    --bg-card: #1b2d3d;
-    --bg-panel: #213647;
-    --border-color: #2a4459;
-    --text-main: #f1f5f9;
-    --text-muted: #94a3b8;
-    --accent-orange: #f97316;
+    --bg-main: #0f1923;           /* Màu nền chính tối sâu */
+    --bg-card: #1b2d3d;           /* Màu nền thẻ card */
+    --bg-panel: #213647;          /* Màu nền khung bảng/bộ lọc */
+    --border-color: #2a4459;      /* Màu viền khung */
+    --text-main: #f1f5f9;         /* Màu chữ chính sáng rõ */
+    --text-muted: #94a3b8;        /* Màu chữ phụ/mô tả mờ */
+    --accent-orange: #f97316;     /* Màu cam nhấn (nút chính, icon vị trí) */
     --accent-orange-hover: #ea580c;
-    --accent-teal: #2dd4bf;
-    --accent-blue: #3b82f6;
+    --accent-teal: #2dd4bf;       /* Màu xanh ngọc nhấn */
+    --accent-blue: #3b82f6;       /* Màu xanh dương khi nút lọc đang chọn */
 }
 
+/* Reset mặc định để các trình duyệt hiển thị giống nhau */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -28,35 +31,41 @@ body {
     justify-content: space-between;
 }
 
-/* Thanh cuộn tùy chỉnh */
+/* Tùy chỉnh thanh cuộn cho đồng bộ giao diện tối */
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
+
 ::-webkit-scrollbar-track {
     background: #14222e;
 }
+
 ::-webkit-scrollbar-thumb {
     background: var(--border-color);
     border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
     background: var(--accent-blue);
 }
 
-/* Header & Navigation */
+/* Khung giới hạn chiều rộng nội dung ở giữa trang */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+/* ==========================================================================
+   HEADER VÀ THANH ĐIỀU HƯỚNG (DÙNG CHUNG CHO TẤT CẢ CÁC TRANG)
+   ========================================================================== */
 header {
     background-color: var(--bg-card);
     border-bottom: 1px solid var(--border-color);
     position: sticky;
     top: 0;
     z-index: 1000;
-}
-
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 16px;
 }
 
 .header-top {
@@ -87,16 +96,18 @@ header {
     font-size: 20px;
     color: white;
 }
+
 .logo-text span em {
     color: var(--accent-teal);
     font-style: normal;
 }
+
 .logo-sub {
     font-size: 10px;
     color: var(--text-muted);
 }
 
-/* Ô tìm kiếm */
+/* Ô tìm kiếm trên header */
 .search-box {
     flex: 1;
     max-width: 500px;
@@ -129,11 +140,47 @@ header {
     color: var(--text-muted);
     cursor: pointer;
 }
-/* ô profile, thông báo */
+
+/* Khu vực thông báo và tài khoản người dùng */
 .user-profile {
     display: flex;
     align-items: center;
     gap: 12px;
+}
+
+.bell-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 18px;
+    position: relative;
+}
+
+/* Chấm đỏ báo có thông báo mới */
+.bell-dot {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    background: var(--accent-orange);
+    border-radius: 50%;
+}
+
+.profile-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-left: 1px solid var(--border-color);
+    padding-left: 12px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.profile-name {
+    font-size: 14px;
+    font-weight: 500;
 }
 
 .avatar {
@@ -144,13 +191,18 @@ header {
     border: 2px solid var(--accent-teal);
 }
 
-/* Sub Navigation Menu */
+/* Thanh menu phụ */
 .sub-nav-bar {
     background-color: var(--bg-main);
     border-top: 1px solid rgba(42, 68, 89, 0.6);
+}
+
+.sub-nav-inner {
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 12px;
     overflow-x: auto;
 }
 
@@ -201,37 +253,80 @@ header {
     transition: opacity 0.2s;
     white-space: nowrap;
 }
+
 .btn-primary:hover {
     opacity: 0.9;
 }
 
-/* Main Grid Layout */
+/* ==========================================================================
+   BỐ CỤC CHÍNH VÀ LƯỚI CỘT (RESPONSIVE)
+   ========================================================================== */
 main.container {
     padding: 24px 16px;
     flex: 1;
     width: 100%;
 }
 
+/* Mặc định 1 cột trên màn hình nhỏ */
 .grid-2cols {
     display: grid;
     grid-template-columns: 1fr;
     gap: 20px;
 }
+
+/* Từ 1024px trở lên chia lưới 12 cột: bên trái 8 cột, bên phải 4 cột */
 @media (min-width: 1024px) {
     .grid-2cols {
         grid-template-columns: repeat(12, 1fr);
     }
-    .col-8 { grid-column: span 8 / span 8; }
-    .col-4 { grid-column: span 4 / span 4; }
+    .col-8 {
+        grid-column: span 8 / span 8;
+    }
+    .col-4 {
+        grid-column: span 4 / span 4;
+    }
 }
 
-/* Map Box */
+.page-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.page-title {
+    font-size: 20px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+}
+
+.page-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+/* Lưới hiển thị các thẻ card (Hoạt động, Công viên, Nhóm) */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 20px;
+}
+
+/* ==========================================================================
+   BẢN ĐỒ VÀ BỘ LỌC
+   ========================================================================== */
 .map-card {
     background-color: var(--bg-card);
     border-radius: 16px;
     border: 1px solid var(--border-color);
     overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
     min-height: 450px;
@@ -241,8 +336,15 @@ main.container {
 #map {
     width: 100%;
     height: 100%;
+    min-height: 450px;
     flex: 1;
     z-index: 10;
+}
+
+/* Chiều cao bản đồ riêng cho trang map.html */
+.map-page-box #map {
+    height: calc(100vh - 220px);
+    min-height: 550px;
 }
 
 .map-badge {
@@ -268,13 +370,23 @@ main.container {
     border-radius: 50%;
     animation: pulse 1.5s infinite;
 }
+
 @keyframes pulse {
-    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
-    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+    }
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+    }
 }
 
-/* Sidebar Filter Panel */
+/* Khung bộ lọc bên phải */
 .filter-panel {
     background-color: var(--bg-panel);
     border-radius: 16px;
@@ -293,6 +405,7 @@ main.container {
     border-bottom: 1px solid rgba(42, 68, 89, 0.6);
     padding-bottom: 12px;
 }
+
 .filter-header h2 {
     font-size: 16px;
     font-weight: 700;
@@ -300,6 +413,7 @@ main.container {
     gap: 8px;
     align-items: center;
 }
+
 .filter-header button {
     background: none;
     border: none;
@@ -308,8 +422,18 @@ main.container {
     cursor: pointer;
     text-decoration: underline;
 }
+
 .filter-header button:hover {
     color: var(--accent-orange);
+}
+
+.filter-scroll-area {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    overflow-y: auto;
+    max-height: 430px;
+    padding-right: 4px;
 }
 
 .filter-group label {
@@ -336,15 +460,34 @@ main.container {
     cursor: pointer;
     transition: all 0.2s;
 }
+
 .filter-btn:hover {
     background-color: rgba(255, 255, 255, 0.15);
     color: white;
 }
+
 .filter-btn.active {
     background-color: var(--accent-blue);
     border-color: #60a5fa;
     color: white;
     font-weight: 600;
+}
+
+.filter-select {
+    width: 100%;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.filter-select:focus {
+    border-color: var(--accent-teal);
 }
 
 .btn-apply-filter {
@@ -359,11 +502,21 @@ main.container {
     cursor: pointer;
     transition: background 0.2s;
 }
+
 .btn-apply-filter:hover {
     background-color: #0f766e;
 }
 
-/* Carousel Section */
+/* ==========================================================================
+   SLIDER ĐỊA ĐIỂM, CARD HOẠT ĐỘNG, CÔNG VIÊN VÀ NHÓM
+   ========================================================================== */
+.section-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
 .section-title {
     font-size: 16px;
     font-weight: 700;
@@ -373,8 +526,23 @@ main.container {
     margin-bottom: 12px;
 }
 
-.carousel-wrapper {
-    position: relative;
+.section-header-row .section-title {
+    margin-bottom: 0;
+}
+
+.carousel-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.carousel-arrow-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: white;
+    cursor: pointer;
 }
 
 .carousel-container {
@@ -385,6 +553,7 @@ main.container {
     padding-bottom: 8px;
 }
 
+/* Card dùng cho hàng trượt ngang ở Trang chủ */
 .carousel-card {
     flex: 0 0 210px;
     background-color: var(--bg-card);
@@ -394,7 +563,24 @@ main.container {
     cursor: pointer;
     transition: border-color 0.3s;
 }
+
 .carousel-card:hover {
+    border-color: rgba(45, 212, 191, 0.5);
+}
+
+/* Card dùng cho dạng lưới ở các trang danh sách */
+.grid-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: border-color 0.3s;
+}
+
+.grid-card:hover {
     border-color: rgba(45, 212, 191, 0.5);
 }
 
@@ -403,13 +589,20 @@ main.container {
     position: relative;
     overflow: hidden;
 }
+
+.grid-card .carousel-img-box {
+    height: 160px;
+}
+
 .carousel-img-box img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.5s;
 }
-.carousel-card:hover .carousel-img-box img {
+
+.carousel-card:hover .carousel-img-box img,
+.grid-card:hover .carousel-img-box img {
     transform: scale(1.05);
 }
 
@@ -427,6 +620,7 @@ main.container {
 .carousel-content {
     padding: 12px;
 }
+
 .carousel-content h3 {
     font-size: 14px;
     font-weight: 600;
@@ -434,13 +628,102 @@ main.container {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 .carousel-content p {
     font-size: 12px;
     color: var(--text-muted);
     margin-top: 2px;
 }
 
-/* Activity Cards List */
+.card-body {
+    padding: 16px;
+}
+
+.card-footer-action {
+    padding: 0 16px 16px 16px;
+}
+
+.card-title-white {
+    font-size: 15px;
+    font-weight: 700;
+    color: white;
+    margin-top: 4px;
+}
+
+.card-location {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.card-location i {
+    color: var(--accent-orange);
+}
+
+.card-time {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.card-desc {
+    font-size: 12px;
+    color: #cbd5e1;
+    margin-top: 8px;
+    line-height: 1.4;
+}
+
+.card-district {
+    font-size: 11px;
+    color: var(--accent-teal);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.card-sports-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+    font-size: 11px;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+}
+
+.card-top-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.member-count {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+/* Nút hành động trong card (thay cho viết style và hover trực tiếp trên thẻ HTML) */
+.btn-card-action {
+    width: 100%;
+    background: var(--bg-panel);
+    color: white;
+    border: 1px solid var(--border-color);
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.btn-card-action:hover {
+    background: var(--accent-orange);
+    border-color: var(--accent-orange);
+}
+
+/* Danh sách hoạt động sắp tới ở Trang chủ */
 .activity-list {
     display: flex;
     flex-direction: column;
@@ -457,6 +740,7 @@ main.container {
     cursor: pointer;
     transition: border-color 0.2s;
 }
+
 .activity-card:hover {
     border-color: #64748b;
 }
@@ -469,21 +753,43 @@ main.container {
     flex-shrink: 0;
 }
 
+.activity-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+}
+
 .activity-info h4 {
     font-size: 13px;
     font-weight: 700;
     color: white;
 }
+
 .activity-info p {
     font-size: 12px;
     color: #cbd5e1;
     margin-top: 2px;
 }
+
 .activity-meta {
     font-size: 11px;
     color: var(--text-muted);
     margin-top: 4px;
 }
+
+.activity-bottom {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.activity-level {
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
 .badge-free {
     background: rgba(16, 185, 129, 0.2);
     color: #34d399;
@@ -492,9 +798,181 @@ main.container {
     padding: 2px 8px;
     border-radius: 9999px;
     font-weight: 600;
+    display: inline-block;
 }
 
-/* Footer */
+.badge-blue {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.badge-paid {
+    background: rgba(217, 119, 6, 0.2);
+    color: #fbbf24;
+    border-color: rgba(217, 119, 6, 0.3);
+}
+
+/* ==========================================================================
+   TRANG TÀI KHOẢN (ACCOUNT.HTML)
+   ========================================================================== */
+.profile-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--accent-teal);
+    margin-bottom: 12px;
+}
+
+.profile-name-lg {
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+}
+
+.profile-role {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.profile-stats {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+}
+
+.stat-value-teal {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent-teal);
+}
+
+.stat-value-orange {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent-orange);
+}
+
+.stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.account-menu-card {
+    background-color: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 16px;
+}
+
+.account-menu-item {
+    padding: 10px 14px;
+    border-radius: 8px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: 0.2s;
+}
+
+.account-menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: white;
+}
+
+.account-menu-item.active {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.account-menu-logout {
+    color: #f87171;
+    margin-top: 8px;
+    border-top: 1px solid var(--border-color);
+    border-radius: 0 0 8px 8px;
+}
+
+.account-form-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px;
+}
+
+.account-form-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.form-grid-compact {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.btn-cancel {
+    background: #334155;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.btn-save {
+    background: var(--accent-orange);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
 footer {
     background-color: var(--bg-card);
     border-top: 1px solid var(--border-color);
@@ -503,6 +981,7 @@ footer {
     color: var(--text-muted);
     margin-top: 32px;
 }
+
 .footer-flex {
     display: flex;
     flex-direction: column;
@@ -510,25 +989,41 @@ footer {
     justify-content: space-between;
     gap: 16px;
 }
+
 @media (min-width: 640px) {
-    .footer-flex { flex-direction: row; }
+    .footer-flex {
+        flex-direction: row;
+    }
 }
+
 .footer-links {
     display: flex;
     gap: 20px;
 }
+
 .footer-links a {
     color: var(--text-muted);
     text-decoration: none;
     transition: color 0.2s;
 }
-.footer-links a:hover { color: white; }
 
-/* Modal Popup */
+.footer-links a:hover {
+    color: white;
+}
+
+.footer-socials {
+    display: flex;
+    gap: 16px;
+    font-size: 16px;
+}
+
+/* ==========================================================================
+   MODAL POPUP, LỊCH MINI VÀ TOAST THÔNG BÁO
+   ========================================================================== */
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(4px);
     z-index: 2000;
     display: flex;
@@ -536,7 +1031,10 @@ footer {
     justify-content: center;
     padding: 16px;
 }
-.hidden { display: none !important; }
+
+.hidden {
+    display: none !important;
+}
 
 .modal-box {
     background-color: var(--bg-panel);
@@ -549,6 +1047,8 @@ footer {
     display: flex;
     flex-direction: column;
     gap: 16px;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .modal-header {
@@ -558,6 +1058,7 @@ footer {
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 12px;
 }
+
 .modal-header h3 {
     font-size: 15px;
     font-weight: 700;
@@ -565,6 +1066,7 @@ footer {
     gap: 8px;
     align-items: center;
 }
+
 .modal-header button {
     background: none;
     border: none;
@@ -572,17 +1074,22 @@ footer {
     font-size: 18px;
     cursor: pointer;
 }
-.modal-header button:hover { color: white; }
+
+.modal-header button:hover {
+    color: white;
+}
 
 .form-group {
     margin-bottom: 12px;
 }
+
 .form-group label {
     display: block;
     font-size: 12px;
     color: #cbd5e1;
     margin-bottom: 4px;
 }
+
 .form-control {
     width: 100%;
     background-color: var(--bg-main);
@@ -593,11 +1100,29 @@ footer {
     font-size: 12px;
     outline: none;
 }
+
 .form-control:focus {
     border-color: var(--accent-orange);
 }
 
-/* lịch */
+.date-picker-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.btn-calendar-toggle {
+    background: var(--bg-card);
+    color: var(--accent-teal);
+    border: 1px solid var(--border-color);
+    padding: 9px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+/* Lịch chọn ngày mini */
 .mini-cal {
     margin-top: 8px;
     background-color: var(--bg-main);
@@ -676,11 +1201,7 @@ footer {
     cursor: default;
 }
 
-input[type="time"] {
-    color-scheme: dark;
-}
-
-/* Toast thông báo */
+/* Toast thông báo nổi góc dưới phải */
 #toast {
     position: fixed;
     bottom: 20px;
@@ -689,7 +1210,7 @@ input[type="time"] {
     color: white;
     padding: 12px 20px;
     border-radius: 12px;
-    box-shadow: 0 10px 15px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
     transform: translateY(100px);
     opacity: 0;
     transition: all 0.3s ease;
@@ -700,16 +1221,18 @@ input[type="time"] {
     align-items: center;
     gap: 8px;
 }
+
 #toast.show {
     transform: translateY(0);
     opacity: 1;
 }
 
-/* Leaflet custom marker */
+/* Icon ghim bản đồ Leaflet */
 .custom-div-icon {
     background: transparent;
     border: none;
 }
+
 .marker-pin {
     width: 32px;
     height: 32px;
@@ -722,8 +1245,9 @@ input[type="time"] {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
+
 .marker-pin i {
     transform: rotate(45deg);
     color: white;
