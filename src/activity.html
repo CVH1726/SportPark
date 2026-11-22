@@ -55,8 +55,8 @@
                     <a href="group.html"><i class="fa-solid fa-users"></i> Nhóm</a>
                     <a href="account.html"><i class="fa-solid fa-user"></i> Tài Khoản</a>
                 </nav>
-                <button onclick="alert('Mở modal đăng ký hoạt động')" class="btn-primary">
-                    <i class="fa-solid fa-plus"></i> Tạo Hoạt Động
+                <button type="button" onclick="openRegisterModal()" class="btn-primary">
+                <i class="fa-solid fa-plus"></i> Tạo Hoạt Động
                 </button>
             </div>
         </div>
@@ -168,6 +168,7 @@
             </div>
         </div>
     </footer>
+
      <!-- Modal Tạo Hoạt Động -->
     <div id="registerModal" class="modal-overlay hidden">
         <div class="modal-box">
@@ -250,6 +251,85 @@
             </div>
         </div>
     </div>
+
+     <script>
+        function openRegisterModal() { document.getElementById('registerModal').classList.remove('hidden'); }
+        function closeRegisterModal() { 
+            document.getElementById('registerModal').classList.add('hidden');
+            document.getElementById('miniCalendar').classList.add('hidden');
+        }
+        function submitRegister() { closeRegisterModal(); showToast("Đăng ký hoạt động thành công!"); }
+        function showToast(message) {
+            const toast = document.getElementById('toast'); 
+            document.getElementById('toastMsg').innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+        let calCurrentDate = new Date();
+        let selectedDateStr = '';
+
+        function toggleMiniCalendar() {
+            const cal = document.getElementById('miniCalendar');
+            cal.classList.toggle('hidden');
+            if (!cal.classList.contains('hidden')) {
+                renderMiniCalendar();
+            }
+        }
+
+        function changeMonth(step) {
+            calCurrentDate.setMonth(calCurrentDate.getMonth() + step);
+            renderMiniCalendar();
+        }
+
+        function renderMiniCalendar() {
+            const year = calCurrentDate.getFullYear();
+            const month = calCurrentDate.getMonth(); // 0 - 11
+
+            document.getElementById('calMonthLabel').innerText = `Tháng ${month + 1} / ${year}`;
+
+            const daysContainer = document.getElementById('miniCalDays');
+            daysContainer.innerHTML = '';
+
+            // Chuyển Sunday (0) -> 6, Monday (1) -> 0 ... để lịch bắt đầu từ Thứ 2
+            const firstDayOfMonth = new Date(year, month, 1).getDay();
+            const startOffset = (firstDayOfMonth + 6) % 7;
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            const now = new Date();
+            const todayFormatted = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+
+            // Ô trống đầu tháng
+            for (let i = 0; i < startOffset; i++) {
+                const emptyCell = document.createElement('span');
+                emptyCell.className = 'cal-day empty';
+                daysContainer.appendChild(emptyCell);
+            }
+
+            // Các ngày trong tháng
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayStr = `${String(day).padStart(2, '0')}/${String(month + 1).padStart(2, '0')}/${year}`;
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'cal-day';
+                btn.innerText = day;
+
+                if (dayStr === todayFormatted) {
+                    btn.classList.add('today');
+                }
+                if (dayStr === selectedDateStr) {
+                    btn.classList.add('selected');
+                }
+
+                btn.onclick = () => {
+                    selectedDateStr = dayStr;
+                    document.getElementById('regDate').value = dayStr;
+                    document.getElementById('miniCalendar').classList.add('hidden');
+                };
+
+                daysContainer.appendChild(btn);
+            }
+        }
+    </script>
 
 </body>
 </html>
