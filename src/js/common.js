@@ -188,7 +188,7 @@ function renderSharedFooter() {
                 </div>
                 <div class="footer-socials">
                     <a href="#" class="social-btn social-facebook" title="Facebook" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
-                    <a href="#" class="social-btn social-x" title="X (Twitter)" aria-label="X"><i class="fa-brands fa-x-twitter"></i></a>
+                    <a href="#" class="social-btn social-instagram" title="Instagram" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
                     <a href="#" class="social-btn social-youtube" title="YouTube" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
                 </div>
             </div>

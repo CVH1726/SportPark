@@ -1036,7 +1036,6 @@ footer {
 
 .social-facebook { color: #1877f2; }      /* Logo Facebook màu xanh */
 .social-youtube  { color: #ff0000; }      /* Logo YouTube đỏ trên nền trắng */
-.social-x        { font-size: 15px; }      /* X (Twitter) màu đen: xem mục [13] */
 
 /* === [08] MODAL POPUP, LỊCH MINI, TOAST VÀ TRANG ĐĂNG NHẬP === */
 .modal-overlay {
@@ -2801,12 +2800,11 @@ body.map-page {
     min-width: 0;
 }
 
-/* Nút X (Twitter) màu đen: nền đen, chữ X trắng viền sáng để nổi trên chân trang tối */
-.social-x {
-    background: #000000;
+/* Nút Instagram: nền gradient đặc trưng, biểu tượng trắng */
+.social-instagram {
+    background: linear-gradient(45deg, #f9ce34 0%, #ee2a7b 50%, #6228d7 100%);
     color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    font-size: 15px;
+    font-size: 19px;
 }
 
 /* ----- Trang Tin tức ----- */
@@ -2865,4 +2863,247 @@ body.map-page {
     display: flex;
     justify-content: center;
     margin-top: 18px;
+}
+
+
+/* ==========================================================================
+   [14] Ô NHẬP GIỜ, LIÊN KẾT TỪ TRANG TÀI KHOẢN, THÔNG TIN CÁ NHÂN, THỐNG KÊ
+   ========================================================================== */
+
+/* Ô nhập giờ HH:MM */
+.time-input {
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+.form-control.input-invalid {
+    border-color: #f87171;
+    box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.2);
+}
+
+.time-error {
+    display: block;
+    margin-top: 6px;
+    font-size: 11px;
+    line-height: 1.4;
+    color: #f87171;
+}
+
+/* Khối quản lý khi được trỏ tới từ trang Tài khoản */
+.manage-section-box {
+    scroll-margin-top: 130px;
+    transition: box-shadow 0.4s, border-color 0.4s;
+}
+
+.manage-section-highlight {
+    border-color: var(--accent-teal) !important;
+    box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.25);
+}
+
+/* --- Trang Tài khoản: số liệu có thể bấm ở thẻ hồ sơ --- */
+.profile-stat-link {
+    text-decoration: none;
+    display: block;
+    padding: 6px 12px;
+    border-radius: 10px;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.profile-stat-link:hover {
+    background: rgba(255, 255, 255, 0.07);
+    transform: translateY(-1px);
+}
+
+.profile-stat-link:hover .stat-label {
+    color: white;
+    text-decoration: underline;
+}
+
+.profile-stats .profile-stat-link .stat-value-teal,
+.profile-stats .profile-stat-link .stat-value-orange {
+    font-size: 20px;
+}
+
+/* --- Thông tin cá nhân (chế độ xem + chế độ chỉnh sửa) --- */
+.account-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.btn-edit-profile {
+    background: rgba(45, 212, 191, 0.1);
+    color: var(--accent-teal);
+    border: 1px solid rgba(45, 212, 191, 0.4);
+    padding: 8px 16px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-edit-profile:hover {
+    background: var(--accent-teal);
+    color: #0f1923;
+}
+
+.profile-info-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+}
+
+@media (min-width: 640px) {
+    .profile-info-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.info-item {
+    background: var(--bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.info-item-full {
+    grid-column: 1 / -1;
+}
+
+.info-label {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.info-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: white;
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+/* Form chỉnh sửa mở rộng ra, có hiệu ứng trượt xuống */
+.profile-edit-panel:not(.hidden) {
+    animation: profileExpand 0.3s ease;
+}
+
+@keyframes profileExpand {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.field-error {
+    display: block;
+    margin-top: 6px;
+    font-size: 11px;
+    line-height: 1.4;
+    color: #f87171;
+}
+
+.activity-stats-card {
+    margin-top: 20px;
+}
+
+/* --- Thống kê hoạt động kiểu GitHub, tông màu xanh ngọc theo theme --- */
+.stats-summary {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.heatmap-scroll {
+    overflow-x: auto;
+    padding-bottom: 6px;
+}
+
+.heatmap {
+    width: max-content;
+}
+
+.heatmap-months {
+    display: grid;
+    column-gap: 3px;
+    margin-left: 30px;
+    margin-bottom: 6px;
+    height: 14px;
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+.heatmap-months span {
+    white-space: nowrap;
+}
+
+.heatmap-body {
+    display: flex;
+    gap: 6px;
+}
+
+.heatmap-weekdays {
+    display: grid;
+    grid-template-rows: repeat(7, 10px);
+    row-gap: 3px;
+    width: 24px;
+    font-size: 10px;
+    line-height: 10px;
+    color: var(--text-muted);
+}
+
+.heatmap-grid {
+    display: grid;
+    grid-template-rows: repeat(7, 10px);
+    grid-auto-flow: column;
+    gap: 3px;
+}
+
+.heat-cell {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    background: #243a4d;
+}
+
+.heat-cell.lvl-0 { background: #243a4d; }
+.heat-cell.lvl-1 { background: #14595c; }
+.heat-cell.lvl-2 { background: #0f8f87; }
+.heat-cell.lvl-3 { background: #2dd4bf; }
+.heat-cell.lvl-4 { background: #a7f3d0; }
+.heat-cell.heat-cell-empty { background: transparent; }
+
+.heatmap-grid .heat-cell:not(.heat-cell-empty):hover {
+    outline: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+.heatmap-legend {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.heatmap-legend-scale {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
 }

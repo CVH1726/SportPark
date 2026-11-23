@@ -141,35 +141,14 @@
                     </div>
                 </div>
 
-                <!-- Thời gian (2): khung giờ bắt đầu / kết thúc (giống bộ lọc ở trang Bản đồ) -->
+                <!-- Thời gian (2): khung giờ bắt đầu / kết thúc - nhập số theo định dạng HH:MM (24 giờ) -->
                 <div class="form-group">
                     <label><i class="fa-regular fa-clock"></i> Thời gian - Khung giờ</label>
                     <div class="form-grid-compact">
-                        <select id="actTimeMin" class="form-control">
-                            <option value="">Giờ bắt đầu (Min)</option>
-                            <option value="05:00">05:00</option>
-                            <option value="06:00">06:00</option>
-                            <option value="07:00">07:00</option>
-                            <option value="08:00">08:00</option>
-                            <option value="14:00">14:00</option>
-                            <option value="16:00">16:00</option>
-                            <option value="17:00">17:00</option>
-                            <option value="18:00">18:00</option>
-                            <option value="19:00">19:00</option>
-                        </select>
-                        <select id="actTimeMax" class="form-control">
-                            <option value="">Giờ kết thúc (Max)</option>
-                            <option value="08:00">08:00</option>
-                            <option value="09:00">09:00</option>
-                            <option value="10:00">10:00</option>
-                            <option value="17:00">17:00</option>
-                            <option value="18:00">18:00</option>
-                            <option value="19:00">19:00</option>
-                            <option value="20:00">20:00</option>
-                            <option value="21:00">21:00</option>
-                            <option value="22:00">22:00</option>
-                        </select>
+                        <input type="text" id="actTimeMin" class="form-control time-input" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="Bắt đầu (HH:MM)">
+                        <input type="text" id="actTimeMax" class="form-control time-input" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="Kết thúc (HH:MM)">
                     </div>
+                    <small class="time-error hidden" id="actTimeError"></small>
                 </div>
 
                 <!-- Số lượng người (số người tối đa của hoạt động): tối thiểu và tối đa -->
@@ -195,8 +174,8 @@
              KHU VỰC 2: QUẢN LÝ HOẠT ĐỘNG (ĐÃ TẠO & ĐÃ ĐĂNG KÝ)
              ================================================================== -->
         <section id="manageSection" class="hidden">
-            <!-- Phần A: Hoạt động do chính bạn tạo -->
-            <div class="manage-section-box">
+            <!-- Phần A: Hoạt động do chính bạn tạo (liên kết từ trang Tài khoản: activity.html#created) -->
+            <div class="manage-section-box" id="createdSection">
                 <div class="manage-section-header">
                     <h2 class="manage-section-title">
                         <i class="fa-solid fa-pen-to-square" style="color: var(--accent-orange);"></i> Hoạt Động Do Bạn Tạo
@@ -208,8 +187,8 @@
                 <div id="createdActivitiesList"></div>
             </div>
 
-            <!-- Phần B: Hoạt động bạn đã đăng ký tham gia -->
-            <div class="manage-section-box">
+            <!-- Phần B: Hoạt động bạn đã đăng ký tham gia (liên kết từ trang Tài khoản: activity.html#joined) -->
+            <div class="manage-section-box" id="joinedSection">
                 <div class="manage-section-header">
                     <h2 class="manage-section-title">
                         <i class="fa-solid fa-calendar-check" style="color: var(--accent-teal);"></i> Hoạt Động Bạn Đã Đăng Ký Tham Gia
@@ -372,6 +351,31 @@
             return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
         }
 
+        // Tự định dạng ô giờ khi gõ: chỉ giữ số, tối đa 4 chữ số, chèn ":" sau 2 số đầu (1830 -> 18:30)
+        function formatTimeInput(inputEl) {
+            const digits = inputEl.value.replace(/\D/g, "").slice(0, 4);
+            inputEl.value = digits.length > 2 ? digits.slice(0, 2) + ":" + digits.slice(2) : digits;
+        }
+
+        // Đọc giờ người dùng gõ: trả về số phút, hoặc null nếu để trống / chưa gõ đủ / không hợp lệ.
+        // Đồng thời đánh dấu ô sai (viền đỏ) khi đã gõ đủ nhưng giờ không hợp lệ (VD 25:70).
+        function readTypedTime(inputId) {
+            const el = document.getElementById(inputId);
+            const value = el.value.trim();
+            el.classList.remove("input-invalid");
+            if (value.length < 5) {
+                return { minutes: null, invalid: false };
+            }
+            const m = value.match(/^(\d{2}):(\d{2})$/);
+            const hour = m ? parseInt(m[1], 10) : -1;
+            const minute = m ? parseInt(m[2], 10) : -1;
+            if (!m || hour > 23 || minute > 59) {
+                el.classList.add("input-invalid");
+                return { minutes: null, invalid: true };
+            }
+            return { minutes: hour * 60 + minute, invalid: false };
+        }
+
         // Lấy giờ bắt đầu / kết thúc từ chuỗi lịch, VD "Thứ 3 & 5, 18:00 - 20:00" -> {start: 1080, end: 1200}
         function parseActivityTimes(schedule) {
             const m = (schedule || "").match(/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/);
@@ -472,7 +476,34 @@
             renderActMiniCalendar();
             filterAndRenderActivities();
             renderManagedActivities();
+            handleActivityHash();
         });
+
+        window.addEventListener("hashchange", handleActivityHash);
+
+        // Mở thẳng tab Quản lý và cuộn tới đúng khối khi vào trang bằng liên kết #joined (đã đăng ký) hoặc #created (đã tạo)
+        function handleActivityHash() {
+            const hash = window.location.hash;
+            let targetId = "";
+            if (hash === "#joined") {
+                targetId = "joinedSection";
+            } else if (hash === "#created") {
+                targetId = "createdSection";
+            }
+            if (targetId === "") {
+                return;
+            }
+
+            switchActivityTab("manage");
+            setTimeout(function () {
+                const target = document.getElementById(targetId);
+                if (target) {
+                    target.scrollIntoView({ behavior: "smooth", block: "start" });
+                    target.classList.add("manage-section-highlight");
+                    setTimeout(function () { target.classList.remove("manage-section-highlight"); }, 1800);
+                }
+            }, 60);
+        }
 
         // Trả về danh sách hợp nhất giữa hoạt động hệ thống và hoạt động người dùng tạo
         function getCombinedActivities() {
@@ -605,10 +636,14 @@
             if (parkSelect) {
                 parkSelect.addEventListener("change", filterAndRenderActivities);
             }
+            // Ô giờ: tự thêm dấu ":" khi gõ số (VD gõ 1830 -> 18:30) rồi lọc ngay
             ["actTimeMin", "actTimeMax"].forEach(function (id) {
                 const el = document.getElementById(id);
                 if (el) {
-                    el.addEventListener("change", filterAndRenderActivities);
+                    el.addEventListener("input", function () {
+                        formatTimeInput(el);
+                        filterAndRenderActivities();
+                    });
                 }
             });
             ["actCostMin", "actCostMax", "actPeopleMin", "actPeopleMax"].forEach(function (id) {
@@ -642,8 +677,22 @@
             const minCost = minCostRaw !== "" ? parseFloat(minCostRaw) : null;
             const maxCost = maxCostRaw !== "" ? parseFloat(maxCostRaw) : null;
 
-            const minMinutes = timeToMinutes(document.getElementById("actTimeMin").value);
-            const maxMinutes = timeToMinutes(document.getElementById("actTimeMax").value);
+            const timeMinResult = readTypedTime("actTimeMin");
+            const timeMaxResult = readTypedTime("actTimeMax");
+            const minMinutes = timeMinResult.minutes;
+            const maxMinutes = timeMaxResult.minutes;
+
+            // Thông báo lỗi nhập giờ (nếu có)
+            const timeError = document.getElementById("actTimeError");
+            if (timeMinResult.invalid || timeMaxResult.invalid) {
+                timeError.textContent = "Giờ không hợp lệ. Nhập theo định dạng HH:MM (00:00 - 23:59), VD: 06:30";
+                timeError.classList.remove("hidden");
+            } else if (minMinutes !== null && maxMinutes !== null && minMinutes > maxMinutes) {
+                timeError.textContent = "Giờ bắt đầu phải nhỏ hơn hoặc bằng giờ kết thúc.";
+                timeError.classList.remove("hidden");
+            } else {
+                timeError.classList.add("hidden");
+            }
 
             const minPeopleRaw = document.getElementById("actPeopleMin").value.trim();
             const maxPeopleRaw = document.getElementById("actPeopleMax").value.trim();
@@ -887,6 +936,8 @@
             document.getElementById("actDateInput").value = "";
             document.getElementById("actTimeMin").value = "";
             document.getElementById("actTimeMax").value = "";
+            document.getElementById("actTimeMin").classList.remove("input-invalid");
+            document.getElementById("actTimeMax").classList.remove("input-invalid");
             document.getElementById("actPeopleMin").value = "";
             document.getElementById("actPeopleMax").value = "";
             actSelectedDateISO = "";

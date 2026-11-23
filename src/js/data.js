@@ -853,3 +853,20 @@ const newsList = [
         ]
     }
 ];
+
+
+// Nhật ký hoạt động của người dùng, dùng để vẽ biểu đồ thống kê ở trang Tài khoản (dữ liệu mẫu).
+// daysAgo = cách hôm nay bao nhiêu ngày; joined = số hoạt động đã tham gia; created = số hoạt động đã tạo trong ngày đó.
+// Khi có backend, thay bằng dữ liệu thật dạng { date: "yyyy-mm-dd", joined, created }.
+const activityLog = [
+    { daysAgo: 8,   joined: 1, created: 0 },
+    { daysAgo: 15,  joined: 2, created: 0 },
+    { daysAgo: 22,  joined: 1, created: 1 },
+    { daysAgo: 31,  joined: 1, created: 0 },
+    { daysAgo: 44,  joined: 1, created: 0 },
+    { daysAgo: 67,  joined: 2, created: 1 },
+    { daysAgo: 95,  joined: 1, created: 0 },
+    { daysAgo: 118, joined: 1, created: 0 },
+    { daysAgo: 150, joined: 1, created: 1 },
+    { daysAgo: 201, joined: 1, created: 0 }
+];

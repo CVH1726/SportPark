@@ -18,29 +18,34 @@
             <div class="col-4">
                 <div class="profile-card">
                     <img src="https://marketplace.canva.com/tXH-Q/MAG7IGtXH-Q/1/tl/canva-MAG7IGtXH-Q.jpg" alt="Avatar" class="profile-avatar">
-                    <h2 class="profile-name-lg">Hào Chu Văn</h2>
+                    <h2 class="profile-name-lg" id="profileCardName">Hào Chu Văn</h2>
                     <p class="profile-role">Thành viên SportPark</p>
 
                     <div class="profile-stats">
-                        <div>
-                            <div class="stat-value-teal">12</div>
+                        <!-- Bấm vào số hoạt động đã tham gia -> mở danh sách "Hoạt động đã đăng ký" ở trang Hoạt động -->
+                        <a href="activity.html#joined" class="profile-stat-link" title="Xem các hoạt động đã đăng ký tham gia">
+                            <div class="stat-value-teal" id="statJoined">12</div>
                             <div class="stat-label">Hoạt động tham gia</div>
-                        </div>
-                        <div>
-                            <div class="stat-value-orange">3</div>
+                        </a>
+                        <!-- Bấm vào số hoạt động đã tạo -> mở danh sách "Hoạt động do bạn tạo" ở trang Hoạt động -->
+                        <a href="activity.html#created" class="profile-stat-link" title="Xem các hoạt động bạn đã tạo">
+                            <div class="stat-value-orange" id="statCreated">3</div>
                             <div class="stat-label">Đã tạo</div>
-                        </div>
+                        </a>
                     </div>
                 </div>
 
                 <div class="account-menu-card">
-                    <a href="#profile-edit" class="account-menu-item active">
+                    <a href="#profile-info" class="account-menu-item active">
                         <i class="fa-solid fa-id-card" style="color: var(--accent-teal);"></i> Thông tin cá nhân
                     </a>
-                    <a href="activity.html" class="account-menu-item">
+                    <a href="activity.html#joined" class="account-menu-item">
                         <i class="fa-solid fa-calendar-check" style="color: var(--accent-orange);"></i> Hoạt động đã đăng ký
                     </a>
-                    <a href="#profile-edit" class="account-menu-item">
+                    <a href="#activity-stats" class="account-menu-item">
+                        <i class="fa-solid fa-chart-simple" style="color: #60a5fa;"></i> Thống kê hoạt động
+                    </a>
+                    <a href="#profile-info" class="account-menu-item">
                         <i class="fa-solid fa-gear"></i> Cài đặt tài khoản
                     </a>
                     <a href="login.html" class="account-menu-item account-menu-logout">
@@ -49,48 +54,115 @@
                 </div>
             </div>
 
-            <!-- Cột phải: Form chỉnh sửa thông tin cá nhân -->
-            <div class="col-8" id="profile-edit">
-                <div class="account-form-card">
-                    <h2 class="account-form-title">
-                        <i class="fa-solid fa-user-pen" style="color: var(--accent-teal);"></i> Chỉnh Sửa Thông Tin Cá Nhân
-                    </h2>
+            <!-- Cột phải: Thông tin cá nhân + thống kê hoạt động -->
+            <div class="col-8">
+                <div class="account-form-card" id="profile-info">
+                    <div class="account-card-header">
+                        <h2 class="account-form-title" style="margin-bottom: 0;">
+                            <i class="fa-solid fa-id-card" style="color: var(--accent-teal);"></i> Thông tin cá nhân
+                        </h2>
+                        <!-- Nút Chỉnh sửa: chỉ khi bấm mới mở rộng phần chỉnh sửa -->
+                        <button type="button" class="btn-edit-profile" id="btnEditProfile" onclick="openProfileEdit()">
+                            <i class="fa-solid fa-pen"></i> Chỉnh sửa
+                        </button>
+                    </div>
 
-                    <div class="form-grid-2">
-                        <div class="form-group">
-                            <label>Họ và Tên</label>
-                            <input type="text" id="accFullName" value="Hào Chu Văn" class="form-control">
+                    <!-- Chế độ xem (mặc định) -->
+                    <div class="profile-info-grid" id="profileView">
+                        <div class="info-item"><span class="info-label">Họ và tên</span><span class="info-value" id="viewFullName"></span></div>
+                        <div class="info-item"><span class="info-label">Email liên hệ</span><span class="info-value" id="viewEmail"></span></div>
+                        <div class="info-item"><span class="info-label">Số điện thoại</span><span class="info-value" id="viewPhone"></span></div>
+                        <div class="info-item"><span class="info-label">Ngày tháng năm sinh</span><span class="info-value" id="viewBirthDate"></span></div>
+                        <div class="info-item"><span class="info-label">Môn thể thao yêu thích</span><span class="info-value" id="viewSport"></span></div>
+                        <div class="info-item"><span class="info-label">Địa chỉ</span><span class="info-value" id="viewAddress"></span></div>
+                        <div class="info-item info-item-full"><span class="info-label">Giới thiệu bản thân / Mục tiêu tập luyện</span><span class="info-value" id="viewBio"></span></div>
+                    </div>
+
+                    <!-- Chế độ chỉnh sửa (ẩn, mở rộng khi bấm nút Chỉnh sửa) -->
+                    <div class="profile-edit-panel hidden" id="profileEditPanel">
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label for="accFullName">Họ và Tên *</label>
+                                <input type="text" id="accFullName" class="form-control">
+                                <span class="field-error hidden" id="errFullName"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="accEmail">Email liên hệ *</label>
+                                <input type="email" id="accEmail" class="form-control">
+                                <span class="field-error hidden" id="errEmail"></span>
+                            </div>
                         </div>
+
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label for="accPhone">Số điện thoại</label>
+                                <input type="text" id="accPhone" class="form-control" inputmode="tel">
+                                <span class="field-error hidden" id="errPhone"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="accBirthDate">Ngày tháng năm sinh</label>
+                                <input type="text" id="accBirthDate" class="form-control" inputmode="numeric" maxlength="10" autocomplete="off" placeholder="dd/mm/yyyy">
+                                <span class="field-error hidden" id="errBirthDate"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label for="accSport">Môn thể thao yêu thích</label>
+                                <select id="accSport" class="form-control">
+                                    <option>Cầu Lông</option>
+                                    <option>Chạy Bộ</option>
+                                    <option>Bóng Rổ</option>
+                                    <option>Gym / Calisthenics</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="accAddress">Địa chỉ</label>
+                                <input type="text" id="accAddress" class="form-control" placeholder="Số nhà, đường, quận/huyện, thành phố">
+                            </div>
+                        </div>
+
                         <div class="form-group">
-                            <label>Email liên hệ</label>
-                            <input type="email" id="accEmail" value="haochuvan@example.com" class="form-control">
+                            <label for="accBio">Giới thiệu bản thân / Mục tiêu tập luyện</label>
+                            <textarea id="accBio" class="form-control" rows="3" style="resize: none;"></textarea>
+                        </div>
+
+                        <!-- 2 nút chỉ xuất hiện khi đang chỉnh sửa -->
+                        <div class="form-actions">
+                            <button type="button" onclick="cancelAccountChanges()" class="btn-cancel">Hủy thay đổi</button>
+                            <button type="button" onclick="saveAccountChanges()" class="btn-save">Lưu Thay Đổi</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thống kê hoạt động (kiểu biểu đồ đóng góp của GitHub) -->
+                <div class="account-form-card activity-stats-card" id="activity-stats">
+                    <div class="account-card-header">
+                        <div>
+                            <h2 class="account-form-title" style="margin-bottom: 4px;">
+                                <i class="fa-solid fa-chart-simple" style="color: #60a5fa;"></i> Thống kê hoạt động
+                            </h2>
+                            <p class="stats-summary" id="heatmapSummary"></p>
                         </div>
                     </div>
 
-                    <div class="form-grid-2">
-                        <div class="form-group">
-                            <label>Số điện thoại</label>
-                            <input type="text" id="accPhone" value="0912 345 678" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label>Môn thể thao yêu thích</label>
-                            <select id="accSport" class="form-control">
-                                <option>Cầu Lông</option>
-                                <option>Chạy Bộ</option>
-                                <option>Bóng Rổ</option>
-                                <option>Gym / Calisthenics</option>
-                            </select>
+                    <div class="heatmap-scroll" id="heatmapScroll">
+                        <div class="heatmap">
+                            <div class="heatmap-months" id="heatmapMonths"></div>
+                            <div class="heatmap-body">
+                                <div class="heatmap-weekdays"><span>T2</span><span></span><span>T4</span><span></span><span>T6</span><span></span><span></span></div>
+                                <div class="heatmap-grid" id="heatmapGrid"></div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Giới thiệu bản thân / Mục tiêu tập luyện</label>
-                        <textarea id="accBio" class="form-control" rows="3" style="resize: none;">Đam mê cầu lông và chạy bộ tại các công viên khu vực Hà Nội. Mong muốn kết nối cộng đồng thể thao lành mạnh.</textarea>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="button" onclick="cancelAccountChanges()" class="btn-cancel">Hủy thay đổi</button>
-                        <button type="button" onclick="saveAccountChanges()" class="btn-save">Lưu Thay Đổi</button>
+                    <div class="heatmap-legend">
+                        <span class="heatmap-legend-note">Mỗi ô là một ngày, màu càng đậm càng nhiều hoạt động (tham gia + đã tạo).</span>
+                        <span class="heatmap-legend-scale">
+                            Ít
+                            <i class="heat-cell lvl-0"></i><i class="heat-cell lvl-1"></i><i class="heat-cell lvl-2"></i><i class="heat-cell lvl-3"></i><i class="heat-cell lvl-4"></i>
+                            Nhiều
+                        </span>
                     </div>
                 </div>
             </div>
@@ -103,20 +175,328 @@
     <script src="js/data.js"></script>
     <script src="js/common.js"></script>
     <script>
-        // Khôi phục lại dữ liệu mặc định khi bấm Hủy thay đổi
+        // ------------------------------------------------------------------
+        // THÔNG TIN CÁ NHÂN
+        // ------------------------------------------------------------------
+        const PROFILE_STORAGE_KEY = "sportpark_profile";
+
+        // Dữ liệu mặc định (mẫu) của người dùng
+        const defaultProfile = {
+            fullName: "Hào Chu Văn",
+            email: "haochuvan@example.com",
+            phone: "0912 345 678",
+            sport: "Cầu Lông",
+            birthDate: "01/01/2000",
+            address: "Cầu Giấy, Hà Nội",
+            bio: "Đam mê cầu lông và chạy bộ tại các công viên khu vực Hà Nội. Mong muốn kết nối cộng đồng thể thao lành mạnh."
+        };
+
+        let savedProfile = loadProfile();
+
+        // Đọc hồ sơ đã lưu (nếu trình duyệt cho phép), không có thì dùng mặc định
+        function loadProfile() {
+            try {
+                const raw = localStorage.getItem(PROFILE_STORAGE_KEY);
+                if (raw) {
+                    return Object.assign({}, defaultProfile, JSON.parse(raw));
+                }
+            } catch (e) {
+                // Bỏ qua, dùng dữ liệu mặc định
+            }
+            return Object.assign({}, defaultProfile);
+        }
+
+        function persistProfile() {
+            try {
+                localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(savedProfile));
+            } catch (e) {
+                // Không lưu được thì chỉ giữ trong phiên hiện tại
+            }
+        }
+
+        // Hiển thị thông tin ở chế độ xem
+        function renderProfileView() {
+            document.getElementById("viewFullName").textContent = savedProfile.fullName || "Chưa cập nhật";
+            document.getElementById("viewEmail").textContent = savedProfile.email || "Chưa cập nhật";
+            document.getElementById("viewPhone").textContent = savedProfile.phone || "Chưa cập nhật";
+            document.getElementById("viewBirthDate").textContent = savedProfile.birthDate || "Chưa cập nhật";
+            document.getElementById("viewSport").textContent = savedProfile.sport || "Chưa cập nhật";
+            document.getElementById("viewAddress").textContent = savedProfile.address || "Chưa cập nhật";
+            document.getElementById("viewBio").textContent = savedProfile.bio || "Chưa cập nhật";
+            document.getElementById("profileCardName").textContent = savedProfile.fullName || "Thành viên";
+        }
+
+        // Bấm "Chỉnh sửa": ẩn phần xem, mở rộng form chỉnh sửa (có 2 nút Hủy / Lưu)
+        function openProfileEdit() {
+            document.getElementById("accFullName").value = savedProfile.fullName;
+            document.getElementById("accEmail").value = savedProfile.email;
+            document.getElementById("accPhone").value = savedProfile.phone;
+            document.getElementById("accBirthDate").value = savedProfile.birthDate;
+            document.getElementById("accAddress").value = savedProfile.address;
+            document.getElementById("accBio").value = savedProfile.bio;
+            selectSportOption(savedProfile.sport);
+            clearProfileErrors();
+
+            document.getElementById("profileView").classList.add("hidden");
+            document.getElementById("btnEditProfile").classList.add("hidden");
+            document.getElementById("profileEditPanel").classList.remove("hidden");
+        }
+
+        // Đóng form chỉnh sửa và quay lại chế độ xem (2 nút Hủy / Lưu biến mất cùng form)
+        function closeProfileEdit() {
+            document.getElementById("profileEditPanel").classList.add("hidden");
+            document.getElementById("profileView").classList.remove("hidden");
+            document.getElementById("btnEditProfile").classList.remove("hidden");
+        }
+
+        // Chọn đúng môn yêu thích trong danh sách (thêm lựa chọn nếu môn đó chưa có trong danh sách)
+        function selectSportOption(sportName) {
+            const select = document.getElementById("accSport");
+            let found = false;
+            for (let i = 0; i < select.options.length; i++) {
+                if (select.options[i].text === sportName) {
+                    select.selectedIndex = i;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found && sportName) {
+                const opt = document.createElement("option");
+                opt.text = sportName;
+                select.add(opt);
+                select.value = sportName;
+            }
+        }
+
+        // Tự thêm dấu "/" khi gõ ngày sinh: 15082003 -> 15/08/2003
+        function formatBirthDateInput(inputEl) {
+            const digits = inputEl.value.replace(/\D/g, "").slice(0, 8);
+            let result = digits;
+            if (digits.length > 4) {
+                result = digits.slice(0, 2) + "/" + digits.slice(2, 4) + "/" + digits.slice(4);
+            } else if (digits.length > 2) {
+                result = digits.slice(0, 2) + "/" + digits.slice(2);
+            }
+            inputEl.value = result;
+        }
+
+        // Kiểm tra ngày sinh dd/mm/yyyy: đúng định dạng, là ngày có thật, không ở tương lai
+        function isValidBirthDate(text) {
+            const m = text.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+            if (!m) {
+                return false;
+            }
+            const day = parseInt(m[1], 10);
+            const month = parseInt(m[2], 10);
+            const year = parseInt(m[3], 10);
+            const date = new Date(year, month - 1, day);
+            const realDate = date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
+            return realDate && year >= 1900 && date.getTime() <= new Date().getTime();
+        }
+
+        function setFieldError(inputId, errId, message) {
+            const input = document.getElementById(inputId);
+            const err = document.getElementById(errId);
+            if (message) {
+                input.classList.add("input-invalid");
+                err.textContent = message;
+                err.classList.remove("hidden");
+            } else {
+                input.classList.remove("input-invalid");
+                err.classList.add("hidden");
+            }
+        }
+
+        function clearProfileErrors() {
+            setFieldError("accFullName", "errFullName", "");
+            setFieldError("accEmail", "errEmail", "");
+            setFieldError("accPhone", "errPhone", "");
+            setFieldError("accBirthDate", "errBirthDate", "");
+        }
+
+        // Bấm "Hủy thay đổi": bỏ các chỉnh sửa, quay lại chế độ xem
         function cancelAccountChanges() {
-            document.getElementById("accFullName").value = "Hào Chu Văn";
-            document.getElementById("accEmail").value = "haochuvan@example.com";
-            document.getElementById("accPhone").value = "0912 345 678";
-            document.getElementById("accSport").selectedIndex = 0;
-            document.getElementById("accBio").value = "Đam mê cầu lông và chạy bộ tại các công viên khu vực Hà Nội. Mong muốn kết nối cộng đồng thể thao lành mạnh.";
+            clearProfileErrors();
+            closeProfileEdit();
             showToast("Đã hủy các thay đổi!");
         }
 
-        // Thông báo khi lưu thay đổi hồ sơ cá nhân
+        // Bấm "Lưu Thay Đổi": kiểm tra dữ liệu, lưu rồi quay lại chế độ xem
         function saveAccountChanges() {
+            const fullName = document.getElementById("accFullName").value.trim();
+            const email = document.getElementById("accEmail").value.trim();
+            const phone = document.getElementById("accPhone").value.trim();
+            const birthDate = document.getElementById("accBirthDate").value.trim();
+
+            let hasError = false;
+
+            if (fullName.length < 2) {
+                setFieldError("accFullName", "errFullName", "Vui lòng nhập họ và tên.");
+                hasError = true;
+            } else {
+                setFieldError("accFullName", "errFullName", "");
+            }
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                setFieldError("accEmail", "errEmail", "Email không hợp lệ.");
+                hasError = true;
+            } else {
+                setFieldError("accEmail", "errEmail", "");
+            }
+
+            const phoneDigits = phone.replace(/[\s.\-]/g, "");
+            if (phone !== "" && !/^(\+?84|0)\d{8,10}$/.test(phoneDigits)) {
+                setFieldError("accPhone", "errPhone", "Số điện thoại không hợp lệ.");
+                hasError = true;
+            } else {
+                setFieldError("accPhone", "errPhone", "");
+            }
+
+            if (birthDate !== "" && !isValidBirthDate(birthDate)) {
+                setFieldError("accBirthDate", "errBirthDate", "Nhập ngày sinh hợp lệ theo định dạng dd/mm/yyyy (VD: 15/08/2003).");
+                hasError = true;
+            } else {
+                setFieldError("accBirthDate", "errBirthDate", "");
+            }
+
+            if (hasError) {
+                showToast("Vui lòng kiểm tra lại các thông tin được đánh dấu đỏ.");
+                return;
+            }
+
+            savedProfile = {
+                fullName: fullName,
+                email: email,
+                phone: phone,
+                sport: document.getElementById("accSport").value,
+                birthDate: birthDate,
+                address: document.getElementById("accAddress").value.trim(),
+                bio: document.getElementById("accBio").value.trim()
+            };
+            persistProfile();
+            renderProfileView();
+            closeProfileEdit();
             showToast("Đã lưu thông tin cá nhân thành công!");
         }
+
+        // ------------------------------------------------------------------
+        // THỐNG KÊ HOẠT ĐỘNG (kiểu GitHub)
+        // ------------------------------------------------------------------
+        function toISODate(d) {
+            return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+        }
+
+        function toViDate(d) {
+            return String(d.getDate()).padStart(2, "0") + "/" + String(d.getMonth() + 1).padStart(2, "0") + "/" + d.getFullYear();
+        }
+
+        // Mức màu theo số hoạt động trong ngày: 0 = trống, 1, 2, 3, 4+ = đậm dần
+        function getHeatLevel(count) {
+            if (count <= 0) {
+                return 0;
+            }
+            return Math.min(count, 4);
+        }
+
+        function renderActivityHeatmap() {
+            const grid = document.getElementById("heatmapGrid");
+            const monthsRow = document.getElementById("heatmapMonths");
+            if (!grid || !monthsRow) {
+                return;
+            }
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // Gom dữ liệu nhật ký theo ngày
+            const perDay = {};
+            let totalJoined = 0;
+            let totalCreated = 0;
+            activityLog.forEach(function (entry) {
+                const d = new Date(today);
+                d.setDate(d.getDate() - entry.daysAgo);
+                const key = toISODate(d);
+                if (!perDay[key]) {
+                    perDay[key] = { joined: 0, created: 0 };
+                }
+                perDay[key].joined += entry.joined;
+                perDay[key].created += entry.created;
+                totalJoined += entry.joined;
+                totalCreated += entry.created;
+            });
+
+            // Cập nhật số liệu ở thẻ hồ sơ và dòng tóm tắt
+            document.getElementById("statJoined").textContent = totalJoined;
+            document.getElementById("statCreated").textContent = totalCreated;
+            document.getElementById("heatmapSummary").textContent =
+                (totalJoined + totalCreated) + " hoạt động trong 12 tháng qua (" + totalJoined + " đã tham gia, " + totalCreated + " đã tạo)";
+
+            // Ô đầu tiên: Thứ 2 của tuần chứa ngày cách hôm nay 364 ngày (Thứ 2 là hàng trên cùng)
+            const start = new Date(today);
+            start.setDate(start.getDate() - 364);
+            start.setDate(start.getDate() - ((start.getDay() + 6) % 7));
+
+            let cellsHtml = "";
+            const monthLabels = [];
+            let weekIndex = 0;
+            let lastMonth = -1;
+            const cursor = new Date(start);
+
+            while (cursor <= today) {
+                // Nhãn tháng đặt ở tuần có ngày đầu tháng mới
+                const monthOfWeek = cursor.getMonth();
+                if (monthOfWeek !== lastMonth) {
+                    monthLabels.push({ col: weekIndex + 1, text: "Th " + (monthOfWeek + 1) });
+                    lastMonth = monthOfWeek;
+                }
+
+                for (let dow = 0; dow < 7; dow++) {
+                    const day = new Date(cursor);
+                    day.setDate(day.getDate() + dow);
+
+                    if (day > today || day < new Date(today.getTime() - 364 * 86400000)) {
+                        cellsHtml += `<i class="heat-cell heat-cell-empty"></i>`;
+                        continue;
+                    }
+
+                    const info = perDay[toISODate(day)] || { joined: 0, created: 0 };
+                    const count = info.joined + info.created;
+                    const tooltip = count === 0
+                        ? "Không có hoạt động - " + toViDate(day)
+                        : count + " hoạt động (" + info.joined + " tham gia, " + info.created + " tạo) - " + toViDate(day);
+                    cellsHtml += `<i class="heat-cell lvl-${getHeatLevel(count)}" title="${tooltip}"></i>`;
+                }
+
+                cursor.setDate(cursor.getDate() + 7);
+                weekIndex++;
+            }
+
+            // Bỏ nhãn tháng đầu tiên nếu sát nhãn tháng kế tiếp (tránh chữ đè lên nhau)
+            if (monthLabels.length > 1 && monthLabels[1].col - monthLabels[0].col < 3) {
+                monthLabels.shift();
+            }
+            let monthsHtml = "";
+            monthLabels.forEach(function (label) {
+                monthsHtml += `<span style="grid-column: ${label.col};">${label.text}</span>`;
+            });
+
+            grid.style.gridTemplateColumns = "repeat(" + weekIndex + ", 10px)";
+            monthsRow.style.gridTemplateColumns = "repeat(" + weekIndex + ", 10px)";
+            grid.innerHTML = cellsHtml;
+            monthsRow.innerHTML = monthsHtml;
+
+            // Cuộn tới cuối để thấy các tháng gần nhất khi màn hình hẹp
+            const scrollBox = document.getElementById("heatmapScroll");
+            scrollBox.scrollLeft = scrollBox.scrollWidth;
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            renderProfileView();
+            renderActivityHeatmap();
+            document.getElementById("accBirthDate").addEventListener("input", function () {
+                formatBirthDateInput(this);
+            });
+        });
     </script>
 </body>
 </html>
