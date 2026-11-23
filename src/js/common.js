@@ -69,6 +69,7 @@ function renderSharedHeader() {
                         <a href="park.html" data-page="park.html"><i class="fa-solid fa-tree"></i> Công Viên</a>
                         <a href="activity.html" data-page="activity.html"><i class="fa-solid fa-person-running"></i> Hoạt Động</a>
                         <a href="group.html" data-page="group.html"><i class="fa-solid fa-users"></i> Nhóm</a>
+                        <a href="news.html" data-page="news.html"><i class="fa-regular fa-newspaper"></i> Tin Tức</a>
                         <a href="account.html" data-page="account.html"><i class="fa-solid fa-user"></i> Tài Khoản</a>
                     </nav>
                 </div>
@@ -229,6 +230,80 @@ function renderSharedModalsAndToast() {
     `;
 }
 
+// ----- TIN TỨC (dùng chung cho Trang chủ và trang news.html) -----
+
+// Chuyển chuỗi ngày "dd/mm/yyyy" thành mốc thời gian để so sánh (không đọc được thì trả về 0)
+function parseViDate(dateStr) {
+    const parts = (dateStr || "").split("/");
+    if (parts.length !== 3) {
+        return 0;
+    }
+    return new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10)).getTime();
+}
+
+// Trả về danh sách tin tức sắp xếp từ MỚI nhất đến cũ nhất (cùng ngày thì tin có id lớn hơn xếp trước)
+function getSortedNews() {
+    if (typeof newsList === "undefined") {
+        return [];
+    }
+    return newsList.slice().sort(function (a, b) {
+        const diff = parseViDate(b.date) - parseViDate(a.date);
+        return diff !== 0 ? diff : b.id - a.id;
+    });
+}
+
+// Mở modal đọc chi tiết một tin tức
+function openNewsDetailModal(newsId) {
+    const item = (typeof newsList !== "undefined") ? newsList.find(function (n) { return n.id === newsId; }) : null;
+    const headerTitle = document.getElementById("detailModalHeaderTitle");
+    const modalBody = document.getElementById("detailModalBody");
+    const modal = document.getElementById("detailInfoModal");
+    if (!item || !headerTitle || !modalBody || !modal) {
+        return;
+    }
+
+    headerTitle.innerHTML = `<i class="fa-regular fa-newspaper" style="color:#60a5fa;"></i> Tin Tức`;
+
+    let paragraphs = "";
+    item.content.forEach(function (text) {
+        paragraphs += `<p class="detail-desc">${text}</p>`;
+    });
+
+    modalBody.innerHTML = `
+        <div class="detail-hero-img">
+            <img src="${item.image}" alt="${item.title}">
+            <span class="detail-hero-badge">${item.category} • ${item.date}</span>
+        </div>
+        <h2 class="detail-title">${item.title}</h2>
+        ${paragraphs}
+        <div class="detail-modal-footer">
+            <button type="button" class="btn-cancel" onclick="closeDetailModal()">Đóng</button>
+        </div>
+    `;
+    modal.classList.remove("hidden");
+}
+
+// Vẽ một thẻ tin tức (dùng cho Trang chủ và trang Tin tức). isNewest = true sẽ gắn nhãn "Mới nhất"
+function buildNewsCardHtml(item, isMain, isNewest) {
+    return `
+        <article class="news-card ${isMain ? 'news-card-main' : ''}" onclick="openNewsDetailModal(${item.id})">
+            <div class="news-img-box">
+                <img src="${item.image}" alt="${item.title}">
+                ${isNewest ? '<span class="news-new-badge"><i class="fa-solid fa-bolt"></i> Mới nhất</span>' : ''}
+            </div>
+            <div class="news-body">
+                <div class="news-meta">
+                    <span class="news-category">${item.category}</span>
+                    <span class="news-date"><i class="fa-regular fa-calendar"></i> ${item.date}</span>
+                </div>
+                <h3>${item.title}</h3>
+                <p>${item.summary}</p>
+                <span class="news-readmore">Đọc tiếp <i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+        </article>
+    `;
+}
+
 // Mở modal xem chi tiết Công Viên
 function openParkDetailModal(parkSlug) {
     if (typeof parksList === "undefined") {
@@ -292,7 +367,7 @@ function openParkDetailModal(parkSlug) {
         </div>
 
         <div class="detail-section">
-            <h4>Môn thể thao đáp ứng cơ sở vật chất</h4>
+            <h4>Môn thể thao</h4>
             <div class="detail-sports-wrap">${sportsTagsHtml}</div>
         </div>
 

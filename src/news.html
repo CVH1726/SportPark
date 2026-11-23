@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SportPark - Tin Tức</title>
+    <!-- Bộ icon FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Font chữ Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- File CSS giao diện chung -->
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+    <!-- Khung chứa Header dùng chung (do common.js tạo) -->
+    <div id="shared-header"></div>
+
+    <!-- Nội dung chính trang Tin tức -->
+    <main class="container">
+        <div class="page-header-row">
+            <div>
+                <h1 class="page-title">
+                    <i class="fa-regular fa-newspaper" style="color: #60a5fa;"></i> Tin Tức
+                </h1>
+                <p class="page-subtitle" id="newsCountText">Đang tải tin tức...</p>
+            </div>
+        </div>
+
+        <!-- Lọc nhanh theo chuyên mục -->
+        <div class="news-category-bar" id="newsCategoryBar"></div>
+
+        <!-- Danh sách tin tức, sắp xếp từ mới nhất đến cũ nhất -->
+        <div class="news-grid" id="newsGrid"></div>
+    </main>
+
+    <!-- Khung chứa Footer và Modal/Toast dùng chung -->
+    <div id="shared-footer"></div>
+    <div id="shared-modals"></div>
+
+    <!-- Các file JavaScript -->
+    <script src="js/data.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/news.js"></script>
+</body>
+</html>

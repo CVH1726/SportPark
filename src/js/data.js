@@ -250,6 +250,153 @@ const activitiesList = [
         image: "https://images.unsplash.com/photo-1519861531473-9200262188bf?auto=format&fit=crop&q=80&w=600",
         badgeColor: "#d97706",
         icon: "fa-basketball"
+    },
+    {
+        id: 4,
+        title: "Bóng Đá Mini Giao Hữu",
+        sport: "bóng đá",
+        park: "Công viên Hòa Bình",
+        meetingPoint: "Bãi cỏ phía cổng Phạm Văn Đồng",
+        date: "28/11/2026",
+        schedule: "Thứ 7, 16:00 - 18:00",
+        costLabel: "Có phí (30k)",
+        costAmount: 30000,
+        badgeStyle: "badge-paid",
+        level: "Trung bình",
+        currentParticipants: 14,
+        maxParticipants: 20,
+        organizer: "Quốc Việt (FC Hòa Bình)",
+        equipmentNote: "Mang giày đá bóng đế bằng và bọc ống đồng; phí 30.000đ/người gồm nước uống và áo chia đội.",
+        description: "Đá bóng mini 5 người, chia đội cân bằng trình độ, tinh thần giao hữu là chính.",
+        image: "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&q=80&w=600",
+        badgeColor: "#16a34a",
+        icon: "fa-futbol"
+    },
+    {
+        id: 5,
+        title: "Đá Cầu Buổi Sáng",
+        sport: "đá cầu",
+        park: "Công viên Thống Nhất",
+        meetingPoint: "Khu sân gạch gần cổng Đại Cồ Việt",
+        date: "25/11/2026",
+        schedule: "Thứ 4, 06:00 - 07:30",
+        costLabel: "Miễn phí",
+        costAmount: 0,
+        badgeStyle: "",
+        level: "Mọi trình độ",
+        currentParticipants: 9,
+        maxParticipants: 16,
+        organizer: "Bác Hùng (CLB Đá Cầu Bảy Mẫu)",
+        equipmentNote: "Mang giày thể thao; cầu do nhóm chuẩn bị sẵn.",
+        description: "Buổi đá cầu nhẹ nhàng đầu ngày, có người hướng dẫn kỹ thuật cho người mới.",
+        image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&q=80&w=600",
+        badgeColor: "#f97316",
+        icon: "fa-feather"
+    },
+    {
+        id: 6,
+        title: "Aerobic & Nhảy Dân Vũ Buổi Tối",
+        sport: "aerobic",
+        park: "Công viên Nghĩa Đô",
+        meetingPoint: "Quảng trường trung tâm công viên",
+        date: "27/11/2026",
+        schedule: "Thứ 6, 18:30 - 20:00",
+        costLabel: "Miễn phí",
+        costAmount: 0,
+        badgeStyle: "",
+        level: "Mọi trình độ",
+        currentParticipants: 32,
+        maxParticipants: 50,
+        organizer: "Thu Hương (Nhóm Aerobic Nghĩa Đô)",
+        equipmentNote: "Mặc trang phục thoải mái, mang theo khăn và nước uống.",
+        description: "Tập aerobic và nhảy dân vũ theo nhạc cùng huấn luyện viên, phù hợp mọi lứa tuổi.",
+        image: "https://images.unsplash.com/photo-1519861531473-9200262188bf?auto=format&fit=crop&q=80&w=600",
+        badgeColor: "#d946ef",
+        icon: "fa-music"
+    },
+    {
+        id: 7,
+        title: "Thái Cực Quyền Dưỡng Sinh",
+        sport: "thái cực quyền",
+        park: "Công viên Bách Thảo",
+        meetingPoint: "Khoảng sân dưới tán cây gần hồ nước",
+        date: "24/11/2026",
+        schedule: "Thứ 3 & 5, 05:30 - 07:00",
+        costLabel: "Miễn phí",
+        costAmount: 0,
+        badgeStyle: "",
+        level: "Người mới",
+        currentParticipants: 15,
+        maxParticipants: 25,
+        organizer: "Thầy Bình (CLB Dưỡng Sinh Bách Thảo)",
+        equipmentNote: "Mặc đồ rộng thoải mái, giày đế mềm.",
+        description: "Các bài tập thái cực quyền và dưỡng sinh nhẹ nhàng, giúp thư giãn và cải thiện thăng bằng.",
+        image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&q=80&w=600",
+        badgeColor: "#94a3b8",
+        icon: "fa-yin-yang"
+    },
+    {
+        id: 8,
+        title: "Pickleball Giao Lưu Cuối Tuần",
+        sport: "pickleball",
+        park: "Công viên Cầu Giấy",
+        meetingPoint: "Khu sân đa năng cạnh sân bóng rổ số 1",
+        date: "29/11/2026",
+        schedule: "Chủ Nhật, 17:00 - 19:00",
+        costLabel: "Có phí (40k)",
+        costAmount: 40000,
+        badgeStyle: "badge-paid",
+        level: "Người mới",
+        currentParticipants: 6,
+        maxParticipants: 12,
+        organizer: "Hải Đăng (Pickleball Cầu Giấy)",
+        equipmentNote: "Vợt và bóng có thể mượn tại chỗ; phí 40.000đ/người gồm thuê sân.",
+        description: "Làm quen luật chơi và đánh đôi pickleball, thích hợp cho người mới bắt đầu.",
+        image: "https://images.unsplash.com/photo-1519861531473-9200262188bf?auto=format&fit=crop&q=80&w=600",
+        badgeColor: "#06b6d4",
+        icon: "fa-table-tennis-paddle-ball"
+    },
+    {
+        id: 9,
+        title: "Đạp Xe Cuối Tuần Quanh Hồ Yên Sở",
+        sport: "đạp xe",
+        park: "Công viên Yên Sở",
+        meetingPoint: "Điểm cho thuê xe đạp tại cổng chính",
+        date: "28/11/2026",
+        schedule: "Thứ 7, 06:00 - 09:00",
+        costLabel: "Miễn phí",
+        costAmount: 0,
+        badgeStyle: "",
+        level: "Trung bình",
+        currentParticipants: 11,
+        maxParticipants: 20,
+        organizer: "Đức Mạnh (Hà Nội Cycling)",
+        equipmentNote: "Đội mũ bảo hiểm, mang theo nước; có thể thuê xe tại cổng.",
+        description: "Đạp xe đường dài ven hồ, tốc độ vừa phải, dừng nghỉ giữa chặng để chụp ảnh và giao lưu.",
+        image: "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&q=80&w=600",
+        badgeColor: "#0d9488",
+        icon: "fa-bicycle"
+    },
+    {
+        id: 10,
+        title: "Yoga Buổi Sáng Bên Hồ",
+        sport: "yoga",
+        park: "Công viên Tuổi Trẻ",
+        meetingPoint: "Bãi cỏ phía hồ trung tâm",
+        date: "26/11/2026",
+        schedule: "Thứ 5, 06:00 - 07:30",
+        costLabel: "Có phí (80k)",
+        costAmount: 80000,
+        badgeStyle: "badge-paid",
+        level: "Người mới",
+        currentParticipants: 12,
+        maxParticipants: 18,
+        organizer: "Ngọc Mai (Yoga Xanh)",
+        equipmentNote: "Tự mang thảm yoga và nước uống; phí 80.000đ/người.",
+        description: "Lớp yoga nhẹ nhàng đón bình minh, tập trung vào hơi thở và các tư thế cơ bản.",
+        image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&q=80&w=600",
+        badgeColor: "#ec4899",
+        icon: "fa-spa"
     }
 ];
 
@@ -386,6 +533,45 @@ const parksList = [
         ]
     }
 ];
+
+// Danh mục các môn thể thao (dùng để gắn môn vào công viên). Muốn thêm môn mới: thêm một dòng ở đây.
+const sportCatalog = {
+    "cầu lông":      { key: "cầu lông",      name: "Cầu lông",              icon: "fa-table-tennis-paddle-ball", color: "#10b981" },
+    "chạy bộ":       { key: "chạy bộ",       name: "Chạy bộ",               icon: "fa-person-running",           color: "#2563eb" },
+    "bóng rổ":       { key: "bóng rổ",       name: "Bóng rổ",               icon: "fa-basketball",               color: "#d97706" },
+    "gym":           { key: "gym",           name: "Gym / Calisthenics",    icon: "fa-dumbbell",                 color: "#8b5cf6" },
+    "đạp xe":        { key: "đạp xe",        name: "Đạp xe",                icon: "fa-bicycle",                  color: "#0d9488" },
+    "yoga":          { key: "yoga",          name: "Yoga ngoài trời",       icon: "fa-spa",                      color: "#ec4899" },
+    "bóng đá":       { key: "bóng đá",       name: "Bóng đá",               icon: "fa-futbol",                   color: "#16a34a" },
+    "bóng chuyền":   { key: "bóng chuyền",   name: "Bóng chuyền",           icon: "fa-volleyball",               color: "#eab308" },
+    "đá cầu":        { key: "đá cầu",        name: "Đá cầu",                icon: "fa-feather",                  color: "#f97316" },
+    "bóng bàn":      { key: "bóng bàn",      name: "Bóng bàn",              icon: "fa-table-tennis-paddle-ball", color: "#ef4444" },
+    "pickleball":    { key: "pickleball",    name: "Pickleball",            icon: "fa-table-tennis-paddle-ball", color: "#06b6d4" },
+    "aerobic":       { key: "aerobic",       name: "Aerobic & Nhảy dân vũ", icon: "fa-music",                    color: "#d946ef" },
+    "thái cực quyền":{ key: "thái cực quyền",name: "Thái cực quyền",        icon: "fa-yin-yang",                 color: "#94a3b8" },
+    "đi bộ":         { key: "đi bộ",         name: "Đi bộ nhanh",           icon: "fa-person-walking",           color: "#84cc16" },
+    "trượt patin":   { key: "trượt patin",   name: "Trượt patin",           icon: "fa-person-skating",           color: "#3b82f6" },
+    "cờ tướng":      { key: "cờ tướng",      name: "Cờ tướng / Cờ vua",     icon: "fa-chess",                    color: "#a16207" }
+};
+
+// Các môn thể thao bổ sung cho từng công viên (ngoài các môn đã khai báo trong parksList)
+const parkExtraSports = {
+    "thong-nhat": ["đi bộ", "thái cực quyền", "đá cầu", "cờ tướng"],
+    "cau-giay":   ["bóng đá", "bóng chuyền", "pickleball", "aerobic"],
+    "nghia-do":   ["đá cầu", "aerobic", "thái cực quyền", "trượt patin"],
+    "hoa-binh":   ["bóng đá", "bóng chuyền", "đi bộ", "trượt patin"],
+    "yen-so":     ["bóng đá", "đi bộ", "thái cực quyền", "pickleball"]
+};
+
+parksList.forEach(function (park) {
+    (parkExtraSports[park.slug] || []).forEach(function (sportKey) {
+        const info = sportCatalog[sportKey];
+        const alreadyHas = park.sports.some(function (sp) { return sp.key === sportKey; });
+        if (info && !alreadyHas) {
+            park.sports.push({ key: info.key, name: info.name, icon: info.icon, color: info.color });
+        }
+    });
+});
 
 // Danh sách các nhóm và câu lạc bộ thể thao
 const groupsList = [
@@ -586,6 +772,84 @@ const newsList = [
             "Vào mục Nhóm hoặc Hoạt Động, chọn tab Quản lý rồi bấm nút tạo mới.",
             "Điền tên, môn thể thao, công viên, lịch sinh hoạt và mô tả. Bạn có thể chọn chế độ công khai hoặc cần phê duyệt đối với nhóm.",
             "Sau khi tạo, nhóm/hoạt động sẽ xuất hiện trong danh sách để mọi người tìm thấy và đăng ký."
+        ]
+    },
+    {
+        id: 5,
+        category: "Sự kiện",
+        date: "21/11/2026",
+        title: "Lịch hoạt động tuần 23–29/11 tại các công viên",
+        summary: "Tổng hợp các buổi tập, giao lưu và chạy bộ cộng đồng sắp diễn ra trong tuần tới.",
+        image: "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&q=80&w=600",
+        content: [
+            "Tuần này có nhiều hoạt động mới ở các công viên: bóng đá mini, đá cầu, aerobic, yoga, đạp xe và pickleball.",
+            "Bạn có thể lọc theo môn, công viên, chi phí, ngày giờ và số lượng người ở trang Hoạt Động để chọn buổi phù hợp.",
+            "Một số hoạt động có số chỗ giới hạn nên hãy đăng ký sớm."
+        ]
+    },
+    {
+        id: 6,
+        category: "Sức khỏe",
+        date: "10/11/2026",
+        title: "Chọn giày chạy bộ phù hợp cho người mới bắt đầu",
+        summary: "Vài tiêu chí đơn giản giúp bạn chọn đôi giày vừa chân, êm và hạn chế chấn thương.",
+        image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&q=80&w=600",
+        content: [
+            "Hãy thử giày vào buổi chiều khi bàn chân hơi nở, chừa khoảng một đốt ngón tay ở mũi giày.",
+            "Ưu tiên giày có đế êm, ôm gót và thoáng khí. Không cần chọn giày quá đắt tiền khi mới tập.",
+            "Thay giày sau khoảng 600–800 km chạy hoặc khi đế mòn rõ rệt."
+        ]
+    },
+    {
+        id: 7,
+        category: "Hướng dẫn",
+        date: "08/11/2026",
+        title: "Quy tắc ứng xử khi tập thể thao chung ở công viên",
+        summary: "Một vài lưu ý nhỏ giúp mọi người cùng tập luyện thoải mái và giữ công viên sạch đẹp.",
+        image: "https://baomoi-photo-fbcrawler.bmcdn.me/w1200_r3x2/2025_04_18_294_52008334/3cca165f4c11a54ffc00.jpg",
+        content: [
+            "Công viên là không gian chung, vì vậy hãy nhường lối cho người đi bộ và chú ý khi chạy hoặc đạp xe đông người.",
+            "Giữ vệ sinh, mang rác về hoặc bỏ đúng nơi quy định, và hạn chế mở nhạc quá lớn.",
+            "Tuân thủ nội quy của từng công viên và hướng dẫn của ban quản lý."
+        ]
+    },
+    {
+        id: 8,
+        category: "Công viên",
+        date: "05/11/2026",
+        title: "Gợi ý cung đường đạp xe ven hồ ở công viên Yên Sở",
+        summary: "Không gian rộng, ít khói bụi và có điểm cho thuê xe ngay tại cổng chính.",
+        image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&q=80&w=600",
+        content: [
+            "Công viên Yên Sở có các tuyến đường ven hồ phù hợp cho cả người mới đạp xe lẫn người muốn tập đường dài.",
+            "Bạn nên đi vào sáng sớm hoặc chiều muộn để tránh nắng, mang đủ nước và đội mũ bảo hiểm.",
+            "Xem các hoạt động đạp xe đang mở ở trang Hoạt Động."
+        ]
+    },
+    {
+        id: 9,
+        category: "Sức khỏe",
+        date: "02/11/2026",
+        title: "Ăn gì trước và sau buổi tập ngoài trời?",
+        summary: "Những gợi ý ăn uống nhẹ nhàng giúp bạn đủ năng lượng và phục hồi nhanh hơn.",
+        image: "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&q=80&w=600",
+        content: [
+            "Trước buổi tập khoảng 1–2 giờ, nên ăn nhẹ với tinh bột dễ tiêu như chuối, bánh mì hoặc yến mạch.",
+            "Sau buổi tập, bổ sung nước và thực phẩm giàu đạm kết hợp tinh bột để phục hồi cơ bắp.",
+            "Nhu cầu dinh dưỡng khác nhau ở mỗi người; nếu có vấn đề sức khỏe hãy hỏi ý kiến chuyên gia."
+        ]
+    },
+    {
+        id: 10,
+        category: "Thông báo",
+        date: "30/10/2026",
+        title: "SportPark ra mắt bản đồ và bộ lọc thông minh",
+        summary: "Tìm địa điểm tập theo môn, chi phí, ngày giờ, trình độ và số người chỉ với vài thao tác.",
+        image: "https://images.unsplash.com/photo-1519861531473-9200262188bf?auto=format&fit=crop&q=80&w=600",
+        content: [
+            "Trang Bản Đồ nay phủ toàn màn hình, kèm thanh bộ lọc bên trái có thể đóng mở khi cần.",
+            "Bộ lọc gồm môn thể thao, địa điểm, chi phí, ngày và khung giờ, trình độ và số lượng người.",
+            "Chúng tôi sẽ tiếp tục bổ sung thêm công viên và môn thể thao mới."
         ]
     }
 ];

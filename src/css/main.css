@@ -1036,7 +1036,7 @@ footer {
 
 .social-facebook { color: #1877f2; }      /* Logo Facebook màu xanh */
 .social-youtube  { color: #ff0000; }      /* Logo YouTube đỏ trên nền trắng */
-.social-x        { color: #000000; font-size: 16px; }
+.social-x        { font-size: 15px; }      /* X (Twitter) màu đen: xem mục [13] */
 
 /* === [08] MODAL POPUP, LỊCH MINI, TOAST VÀ TRANG ĐĂNG NHẬP === */
 .modal-overlay {
@@ -2762,4 +2762,107 @@ body.map-page {
     body.map-page {
         height: 100dvh;
     }
+}
+
+
+/* ==========================================================================
+   [13] BỘ LỌC HOẠT ĐỘNG MỞ RỘNG, TRANG TIN TỨC, NÚT X MÀU ĐEN
+   ========================================================================== */
+
+/* Bộ lọc hoạt động: 4 cột trên màn hình rộng (chỉ áp dụng cho trang Hoạt động) */
+@media (min-width: 1024px) {
+    .activity-filter-panel.activity-filter-panel-wide {
+        grid-template-columns: repeat(4, 1fr);
+        align-items: start;
+    }
+}
+
+.activity-filter-panel-wide .btn-reset-activity {
+    grid-column: 1 / -1;
+    justify-self: end;
+}
+
+/* Ô ngày + lịch mini: lịch bật ra dạng popup, không làm giãn bảng lọc */
+.filter-date-group {
+    position: relative;
+}
+
+.filter-date-group .mini-cal {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 60;
+    width: 270px;
+    max-width: 90vw;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+}
+
+.activity-filter-panel .form-grid-compact .form-control {
+    min-width: 0;
+}
+
+/* Nút X (Twitter) màu đen: nền đen, chữ X trắng viền sáng để nổi trên chân trang tối */
+.social-x {
+    background: #000000;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    font-size: 15px;
+}
+
+/* ----- Trang Tin tức ----- */
+.news-category-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.news-chip {
+    background: var(--bg-card);
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    border-radius: 9999px;
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.news-chip:hover {
+    color: white;
+    border-color: var(--accent-teal);
+}
+
+.news-chip.active {
+    background: var(--accent-orange);
+    border-color: var(--accent-orange);
+    color: white;
+}
+
+.news-img-box {
+    position: relative;
+}
+
+.news-new-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: var(--accent-orange);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+}
+
+/* Nút "Xem tất cả tin tức" dưới danh sách tin ở Trang chủ */
+.news-more-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 18px;
 }

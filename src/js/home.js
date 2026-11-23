@@ -137,7 +137,7 @@ function renderFeaturedParks() {
     grid.innerHTML = html;
 }
 
-// Tin tức: bài đầu là bài nổi bật (to), các bài còn lại xếp bên cạnh
+// Tin tức: lấy 4 tin MỚI nhất; bài đầu là bài nổi bật (to). Xem toàn bộ tại news.html
 function renderNews() {
     const grid = document.getElementById("newsGrid");
     if (!grid) {
@@ -145,54 +145,10 @@ function renderNews() {
     }
 
     let html = "";
-    newsList.forEach(function (item, index) {
-        html += `
-            <article class="news-card ${index === 0 ? 'news-card-main' : ''}" onclick="openNewsDetailModal(${item.id})">
-                <div class="news-img-box"><img src="${item.image}" alt="${item.title}"></div>
-                <div class="news-body">
-                    <div class="news-meta">
-                        <span class="news-category">${item.category}</span>
-                        <span class="news-date"><i class="fa-regular fa-calendar"></i> ${item.date}</span>
-                    </div>
-                    <h3>${item.title}</h3>
-                    <p>${item.summary}</p>
-                    <span class="news-readmore">Đọc tiếp <i class="fa-solid fa-arrow-right"></i></span>
-                </div>
-            </article>
-        `;
+    getSortedNews().slice(0, 4).forEach(function (item, index) {
+        html += buildNewsCardHtml(item, index === 0, index === 0);
     });
     grid.innerHTML = html;
-}
-
-// Mở modal đọc chi tiết một tin tức
-function openNewsDetailModal(newsId) {
-    const item = newsList.find(function (n) { return n.id === newsId; });
-    const headerTitle = document.getElementById("detailModalHeaderTitle");
-    const modalBody = document.getElementById("detailModalBody");
-    const modal = document.getElementById("detailInfoModal");
-    if (!item || !headerTitle || !modalBody || !modal) {
-        return;
-    }
-
-    headerTitle.innerHTML = `<i class="fa-regular fa-newspaper" style="color:#60a5fa;"></i> Tin Tức`;
-
-    let paragraphs = "";
-    item.content.forEach(function (text) {
-        paragraphs += `<p class="detail-desc">${text}</p>`;
-    });
-
-    modalBody.innerHTML = `
-        <div class="detail-hero-img">
-            <img src="${item.image}" alt="${item.title}">
-            <span class="detail-hero-badge">${item.category} • ${item.date}</span>
-        </div>
-        <h2 class="detail-title">${item.title}</h2>
-        ${paragraphs}
-        <div class="detail-modal-footer">
-            <button type="button" class="btn-cancel" onclick="closeDetailModal()">Đóng</button>
-        </div>
-    `;
-    modal.classList.remove("hidden");
 }
 
 // Hiển thị thông tin liên hệ từ siteInfo (data.js)

@@ -63,17 +63,27 @@
                 </select>
             </div>
 
-            <!-- 3. Các môn thể thao có cơ sở vật chất đáp ứng -->
+            <!-- 3. Môn thể thao -->
             <div class="form-group">
-                <label for="parkSportSelect"><i class="fa-solid fa-dumbbell"></i> Môn có cơ sở vật chất</label>
+                <label for="parkSportSelect"><i class="fa-solid fa-dumbbell"></i> Môn thể thao</label>
                 <select id="parkSportSelect" class="form-control">
                     <option value="all">Tất cả môn thể thao</option>
-                    <option value="cầu lông">Sân Cầu lông</option>
-                    <option value="chạy bộ">Đường Chạy bộ</option>
-                    <option value="bóng rổ">Sân Bóng rổ</option>
-                    <option value="gym">Khu Gym / Calisthenics</option>
-                    <option value="đạp xe">Tuyến Đạp xe</option>
-                    <option value="yoga">Bãi cỏ Yoga ngoài trời</option>
+                    <option value="cầu lông">Cầu lông</option>
+                    <option value="chạy bộ">Chạy bộ</option>
+                    <option value="bóng rổ">Bóng rổ</option>
+                    <option value="gym">Gym / Calisthenics</option>
+                    <option value="đạp xe">Đạp xe</option>
+                    <option value="yoga">Yoga ngoài trời</option>
+                    <option value="bóng đá">Bóng đá</option>
+                    <option value="bóng chuyền">Bóng chuyền</option>
+                    <option value="đá cầu">Đá cầu</option>
+                    <option value="bóng bàn">Bóng bàn</option>
+                    <option value="pickleball">Pickleball</option>
+                    <option value="aerobic">Aerobic &amp; Nhảy dân vũ</option>
+                    <option value="thái cực quyền">Thái cực quyền</option>
+                    <option value="đi bộ">Đi bộ nhanh</option>
+                    <option value="trượt patin">Trượt patin</option>
+                    <option value="cờ tướng">Cờ tướng / Cờ vua</option>
                 </select>
             </div>
 
@@ -158,7 +168,7 @@
             }
         }
 
-        // Lọc danh sách công viên theo từ khóa, quận/xã, môn có cơ sở vật chất, mức độ đông đúc và khoảng cách
+        // Lọc danh sách công viên theo từ khóa, quận/xã, môn thể thao, mức độ đông đúc và khoảng cách
         function filterAndRenderParks() {
             const keyword = document.getElementById("parkKeywordInput").value.trim().toLowerCase();
             const selectedDistrict = document.getElementById("parkDistrictSelect").value;
